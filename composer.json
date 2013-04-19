@@ -1,7 +1,7 @@
 {
 	"name": "kdyby/autowired",
 	"type": "library",
-	"description": "DI Extension for Nette Framework",
+	"description": "Syntax sugar for working with services in Nette Framework",
 	"keywords": ["nette", "di", "autowire", "kdyby"],
 	"homepage": "http://kdyby.org",
 	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
