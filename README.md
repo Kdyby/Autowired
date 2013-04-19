@@ -24,12 +24,8 @@ $ composer require kdyby/autowired:@dev
 ```
 
 
------
-
-Homepage [http://www.kdyby.org](http://www.kdyby.org) and repository [http://github.com/kdyby/autowired](http://github.com/kdyby/autowired).
-
-
-## Include in application
+Include in application
+------------
 
 
 ```php
@@ -41,7 +37,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 ```
 
 
-## Usage
+Usage
+------------
 
 
 ```php
@@ -62,3 +59,8 @@ class ArticlePresenter extends BasePresenter
     // ..
 }
 ```
+
+
+-----
+
+Homepage [http://www.kdyby.org](http://www.kdyby.org) and repository [http://github.com/kdyby/autowired](http://github.com/kdyby/autowired).
