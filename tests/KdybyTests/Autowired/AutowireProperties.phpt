@@ -81,6 +81,7 @@ class AutowirePropertiesTest extends Tester\TestCase
 }
 
 
+
 class DummyPresenter extends Nette\Application\UI\Presenter
 {
 
@@ -106,6 +107,8 @@ class DummyPresenter extends Nette\Application\UI\Presenter
 
 }
 
+
+
 class SampleService
 {
 	public $args;
@@ -115,6 +118,8 @@ class SampleService
 		$this->args = func_get_args();
 	}
 }
+
+
 
 interface ISampleServiceFactory
 {
