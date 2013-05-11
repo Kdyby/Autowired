@@ -87,6 +87,27 @@ trait AutowireProperties
 
 
 	/**
+	 * @param string $type
+	 * @return string|bool
+	 */
+	private function findByType($type)
+	{
+		if (method_exists($this->autowirePropertiesLocator, 'findByType')) {
+			$found = $this->autowirePropertiesLocator->findByType($type);
+
+			return reset($found);
+		}
+
+		$type = ltrim(strtolower($type), '\\');
+
+		return !empty($this->autowirePropertiesLocator->classes[$type])
+			? $this->autowirePropertiesLocator->classes[$type]
+			: FALSE;
+	}
+
+
+
+	/**
 	 * @param Property $prop
 	 * @throws MissingServiceException
 	 * @throws UnexpectedValueException
@@ -102,7 +123,7 @@ trait AutowireProperties
 		if (($args = (array) $prop->getAnnotation('autowire')) && !empty($args['factory'])) {
 			$factoryType = $this->resolveAnnotationClass($prop, $args['factory'], 'autowire');
 
-			if (empty($this->autowirePropertiesLocator->classes[strtolower($factoryType)])) {
+			if (!$this->findByType($factoryType)) {
 				throw new MissingServiceException("Factory of type \"$factoryType\" not found for $prop in annotation @autowire.");
 			}
 
@@ -114,12 +135,10 @@ trait AutowireProperties
 
 			unset($args['factory']);
 			$metadata['arguments'] = array_values($args);
-			$metadata['factory'] = $this->autowirePropertiesLocator->classes[strtolower($factoryType)];
+			$metadata['factory'] = $this->findByType($factoryType);
 
-		} else {
-			if (empty($this->autowirePropertiesLocator->classes[strtolower($type)])) {
-				throw new MissingServiceException("Service of type \"$type\" not found for $prop in annotation @var.");
-			}
+		} elseif (!$this->findByType($type)) {
+			throw new MissingServiceException("Service of type \"$type\" not found for $prop in annotation @var.");
 		}
 
 		// unset property to pass control to __set() and __get()

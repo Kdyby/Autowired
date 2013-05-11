@@ -79,7 +79,7 @@ trait AutowireComponentFactories
 					continue;
 				}
 
-				if ($this->autowireComponentFactoriesLocator->getByType($class, FALSE) === NULL && !$parameter->allowsNull()) {
+				if (!$this->findByType($class) && !$parameter->allowsNull()) {
 					throw new MissingServiceException("No service of type {$class} found. Make sure the type hint in $method is written correctly and service of this type is registered.");
 				}
 			}
@@ -94,6 +94,27 @@ trait AutowireComponentFactories
 		$cache->save($presenterClass, TRUE, array(
 			$cache::FILES => $files,
 		));
+	}
+
+
+
+	/**
+	 * @param string $type
+	 * @return string|bool
+	 */
+	private function findByType($type)
+	{
+		if (method_exists($this->autowireComponentFactoriesLocator, 'findByType')) {
+			$found = $this->autowireComponentFactoriesLocator->findByType($type);
+
+			return reset($found);
+		}
+
+		$type = ltrim(strtolower($type), '\\');
+
+		return !empty($this->autowireComponentFactoriesLocator->classes[$type])
+			? $this->autowireComponentFactoriesLocator->classes[$type]
+			: FALSE;
 	}
 
 
