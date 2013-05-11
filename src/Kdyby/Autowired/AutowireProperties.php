@@ -19,6 +19,8 @@ use Nette\Reflection\ClassType;
 
 /**
  * @author Filip Procházka <filip@prochazka.su>
+ *
+ * @method Nette\Application\UI\PresenterComponentReflection getReflection()
  */
 trait AutowireProperties
 {
@@ -26,7 +28,7 @@ trait AutowireProperties
 	/**
 	 * @var array
 	 */
-	private $autowire = array();
+	private $autowireProperties = array();
 
 	/**
 	 * @var Nette\DI\Container
@@ -49,34 +51,37 @@ trait AutowireProperties
 		}
 
 		$this->autowirePropertiesLocator = $dic;
-		$cache = new Nette\Caching\Cache($dic->getByType('Nette\Caching\IStorage'), 'Kdyby.Autowired.PresenterComponent');
-		if (($this->autowire = $cache->load($presenterClass = get_class($this))) === NULL) {
-			$this->autowire = array();
-
-			$rc = ClassType::from($this);
-			$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
-			foreach ($rc->getProperties(Property::IS_PUBLIC | Property::IS_PROTECTED) as $prop) {
-				/** @var Property $prop */
-				if (in_array($prop->getDeclaringClass()->getName(), $ignore) || !$prop->hasAnnotation('autowire')) {
-					continue;
-				}
-
-				$this->resolveProperty($prop);
-			}
-
-			$files = array_map(function ($class) {
-				return ClassType::from($class)->getFileName();
-			}, array_diff(array_values(class_parents($presenterClass) + array('me' => $presenterClass)), $ignore));
-
-			$cache->save($presenterClass, $this->autowire, array(
-				$cache::FILES => $files,
-			));
-
-		} else {
-			foreach ($this->autowire as $propName => $tmp) {
+		$cache = new Nette\Caching\Cache($dic->getByType('Nette\Caching\IStorage'), 'Kdyby.Autowired.AutowireProperties');
+		if (($this->autowireProperties = $cache->load($presenterClass = get_class($this))) !== NULL) {
+			foreach ($this->autowireProperties as $propName => $tmp) {
 				unset($this->{$propName});
 			}
+
+			return;
 		}
+
+		$this->autowireProperties = array();
+
+		$rc = $this->getReflection();
+		$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
+		foreach ($rc->getProperties(Property::IS_PUBLIC | Property::IS_PROTECTED) as $prop) {
+			/** @var Property $prop */
+			if (in_array($prop->getDeclaringClass()->getName(), $ignore) || !$prop->hasAnnotation('autowire')) {
+				continue;
+			}
+
+			$this->resolveProperty($prop);
+		}
+
+		$files = array_map(function ($class) {
+			return ClassType::from($class)->getFileName();
+		}, array_diff(array_values(class_parents($presenterClass) + array('me' => $presenterClass)), $ignore));
+
+		$files[] = ClassType::from($this->autowirePropertiesLocator)->getFileName();
+
+		$cache->save($presenterClass, $this->autowireProperties, array(
+			$cache::FILES => $files,
+		));
 	}
 
 
@@ -119,7 +124,7 @@ trait AutowireProperties
 
 		// unset property to pass control to __set() and __get()
 		unset($this->{$prop->getName()});
-		$this->autowire[$prop->getName()] = $metadata;
+		$this->autowireProperties[$prop->getName()] = $metadata;
 	}
 
 
@@ -155,17 +160,17 @@ trait AutowireProperties
 	 */
 	public function __set($name, $value)
 	{
-		if (!isset($this->autowire[$name])) {
+		if (!isset($this->autowireProperties[$name])) {
 			return parent::__set($name, $value);
 
-		} elseif ($this->autowire[$name]['value']) {
+		} elseif ($this->autowireProperties[$name]['value']) {
 			throw new MemberAccessException("Property \$$name has already been set.");
 
-		} elseif (!$value instanceof $this->autowire[$name]['type']) {
-			throw new MemberAccessException("Property \$$name must be an instance of " . $this->autowire[$name]['type'] . ".");
+		} elseif (!$value instanceof $this->autowireProperties[$name]['type']) {
+			throw new MemberAccessException("Property \$$name must be an instance of " . $this->autowireProperties[$name]['type'] . ".");
 		}
 
-		return $this->autowire[$name]['value'] = $value;
+		return $this->autowireProperties[$name]['value'] = $value;
 	}
 
 
@@ -177,21 +182,21 @@ trait AutowireProperties
 	 */
 	public function &__get($name)
 	{
-		if (!isset($this->autowire[$name])) {
+		if (!isset($this->autowireProperties[$name])) {
 			return parent::__get($name);
 		}
 
-		if (empty($this->autowire[$name]['value'])) {
-			if (!empty($this->autowire[$name]['factory'])) {
-				$factory = callback($this->autowirePropertiesLocator->getService($this->autowire[$name]['factory']), 'create');
-				$this->autowire[$name]['value'] = $factory->invokeArgs($this->autowire[$name]['arguments']);
+		if (empty($this->autowireProperties[$name]['value'])) {
+			if (!empty($this->autowireProperties[$name]['factory'])) {
+				$factory = callback($this->autowirePropertiesLocator->getService($this->autowireProperties[$name]['factory']), 'create');
+				$this->autowireProperties[$name]['value'] = $factory->invokeArgs($this->autowireProperties[$name]['arguments']);
 
 			} else {
-				$this->autowire[$name]['value'] = $this->autowirePropertiesLocator->getByType($this->autowire[$name]['type']);
+				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getByType($this->autowireProperties[$name]['type']);
 			}
 		}
 
-		return $this->autowire[$name]['value'];
+		return $this->autowireProperties[$name]['value'];
 	}
 
 }
