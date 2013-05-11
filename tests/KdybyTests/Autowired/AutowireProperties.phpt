@@ -111,6 +111,42 @@ class AutowirePropertiesTest extends ContainerTestCase
 		}, 'Kdyby\Autowired\MemberAccessException', 'Trait Kdyby\Autowired\AutowireProperties can be used only in descendants of PresenterComponent.');
 	}
 
+
+
+	public function testPrivateAutowiredPropertyException()
+	{
+		$container = $this->container;
+
+		Assert::exception(function () use ($container) {
+			$component = new PrivateAutowiredPropertyPresenter();
+			$container->callMethod(array($component, 'injectProperties'));
+		}, 'Kdyby\Autowired\MemberAccessException', 'Autowired properties must be protected or public. Please fix visibility of KdybyTests\Autowired\PrivateAutowiredPropertyPresenter::$service or remove the @autowire annotation.');
+	}
+
+
+
+	public function testWrongCasePropertyAnnotationException()
+	{
+		$container = $this->container;
+
+		Assert::exception(function () use ($container) {
+			$component = new WrongCasePropertyAnnotationPresenter();
+			$container->callMethod(array($component, 'injectProperties'));
+		}, 'Kdyby\Autowired\UnexpectedValueException', 'Annotation @Autowire on KdybyTests\Autowired\WrongCasePropertyAnnotationPresenter::$service should be fixed to lowercase @autowire.');
+	}
+
+
+
+	public function testTypoPropertyAnnotationException()
+	{
+		$container = $this->container;
+
+		Assert::exception(function () use ($container) {
+			$component = new TypoPropertyAnnotationPresenter();
+			$container->callMethod(array($component, 'injectProperties'));
+		}, 'Kdyby\Autowired\UnexpectedValueException', 'Annotation @autowired on KdybyTests\Autowired\TypoPropertyAnnotationPresenter::$service should be fixed to lowercase @autowire.');
+	}
+
 }
 
 
@@ -173,6 +209,51 @@ class WithMissingServiceFactoryPresenter_ap extends Nette\Application\UI\Present
 class NonPresenterComponent_ap extends Nette\Object
 {
 	use Kdyby\Autowired\AutowireProperties;
+}
+
+
+
+class PrivateAutowiredPropertyPresenter extends Nette\Application\UI\Presenter
+{
+
+	use Kdyby\Autowired\AutowireProperties;
+
+	/**
+	 * @var SampleService
+	 * @autowire
+	 */
+	private $service;
+
+}
+
+
+
+class WrongCasePropertyAnnotationPresenter extends Nette\Application\UI\Presenter
+{
+
+	use Kdyby\Autowired\AutowireProperties;
+
+	/**
+	 * @var SampleService
+	 * @Autowire
+	 */
+	public $service;
+
+}
+
+
+
+class TypoPropertyAnnotationPresenter extends Nette\Application\UI\Presenter
+{
+
+	use Kdyby\Autowired\AutowireProperties;
+
+	/**
+	 * @var SampleService
+	 * @autowired
+	 */
+	public $service;
+
 }
 
 

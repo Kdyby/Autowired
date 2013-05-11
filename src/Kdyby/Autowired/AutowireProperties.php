@@ -14,6 +14,7 @@ use Nette;
 use Nette\Reflection\Method;
 use Nette\Reflection\Property;
 use Nette\Reflection\ClassType;
+use Nette\Utils\Strings;
 
 
 
@@ -62,11 +63,10 @@ trait AutowireProperties
 
 		$this->autowireProperties = array();
 
-		$rc = $this->getReflection();
 		$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
-		foreach ($rc->getProperties(Property::IS_PUBLIC | Property::IS_PROTECTED) as $prop) { // todo: validate private with @autowire
+		foreach ($this->getReflection()->getProperties() as $prop) {
 			/** @var Property $prop */
-			if (in_array($prop->getDeclaringClass()->getName(), $ignore) || !$prop->hasAnnotation('autowire')) {
+			if (!$this->validateProperty($prop, $ignore)) {
 				continue;
 			}
 
@@ -82,6 +82,33 @@ trait AutowireProperties
 		$cache->save($presenterClass, $this->autowireProperties, array(
 			$cache::FILES => $files,
 		));
+	}
+
+
+
+	private function validateProperty(Property $property, array $ignore)
+	{
+		if (in_array($property->getDeclaringClass()->getName(), $ignore)) {
+			return FALSE;
+		}
+
+		foreach ($property->getAnnotations() as $name => $value) {
+			if (!in_array(Strings::lower($name), array('autowire', 'autowired'), TRUE)) {
+				continue;
+			}
+
+			if (Strings::lower($name) !== $name || $name !== 'autowire') {
+				throw new UnexpectedValueException("Annotation @$name on $property should be fixed to lowercase @autowire.");
+			}
+
+			if ($property->isPrivate()) {
+				throw new MemberAccessException("Autowired properties must be protected or public. Please fix visibility of $property or remove the @autowire annotation.");
+			}
+
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 
 
