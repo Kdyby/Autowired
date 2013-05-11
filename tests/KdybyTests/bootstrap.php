@@ -8,6 +8,11 @@
  * For the full copyright and license information, please view the file license.md that was distributed with this source code.
  */
 
+namespace KdybyTests\Autowired;
+
+use Nette\DI\ContainerBuilder;
+use Tester;
+
 if (@!include __DIR__ . '/../../vendor/autoload.php') {
 	echo 'Install Nette Tester using `composer update --dev`';
 	exit(1);
@@ -39,4 +44,33 @@ function id($val) {
 
 function run(Tester\TestCase $testCase) {
 	$testCase->run(isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : NULL);
+}
+
+
+
+abstract class ContainerTestCase extends \Tester\TestCase
+{
+
+	/**
+	 * @param \Nette\DI\ContainerBuilder $builder
+	 * @param string $className
+	 * @return \Nette\DI\Container
+	 */
+	protected function compileContainer(ContainerBuilder $builder, $className = NULL)
+	{
+		$classes = $builder->generateClasses();
+		$classes[0]->setName($className = ($className ?: 'Container_' . md5(get_class($this)) . '_' . getmypid()))
+			->setExtends('Nette\DI\Container')
+			/*->addMethod('initialize')*/;
+
+		$code = implode('', $classes);
+		file_put_contents($file = TEMP_DIR . '/code.' . urlencode($className) . '.php', "<?php\n$code");
+		require $file;
+
+		$container = new $className;
+		/*$container->initialize();*/
+
+		return $container;
+	}
+
 }

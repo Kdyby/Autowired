@@ -24,7 +24,7 @@ require_once __DIR__ . '/../bootstrap.php';
 /**
  * @author Filip Procházka <filip@prochazka.su>
  */
-class AutowirePropertiesTest extends Tester\TestCase
+class AutowirePropertiesTest extends ContainerTestCase
 {
 
 	/**
@@ -49,12 +49,7 @@ class AutowirePropertiesTest extends Tester\TestCase
 		$builder->addDefinition('cacheStorage')
 			->setClass('Nette\Caching\Storages\MemoryStorage');
 
-		// run-time
-		$code = implode('', $builder->generateClasses());
-		file_put_contents(TEMP_DIR . '/code.php', "<?php\n$code");
-		require TEMP_DIR . '/code.php';
-
-		$this->container = new \Container;
+		$this->container = $this->compileContainer($builder);
 	}
 
 
@@ -128,4 +123,4 @@ interface ISampleServiceFactory
 }
 
 
-\run(new AutowirePropertiesTest());
+run(new AutowirePropertiesTest());
