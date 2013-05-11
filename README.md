@@ -9,7 +9,7 @@ discussion: http://forum.nette.org/cs/13084-presentery-property-lazy-autowire-na
 Requirements
 ------------
 
-Kdyby/Autowired requires PHP 5.3.2 or higher.
+Kdyby/Autowired requires PHP 5.4 or higher.
 
 - [Nette Framework 2.0.x](https://github.com/nette/nette)
 
@@ -23,42 +23,6 @@ The best way to install Kdyby/Autowired is using  [Composer](http://getcomposer.
 $ composer require kdyby/autowired:@dev
 ```
 
-
-Include in application
-------------
-
-
-```php
-abstract class BasePresenter extends Nette\Application\UI\Presenter
-{
-	use Kdyby\Autowired\AutowireProperties;
-
-}
-```
-
-
-Usage
-------------
-
-
-```php
-class ArticlePresenter extends BasePresenter
-{
-    /**
-     * @autowire
-     * @var App\ArticleRepository
-     */
-    protected $articleRepository;
-
-	/**
-	 * @var Kdyby\Doctrine\EntityDao
-	 * @autowire(MyApp\Blog\Article, factory=\Kdyby\Doctrine\IEntityDaoFactory)
-	 */
-	public $factoryResult;
-
-    // ..
-}
-```
 
 
 -----
