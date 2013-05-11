@@ -68,9 +68,9 @@ class ArticlePresenter extends BasePresenter
 Autowired component factories
 -----------------------------
 
-There is often needed to pass a component factory object to presenter and then use it lazy component factory method, that connects the created component to component tree.
+There is often needed to inject a component factory object to the presenter and then use it in lazy component factory method that connects the created component to the component tree.
 
-What if the component factory object from DI Container could be passed directly to the component factory method?
+What if the component factory object from DI Container could be passed directly to the component factory method, without all that boilerplate code?
 
 
 ```php
@@ -91,3 +91,9 @@ class ArticlePresenter extends BasePresenter
 ```
 
 Cool right?
+
+
+Not so clean...
+---------------
+
+Just keep in mind, that is not a clean approach - it's pragmatic. Never try to use theese traits in model classes. Strictly use constructor injection whenever it's possible!
