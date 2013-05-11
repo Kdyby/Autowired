@@ -64,7 +64,7 @@ trait AutowireProperties
 
 		$rc = $this->getReflection();
 		$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
-		foreach ($rc->getProperties(Property::IS_PUBLIC | Property::IS_PROTECTED) as $prop) {
+		foreach ($rc->getProperties(Property::IS_PUBLIC | Property::IS_PROTECTED) as $prop) { // todo: validate private with @autowire
 			/** @var Property $prop */
 			if (in_array($prop->getDeclaringClass()->getName(), $ignore) || !$prop->hasAnnotation('autowire')) {
 				continue;
@@ -139,11 +139,11 @@ trait AutowireProperties
 
 		if (!class_exists($type) && !interface_exists($type)) {
 			if (substr(func_get_arg(1), 0, 1) === '\\') {
-				throw new MissingClassException("Class \"$type\" was not found, please check the typehint on {$prop} in annotation @{$annotationName}");
+				throw new MissingClassException("Class \"$type\" was not found, please check the typehint on {$prop} in annotation @{$annotationName}.");
 			}
 
 			if (!class_exists($type = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $type) && !interface_exists($type)) {
-				throw new MissingClassException("Neither class \"" . func_get_arg(1) . "\" or \"{$type}\" was found, please check the typehint on {$prop} in annotation @{$annotationName}");
+				throw new MissingClassException("Neither class \"" . func_get_arg(1) . "\" or \"{$type}\" was found, please check the typehint on {$prop} in annotation @{$annotationName}.");
 			}
 		}
 
