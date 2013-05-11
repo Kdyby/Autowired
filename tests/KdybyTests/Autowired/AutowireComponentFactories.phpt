@@ -57,6 +57,30 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 		Assert::true($presenter['dummy'] instanceof SillyComponent);
 	}
 
+
+
+	public function testMissingServiceException()
+	{
+		$container = $this->container;
+
+		Assert::exception(function () use ($container) {
+			$presenter = new WithMissingServicePresenter_wcf();
+			$container->callMethod(array($presenter, 'injectComponentFactories'));
+		}, 'Kdyby\Autowired\MissingServiceException', 'No service of type SampleMissingService12345 found. Make sure the type hint in KdybyTests\Autowired\WithMissingServicePresenter_wcf::createComponentSilly() is written correctly and service of this type is registered.');
+	}
+
+
+
+	public function testTraitUserIsDescendantOfPresenterComponent()
+	{
+		$container = $this->container;
+
+		Assert::exception(function () use ($container) {
+			$component = new NonPresenterComponent_AcfProperties();
+			$container->callMethod(array($component, 'injectComponentFactories'));
+		}, 'Kdyby\Autowired\MemberAccessException', 'Trait Kdyby\Autowired\AutowireComponentFactories can be used only in descendants of PresenterComponent.');
+	}
+
 }
 
 
@@ -91,6 +115,22 @@ class SillyPresenter extends Nette\Application\UI\Presenter
 }
 
 
+
+class WithMissingServicePresenter_wcf extends Nette\Application\UI\Presenter
+{
+
+	use Kdyby\Autowired\AutowireComponentFactories;
+
+
+
+	protected function createComponentSilly(\SampleMissingService12345 $factory)
+	{
+
+	}
+
+}
+
+
 class SillyComponent extends Nette\Application\UI\PresenterComponent
 {
 
@@ -99,6 +139,13 @@ class SillyComponent extends Nette\Application\UI\PresenterComponent
 		parent::__construct();
 	}
 
+}
+
+
+
+class NonPresenterComponent_AcfProperties extends Nette\Object
+{
+	use Kdyby\Autowired\AutowireComponentFactories;
 }
 
 

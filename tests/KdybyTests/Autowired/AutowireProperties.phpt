@@ -80,10 +80,10 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(function () use ($container) {
-			$presenter = new WithMissingServicePresenter();
+			$presenter = new WithMissingServicePresenter_ap();
 			Assert::null($presenter->service);
 			$container->callMethod(array($presenter, 'injectProperties'));
-		}, 'Kdyby\Autowired\MissingClassException', 'Class "SampleMissingService12345" was not found, please check the typehint on KdybyTests\Autowired\WithMissingServicePresenter::$service in annotation @var.');
+		}, 'Kdyby\Autowired\MissingClassException', 'Class "SampleMissingService12345" was not found, please check the typehint on KdybyTests\Autowired\WithMissingServicePresenter_ap::$service in annotation @var.');
 	}
 
 
@@ -93,10 +93,22 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(function () use ($container) {
-			$presenter = new WithMissingServiceFactoryPresenter();
+			$presenter = new WithMissingServiceFactoryPresenter_ap();
 			Assert::null($presenter->secondFactoryResult);
 			$container->callMethod(array($presenter, 'injectProperties'));
-		}, 'Kdyby\Autowired\MissingClassException', 'Class "SampleMissingService12345" was not found, please check the typehint on KdybyTests\Autowired\WithMissingServiceFactoryPresenter::$secondFactoryResult in annotation @autowire.');
+		}, 'Kdyby\Autowired\MissingClassException', 'Class "SampleMissingService12345" was not found, please check the typehint on KdybyTests\Autowired\WithMissingServiceFactoryPresenter_ap::$secondFactoryResult in annotation @autowire.');
+	}
+
+
+
+	public function testTraitUserIsDescendantOfPresenterComponent()
+	{
+		$container = $this->container;
+
+		Assert::exception(function () use ($container) {
+			$component = new NonPresenterComponent_ap();
+			$container->callMethod(array($component, 'injectProperties'));
+		}, 'Kdyby\Autowired\MemberAccessException', 'Trait Kdyby\Autowired\AutowireProperties can be used only in descendants of PresenterComponent.');
 	}
 
 }
@@ -129,7 +141,7 @@ class DummyPresenter extends Nette\Application\UI\Presenter
 }
 
 
-class WithMissingServicePresenter extends Nette\Application\UI\Presenter
+class WithMissingServicePresenter_ap extends Nette\Application\UI\Presenter
 {
 
 	use Kdyby\Autowired\AutowireProperties;
@@ -144,7 +156,7 @@ class WithMissingServicePresenter extends Nette\Application\UI\Presenter
 
 
 
-class WithMissingServiceFactoryPresenter extends Nette\Application\UI\Presenter
+class WithMissingServiceFactoryPresenter_ap extends Nette\Application\UI\Presenter
 {
 
 	use Kdyby\Autowired\AutowireProperties;
@@ -155,6 +167,12 @@ class WithMissingServiceFactoryPresenter extends Nette\Application\UI\Presenter
 	 */
 	public $secondFactoryResult;
 
+}
+
+
+class NonPresenterComponent_ap extends Nette\Object
+{
+	use Kdyby\Autowired\AutowireProperties;
 }
 
 
