@@ -59,15 +59,18 @@ abstract class ContainerTestCase extends \Tester\TestCase
 	protected function compileContainer(ContainerBuilder $builder, $className = NULL)
 	{
 		$classes = $builder->generateClasses();
-		$classes[0]->setName($className = ($className ?: 'Container_' . md5(get_class($this)) . '_' . getmypid()))
+		$classes[0]->setName($className = ($className ?: 'Container'))
 			->setExtends('Nette\DI\Container')
 			/*->addMethod('initialize')*/;
 
 		$code = implode('', $classes);
-		file_put_contents($file = TEMP_DIR . '/code.' . urlencode($className) . '.php', "<?php\n$code");
-		require $file;
+		$ns = 'DIC_' . md5($code);
+		$className = $ns . '\\' . $className;
 
-		$container = new $className;
+		file_put_contents($file = TEMP_DIR . '/code.' . urlencode($className) . '.php', "<?php\nnamespace $ns;\nuse Nette, KdybyTests;\n\n$code");
+		require_once $file;
+
+		$container = new $className();
 		/*$container->initialize();*/
 
 		return $container;
