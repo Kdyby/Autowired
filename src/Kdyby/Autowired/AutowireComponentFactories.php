@@ -79,7 +79,7 @@ trait AutowireComponentFactories
 					continue;
 				}
 
-				if (!$this->findByType($class) && !$parameter->allowsNull()) {
+				if (!$this->findByTypeForFactory($class) && !$parameter->allowsNull()) {
 					throw new MissingServiceException("No service of type {$class} found. Make sure the type hint in $method is written correctly and service of this type is registered.");
 				}
 			}
@@ -102,7 +102,7 @@ trait AutowireComponentFactories
 	 * @param string $type
 	 * @return string|bool
 	 */
-	private function findByType($type)
+	private function findByTypeForFactory($type)
 	{
 		if (method_exists($this->autowireComponentFactoriesLocator, 'findByType')) {
 			$found = $this->autowireComponentFactoriesLocator->findByType($type);
