@@ -75,16 +75,28 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 
 
-	public function testMissingServiceException_varAnnotation()
+	public function testMissingServiceException_var()
 	{
 		$container = $this->container;
 
 		Assert::exception(function () use ($container) {
 			$presenter = new WithMissingServicePresenter();
 			Assert::null($presenter->service);
-
 			$container->callMethod(array($presenter, 'injectProperties'));
 		}, 'Kdyby\Autowired\MissingClassException', 'Class "SampleMissingService12345" was not found, please check the typehint on KdybyTests\Autowired\WithMissingServicePresenter::$service in annotation @var.');
+	}
+
+
+
+	public function testMissingServiceException_factory()
+	{
+		$container = $this->container;
+
+		Assert::exception(function () use ($container) {
+			$presenter = new WithMissingServiceFactoryPresenter();
+			Assert::null($presenter->secondFactoryResult);
+			$container->callMethod(array($presenter, 'injectProperties'));
+		}, 'Kdyby\Autowired\MissingClassException', 'Class "SampleMissingService12345" was not found, please check the typehint on KdybyTests\Autowired\WithMissingServiceFactoryPresenter::$secondFactoryResult in annotation @autowire.');
 	}
 
 }
@@ -127,6 +139,21 @@ class WithMissingServicePresenter extends Nette\Application\UI\Presenter
 	 * @autowire
 	 */
 	public $service;
+
+}
+
+
+
+class WithMissingServiceFactoryPresenter extends Nette\Application\UI\Presenter
+{
+
+	use Kdyby\Autowired\AutowireProperties;
+
+	/**
+	 * @var SampleService
+	 * @autowire("string argument", "and another", factory=\SampleMissingService12345)
+	 */
+	public $secondFactoryResult;
 
 }
 
