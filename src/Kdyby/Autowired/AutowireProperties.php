@@ -53,7 +53,8 @@ trait AutowireProperties
 
 		$this->autowirePropertiesLocator = $dic;
 		$cache = new Nette\Caching\Cache($dic->getByType('Nette\Caching\IStorage'), 'Kdyby.Autowired.AutowireProperties');
-		if (($this->autowireProperties = $cache->load($presenterClass = get_class($this))) !== NULL) {
+
+		if (is_array($this->autowireProperties = $cache->load($presenterClass = get_class($this)))) {
 			foreach ($this->autowireProperties as $propName => $tmp) {
 				unset($this->{$propName});
 			}
