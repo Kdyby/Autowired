@@ -56,7 +56,7 @@ class ArticlePresenter extends BasePresenter
 	 * @var Kdyby\Doctrine\EntityDao
 	 * @autowire(MyApp\Blog\Article, factory=\Kdyby\Doctrine\IEntityDaoFactory)
 	 */
-	public $factoryResult;
+	protected $factoryResult;
 
 	// ..
 
