@@ -99,11 +99,11 @@ trait AutowireProperties
 			}
 
 			if (Strings::lower($name) !== $name || $name !== 'autowire') {
-				throw new UnexpectedValueException("Annotation @$name on $property should be fixed to lowercase @autowire.");
+				throw new UnexpectedValueException("Annotation @$name on $property should be fixed to lowercase @autowire.", $property);
 			}
 
 			if ($property->isPrivate()) {
-				throw new MemberAccessException("Autowired properties must be protected or public. Please fix visibility of $property or remove the @autowire annotation.");
+				throw new MemberAccessException("Autowired properties must be protected or public. Please fix visibility of $property or remove the @autowire annotation.", $property);
 			}
 
 			return TRUE;
@@ -152,13 +152,13 @@ trait AutowireProperties
 			$factoryType = $this->resolveAnnotationClass($prop, $args['factory'], 'autowire');
 
 			if (!$this->findByTypeForProperty($factoryType)) {
-				throw new MissingServiceException("Factory of type \"$factoryType\" not found for $prop in annotation @autowire.");
+				throw new MissingServiceException("Factory of type \"$factoryType\" not found for $prop in annotation @autowire.", $prop);
 			}
 
 			$factoryMethod = Method::from($factoryType, 'create');
 			$createsType = $this->resolveAnnotationClass($factoryMethod, $factoryMethod->getAnnotation('return'), 'return');
 			if ($createsType !== $type) {
-				throw new UnexpectedValueException("The property $prop requires $type, but factory of type $factoryType, that creates $createsType was provided.");
+				throw new UnexpectedValueException("The property $prop requires $type, but factory of type $factoryType, that creates $createsType was provided.", $prop);
 			}
 
 			unset($args['factory']);
@@ -166,7 +166,7 @@ trait AutowireProperties
 			$metadata['factory'] = $this->findByTypeForProperty($factoryType);
 
 		} elseif (!$this->findByTypeForProperty($type)) {
-			throw new MissingServiceException("Service of type \"$type\" not found for $prop in annotation @var.");
+			throw new MissingServiceException("Service of type \"$type\" not found for $prop in annotation @var.", $prop);
 		}
 
 		// unset property to pass control to __set() and __get()
@@ -181,16 +181,16 @@ trait AutowireProperties
 		/** @var Property|Method $prop */
 
 		if (!$type = ltrim($annotationValue, '\\')) {
-			throw new InvalidStateException("Missing annotation @{$annotationName} with typehint on {$prop}.");
+			throw new InvalidStateException("Missing annotation @{$annotationName} with typehint on {$prop}.", $prop);
 		}
 
 		if (!class_exists($type) && !interface_exists($type)) {
 			if (substr(func_get_arg(1), 0, 1) === '\\') {
-				throw new MissingClassException("Class \"$type\" was not found, please check the typehint on {$prop} in annotation @{$annotationName}.");
+				throw new MissingClassException("Class \"$type\" was not found, please check the typehint on {$prop} in annotation @{$annotationName}.", $prop);
 			}
 
 			if (!class_exists($type = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $type) && !interface_exists($type)) {
-				throw new MissingClassException("Neither class \"" . func_get_arg(1) . "\" or \"{$type}\" was found, please check the typehint on {$prop} in annotation @{$annotationName}.");
+				throw new MissingClassException("Neither class \"" . func_get_arg(1) . "\" or \"{$type}\" was found, please check the typehint on {$prop} in annotation @{$annotationName}.", $prop);
 			}
 		}
 
