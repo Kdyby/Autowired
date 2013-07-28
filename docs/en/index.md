@@ -90,6 +90,8 @@ class ArticlePresenter extends BasePresenter
 }
 ```
 
+The `$name` parameter can be omitted, `createComponentDatagrid(IDatagridFactory $factory)` works as well. 
+
 Cool right?
 
 
