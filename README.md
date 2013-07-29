@@ -11,7 +11,7 @@ Requirements
 
 Kdyby/Autowired requires PHP 5.4 or higher.
 
-- [Nette Framework 2.0.x](https://github.com/nette/nette)
+- [Nette Framework 2.1.x (or dev)](https://github.com/nette/nette)
 
 
 Installation
