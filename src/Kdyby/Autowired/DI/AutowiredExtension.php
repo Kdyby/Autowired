@@ -39,7 +39,7 @@ class AutowiredExtension extends Nette\DI\CompilerExtension
 		$container = $this->getContainerBuilder();
 
 		$initialize->addBody($container->formatPhp(
-			'Nette\Diagnostics\Debugger::$blueScreen->addPanel(?);',
+			'Nette\Diagnostics\Debugger::' . (method_exists('Nette\Diagnostics\Debugger', 'getBlueScreen') ? 'getBlueScreen()' : '$blueScreen') . '->addPanel(?);',
 			Nette\DI\Compiler::filterArguments(array('Kdyby\Autowired\Diagnostics\Panel::renderException'))
 		));
 	}
