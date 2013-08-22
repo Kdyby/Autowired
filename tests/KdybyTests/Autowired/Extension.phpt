@@ -27,7 +27,7 @@ class ExtensionTest extends Tester\TestCase
 
 	public function testFunctionality()
 	{
-		$config = new Nette\Config\Configurator();
+		$config = new Nette\Configurator();
 		$config->setTempDirectory(TEMP_DIR);
 		Kdyby\Autowired\DI\AutowiredExtension::register($config);
 		$config->createContainer(); // init panel
