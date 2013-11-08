@@ -53,8 +53,10 @@ trait AutowireProperties
 
 		$this->autowirePropertiesLocator = $dic;
 		$cache = new Nette\Caching\Cache($dic->getByType('Nette\Caching\IStorage'), 'Kdyby.Autowired.AutowireProperties');
+		$containerFileName = ClassType::from($this->autowirePropertiesLocator)->getFileName();
+		$cacheKey = array($presenterClass = get_class($this), $containerFileName);
 
-		if (is_array($this->autowireProperties = $cache->load($presenterClass = get_class($this)))) {
+		if (is_array($this->autowireProperties = $cache->load($cacheKey))) {
 			foreach ($this->autowireProperties as $propName => $tmp) {
 				unset($this->{$propName});
 			}
@@ -78,9 +80,9 @@ trait AutowireProperties
 			return ClassType::from($class)->getFileName();
 		}, array_diff(array_values(class_parents($presenterClass) + array('me' => $presenterClass)), $ignore));
 
-		$files[] = ClassType::from($this->autowirePropertiesLocator)->getFileName();
+		$files[] = $containerFileName;
 
-		$cache->save($presenterClass, $this->autowireProperties, array(
+		$cache->save($cacheKey, $this->autowireProperties, array(
 			$cache::FILES => $files,
 		));
 	}
