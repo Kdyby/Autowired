@@ -124,7 +124,7 @@ trait AutowireComponentFactories
 	 * @return Nette\ComponentModel\IComponent
 	 * @throws Nette\UnexpectedValueException
 	 */
-	public function createComponent($name)
+	protected function createComponent($name)
 	{
 		$sl = $this->getComponentFactoriesLocator();
 
