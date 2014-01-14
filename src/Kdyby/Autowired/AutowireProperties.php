@@ -190,8 +190,15 @@ trait AutowireProperties
 			if (substr(func_get_arg(1), 0, 1) === '\\') {
 				throw new MissingClassException("Class \"$type\" was not found, please check the typehint on {$prop} in annotation @{$annotationName}.", $prop);
 			}
+			$expandedType = NULL;
+			if (method_exists('Nette\Reflection\AnnotationsParser', 'expandClassName')) {
+			    $expandedType = Nette\Reflection\AnnotationsParser::expandClassName($annotationValue, $prop->getDeclaringClass());
+			}
 
-			if (!class_exists($type = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $type) && !interface_exists($type)) {
+			if ($expandedType && (class_exists($expandedType) || interface_exists($expandedType))) {
+				$type = $expandedType;
+
+			} elseif(!class_exists($type = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $type) && !interface_exists($type)) {
 				throw new MissingClassException("Neither class \"" . func_get_arg(1) . "\" or \"{$type}\" was found, please check the typehint on {$prop} in annotation @{$annotationName}.", $prop);
 			}
 		}
