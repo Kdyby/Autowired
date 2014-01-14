@@ -16,6 +16,7 @@ use Nette\DI;
 use Nette\PhpGenerator\PhpLiteral;
 use Tester;
 use Tester\Assert;
+use KdybyTests\Autowired\UseExpansion\ImportedService;
 
 require_once __DIR__ . '/../bootstrap.php';
 
@@ -45,6 +46,9 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 		$builder->addDefinition('sample')
 			->setClass('KdybyTests\Autowired\SampleService', array('shared'));
+
+		$builder->addDefinition('importedService')
+			->setClass('KdybyTests\Autowired\UseExpansion\ImportedService');
 
 		$builder->addDefinition('cacheStorage')
 			->setClass('Nette\Caching\Storages\MemoryStorage');
@@ -145,6 +149,14 @@ class AutowirePropertiesTest extends ContainerTestCase
 			$component = new TypoPropertyAnnotationPresenter();
 			$container->callMethod(array($component, 'injectProperties'));
 		}, 'Kdyby\Autowired\UnexpectedValueException', 'Annotation @autowired on KdybyTests\Autowired\TypoPropertyAnnotationPresenter::$service should be fixed to lowercase @autowire.');
+	}
+
+	public function testUseExpansion()
+	{
+		$presenter = new PropertyWithUsePresenter();
+
+		$this->container->callMethod(array($presenter, 'injectProperties'));
+		Assert::true($presenter->service instanceof ImportedService);
 	}
 
 }
@@ -258,6 +270,20 @@ class TypoPropertyAnnotationPresenter extends Nette\Application\UI\Presenter
 
 
 
+class PropertyWithUsePresenter extends Nette\Application\UI\Presenter {
+
+	use Kdyby\Autowired\AutowireProperties;
+
+	/**
+	 * @var ImportedService
+	 * @autowire
+	 */
+	public $service;
+
+}
+
+
+
 class SampleService
 {
 	public $args;
@@ -278,3 +304,9 @@ interface ISampleServiceFactory
 
 
 run(new AutowirePropertiesTest());
+
+namespace KdybyTests\Autowired\UseExpansion;
+
+class ImportedService {
+
+}
