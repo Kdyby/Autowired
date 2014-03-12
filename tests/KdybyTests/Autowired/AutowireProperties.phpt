@@ -40,9 +40,9 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$builder = new DI\ContainerBuilder;
 		$builder->addDefinition('sampleFactory')
 			->setFactory('KdybyTests\Autowired\SampleService', array(new PhpLiteral('$name'), new PhpLiteral('$secondName')))
-			->setImplement('KdybyTests\Autowired\ISampleServiceFactory')
 			->setParameters(array('name', 'secondName' => NULL))
-			->setShared(TRUE)->setAutowired(TRUE);
+			->setImplement('KdybyTests\Autowired\ISampleServiceFactory')
+			->setAutowired(TRUE);
 
 		$builder->addDefinition('sample')
 			->setClass('KdybyTests\Autowired\SampleService', array('shared'));
