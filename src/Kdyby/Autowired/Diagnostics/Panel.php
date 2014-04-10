@@ -11,12 +11,18 @@
 namespace Kdyby\Autowired\Diagnostics;
 
 use Kdyby;
-use Kdyby\Autowired\MissingClassException;
-use Kdyby\Autowired\MissingServiceException;
 use Nette;
-use Nette\Diagnostics\BlueScreen;
+use Tracy\BlueScreen;
+use Tracy\Helpers;
 
 
+
+if (!class_exists('Tracy\Bar')) {
+	class_alias('Nette\Diagnostics\Bar', 'Tracy\Bar');
+	class_alias('Nette\Diagnostics\BlueScreen', 'Tracy\BlueScreen');
+	class_alias('Nette\Diagnostics\Helpers', 'Tracy\Helpers');
+	class_alias('Nette\Diagnostics\IBarPanel', 'Tracy\IBarPanel');
+}
 
 /**
  * @author Filip Procházka <filip@prochazka.su>
@@ -49,7 +55,7 @@ class Panel extends Nette\Object
 		$file = $refl->getDeclaringClass()->getFileName();
 		$line = $refl instanceof Nette\Reflection\Property ? self::getPropertyLine($refl) : $refl->getStartLine();
 
-		return '<p><b>File:</b> ' . Nette\Diagnostics\Helpers::editorLink($file, $line) . '</p>' .
+		return '<p><b>File:</b> ' . Helpers::editorLink($file, $line) . '</p>' .
 			BlueScreen::highlightFile($file, $line);
 	}
 
