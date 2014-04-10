@@ -26,6 +26,13 @@ require_once __DIR__ . '/../bootstrap.php';
 class IntegrationTest extends ContainerTestCase
 {
 
+	protected function setUp()
+	{
+		Tester\Environment::$checkAssertions = FALSE;
+	}
+
+
+
 	public function testFunctional()
 	{
 		$builder = new DI\ContainerBuilder;
