@@ -13,9 +13,14 @@ namespace Kdyby\Autowired\Diagnostics;
 use Kdyby;
 use Nette;
 use Tracy\BlueScreen;
+use Tracy\Debugger;
 use Tracy\Helpers;
 
 
+
+if (!class_exists('Tracy\Debugger')) {
+	class_alias('Nette\Diagnostics\Debugger', 'Tracy\Debugger');
+}
 
 if (!class_exists('Tracy\Bar')) {
 	class_alias('Nette\Diagnostics\Bar', 'Tracy\Bar');
@@ -29,6 +34,17 @@ if (!class_exists('Tracy\Bar')) {
  */
 class Panel extends Nette\Object
 {
+
+
+	public static function registerBluescreen()
+	{
+		$blueScreen = method_exists('Tracy\Debugger', 'getBlueScreen')
+			? Debugger::getBlueScreen()
+			: Debugger::$blueScreen;
+
+		$blueScreen->addPanel(array(get_called_class(), 'renderException'));
+	}
+
 
 	public static function renderException(\Exception $e = NULL)
 	{
