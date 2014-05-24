@@ -17,9 +17,13 @@
 		"issues": "https://github.com/kdyby/autowired/issues"
 	},
 	"require": {
-		"nette/nette": "~2.1@dev"
+		"nette/di": "~2.2@dev",
+		"nette/application": "~2.2@dev"
 	},
 	"require-dev": {
+		"nette/nette": "~2.2@dev",
+		"nette/bootstrap": "~2.2@dev",
+
 		"nette/tester": "@dev",
 		"jakub-onderka/php-parallel-lint": "~0.6"
 	},
