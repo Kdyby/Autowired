@@ -3,7 +3,7 @@ Kdyby/Autowired
 
 [![Build Status](https://travis-ci.org/Kdyby/Autowired.svg?branch=master)](https://travis-ci.org/Kdyby/Autowired)
 [![Downloads this Month](https://img.shields.io/packagist/dm/Kdyby/Autowired.svg)](https://packagist.org/packages/Kdyby/Autowired)
-[![Latest stable](img.shields.io/packagist/v/Kdyby/Autowired.svg)](https://packagist.org/packages/Kdyby/Autowired)
+[![Latest stable](https://img.shields.io/packagist/v/Kdyby/Autowired.svg)](https://packagist.org/packages/Kdyby/Autowired)
 
 **You shouldn't be using this, if you don't know what youre doing!**
 
