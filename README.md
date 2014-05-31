@@ -3,7 +3,7 @@ Kdyby/Autowired
 
 [![Build Status](https://travis-ci.org/Kdyby/Autowired.svg?branch=master)](https://travis-ci.org/Kdyby/Autowired)
 [![Downloads this Month](https://img.shields.io/packagist/dm/Kdyby/Autowired.svg)](https://packagist.org/packages/Kdyby/Autowired)
-[![Latest stable](https://img.shields.io/packagist/v/Kdyby/Autowired.svg)](https://packagist.org/packages/Kdyby/Autowired)
+[![Latest stable](https://img.shields.io/packagist/v/kdyby/autowired.svg)](https://packagist.org/packages/kdyby/autowired)
 
 **You shouldn't be using this, if you don't know what youre doing!**
 
@@ -15,7 +15,7 @@ Requirements
 
 Kdyby/Autowired requires PHP 5.4 or higher.
 
-- [Nette Framework 2.1.x (or dev)](https://github.com/nette/nette)
+- [Nette Framework](https://github.com/nette/nette)
 
 
 Installation
@@ -24,8 +24,14 @@ Installation
 The best way to install Kdyby/Autowired is using  [Composer](http://getcomposer.org/):
 
 ```sh
-$ composer require kdyby/autowired:@dev
+$ composer require kdyby/autowired:~1.0
 ```
+
+
+Documentation
+------------
+
+Lear more in the [documentation](https://github.com/Kdyby/Autowired/blob/master/docs/en/index.md).
 
 
 
