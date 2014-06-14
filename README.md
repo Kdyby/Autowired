@@ -31,7 +31,7 @@ $ composer require kdyby/autowired:~1.0
 Documentation
 ------------
 
-Lear more in the [documentation](https://github.com/Kdyby/Autowired/blob/master/docs/en/index.md).
+Learn more in the [documentation](https://github.com/Kdyby/Autowired/blob/master/docs/en/index.md).
 
 
 
