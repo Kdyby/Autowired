@@ -14,6 +14,7 @@ use Nette;
 use Nette\Reflection\Method;
 use Nette\Reflection\Property;
 use Nette\Reflection\ClassType;
+use Nette\Utils\Callback;
 use Nette\Utils\Strings;
 
 
@@ -244,8 +245,8 @@ trait AutowireProperties
 
 		if (empty($this->autowireProperties[$name]['value'])) {
 			if (!empty($this->autowireProperties[$name]['factory'])) {
-				$factory = callback($this->autowirePropertiesLocator->getService($this->autowireProperties[$name]['factory']), 'create');
-				$this->autowireProperties[$name]['value'] = $factory->invokeArgs($this->autowireProperties[$name]['arguments']);
+				$factory = Callback::closure($this->autowirePropertiesLocator->getService($this->autowireProperties[$name]['factory']), 'create');
+				$this->autowireProperties[$name]['value'] = Callback::invokeArgs($factory, $this->autowireProperties[$name]['arguments']);
 
 			} else {
 				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getByType($this->autowireProperties[$name]['type']);
