@@ -20,10 +20,6 @@ require_once __DIR__ . '/../bootstrap.php';
 
 
 
-if (!class_exists('Tracy\Debugger')) {
-	class_alias('Nette\Diagnostics\Debugger', 'Tracy\Debugger');
-}
-
 /**
  * @author Filip Procházka <filip@prochazka.su>
  */
