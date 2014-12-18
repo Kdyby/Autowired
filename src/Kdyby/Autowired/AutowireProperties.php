@@ -52,7 +52,12 @@ trait AutowireProperties
 		}
 
 		$this->autowirePropertiesLocator = $dic;
-		$cache = new Nette\Caching\Cache($dic->getByType('Nette\Caching\IStorage'), 'Kdyby.Autowired.AutowireProperties');
+
+		$storage = $dic->hasService('autowired.cacheStorage')
+			? $dic->getService('autowired.cacheStorage')
+			: $dic->getByType('Nette\Caching\IStorage');
+		$cache = new Nette\Caching\Cache($storage, 'Kdyby.Autowired.AutowireProperties');
+
 		$containerFileName = ClassType::from($this->autowirePropertiesLocator)->getFileName();
 		$cacheKey = array($presenterClass = get_class($this), $containerFileName);
 
