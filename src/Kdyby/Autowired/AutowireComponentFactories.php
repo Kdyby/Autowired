@@ -60,7 +60,11 @@ trait AutowireComponentFactories
 		}
 
 		$this->autowireComponentFactoriesLocator = $dic;
-		$cache = new Nette\Caching\Cache($dic->getByType('Nette\Caching\IStorage'), 'Kdyby.Autowired.AutowireComponentFactories');
+
+		$storage = $dic->hasService('autowired.cacheStorage')
+			? $dic->getService('autowired.cacheStorage')
+			: $dic->getByType('Nette\Caching\IStorage');
+		$cache = new Nette\Caching\Cache($storage, 'Kdyby.Autowired.AutowireComponentFactories');
 
 		if ($cache->load($presenterClass = get_class($this)) !== NULL) {
 			return;

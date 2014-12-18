@@ -22,6 +22,27 @@ use Nette\PhpGenerator as Code;
 class AutowiredExtension extends Nette\DI\CompilerExtension
 {
 
+	public $defaults = array(
+		'cacheStorage' => '@Nette\Caching\IStorage',
+	);
+
+
+	public function loadConfiguration()
+	{
+		$builder = $this->getContainerBuilder();
+		$config = $this->getConfig($this->defaults);
+
+		$storage = $builder->addDefinition($this->prefix('cacheStorage'))
+			->setClass('Nette\Caching\IStorage')
+			->setAutowired(FALSE);
+
+		$storage->factory = is_string($config['cacheStorage'])
+			? new Nette\DI\Statement($config['cacheStorage'])
+			: $config['cacheStorage'];
+	}
+
+
+
 	public function afterCompile(Code\ClassType $class)
 	{
 		$initialize = $class->methods['initialize'];
