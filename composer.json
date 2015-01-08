@@ -19,6 +19,7 @@
 	"require": {
 		"nette/di": "~2.3@dev",
 		"nette/application": "~2.3@dev",
+		"nette/reflection": "~2.3@dev",
 		"tracy/tracy": "~2.3@dev"
 	},
 	"require-dev": {

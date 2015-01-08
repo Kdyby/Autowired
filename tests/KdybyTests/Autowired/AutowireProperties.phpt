@@ -159,6 +159,18 @@ class AutowirePropertiesTest extends ContainerTestCase
 		Assert::true($presenter->service instanceof AliasedService);
 	}
 
+	public function testTraitUsage()
+	{
+		if (!method_exists('Nette\Reflection\Helpers', 'getDeclaringClass')) {
+			Tester\Environment::skip('Correct raits usage requires nette/reflection 2.3.');
+		}
+
+		$presenter = new WithTraitPresenter();
+
+		$this->container->callMethod(array($presenter, 'injectProperties'));
+		Assert::true($presenter->service instanceof SampleService);
+	}
+
 }
 
 
@@ -270,7 +282,8 @@ class TypoPropertyAnnotationPresenter extends Nette\Application\UI\Presenter
 
 
 
-class PropertyWithUsePresenter extends Nette\Application\UI\Presenter {
+class PropertyWithUsePresenter extends Nette\Application\UI\Presenter
+{
 
 	use Kdyby\Autowired\AutowireProperties;
 
@@ -279,6 +292,16 @@ class PropertyWithUsePresenter extends Nette\Application\UI\Presenter {
 	 * @autowire
 	 */
 	public $service;
+
+}
+
+
+
+class WithTraitPresenter extends Nette\Application\UI\Presenter
+{
+
+	use Kdyby\Autowired\AutowireProperties;
+	use \KdybyTests\Autowired\UseExpansion\TraitSample;
 
 }
 
@@ -307,6 +330,20 @@ run(new AutowirePropertiesTest());
 
 namespace KdybyTests\Autowired\UseExpansion;
 
-class ImportedService {
+use KdybyTests\Autowired\SampleService as AliasedService;
+
+class ImportedService
+{
+
+}
+
+trait TraitSample
+{
+
+	/**
+	 * @var AliasedService
+	 * @autowire
+	 */
+	public $service;
 
 }
