@@ -19,6 +19,7 @@
 	"require": {
 		"nette/di": "~2.2@dev",
 		"nette/application": "~2.2@dev",
+		"nette/reflection": "~2.2@dev",
 		"tracy/tracy": "~2.2@dev"
 	},
 	"require-dev": {
@@ -34,7 +35,6 @@
 		"nette/mail": "~2.2@dev",
 		"nette/neon": "~2.2@dev",
 		"nette/php-generator": "~2.2@dev",
-		"nette/reflection": "~2.2@dev",
 		"nette/robot-loader": "~2.2@dev",
 		"nette/safe-stream": "~2.2@dev",
 		"nette/security": "~2.2@dev",
