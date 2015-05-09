@@ -24,7 +24,7 @@ Installation
 The best way to install Kdyby/Autowired is using  [Composer](http://getcomposer.org/):
 
 ```sh
-$ composer require kdyby/autowired:~1.0
+$ composer require kdyby/autowired
 ```
 
 

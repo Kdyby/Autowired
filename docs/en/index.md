@@ -5,7 +5,7 @@ Quickstart
 The best way to install Kdyby/Autowired is using  [Composer](http://getcomposer.org/):
 
 ```sh
-$ composer require kdyby/autowired:@dev
+$ composer require kdyby/autowired
 ```
 
 
@@ -28,11 +28,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 }
 ```
 
-For debugging purposes you may also add the AutowiredExtension in bootstrap.php.
+For debugging purposes you may also add the AutowiredExtension in config, which registers Tracy panel
 
 
 ```php
-\Kdyby\Autowired\DI\AutowiredExtension::register();
+extensions:
+	autowired: Kdyby\Autowired\DI\AutowiredExtension
 ```
 
 
@@ -97,7 +98,7 @@ class ArticlePresenter extends BasePresenter
 }
 ```
 
-The `$name` parameter can be omitted, `createComponentDatagrid(IDatagridFactory $factory)` works as well. 
+The `$name` parameter can be omitted, `createComponentDatagrid(IDatagridFactory $factory)` works as well.
 
 Cool right?
 
@@ -105,4 +106,4 @@ Cool right?
 Not so clean...
 ---------------
 
-Just keep in mind, that is not a clean approach - it's pragmatic. Never try to use theese traits in model classes. Strictly use constructor injection whenever it's possible!
+Just keep in mind, that is not a clean approach - it's pragmatic. Never try to use these traits in model classes. Strictly use constructor injection whenever it's possible!
