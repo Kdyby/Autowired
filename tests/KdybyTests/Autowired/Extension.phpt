@@ -37,13 +37,7 @@ class ExtensionTest extends Tester\TestCase
 		$refl = new Nette\Reflection\Property('\Nette\Application\UI\Presenter', 'onShutdown');
 		$file = Debugger::log(new Kdyby\Autowired\MissingServiceException("Missing service blabla", $refl));
 
-		try {
-			Assert::match('%A%<div class="panel">%A?%<h2><a href="#netteBsPnl1" class="nette-toggle">Autowired</a></h2>%A%', file_get_contents($file));
-
-		} catch (Tester\AssertException $e) {
-			Assert::match('%A%<div class="panel">%A?%<h2><a href="#tracyBsPnl1" class="tracy-toggle">Autowired</a></h2>%A%', file_get_contents($file));
-		}
-
+		Assert::match('%A%<div class="panel">%A?%<h2><a href="#tracyBsPnl1" class="tracy-toggle">Autowired</a></h2>%A%', file_get_contents($file));
 	}
 
 }
