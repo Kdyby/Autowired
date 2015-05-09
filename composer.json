@@ -57,7 +57,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "1.0-dev"
+			"dev-nette-2.2": "1.2-dev"
 		}
 	}
 }
