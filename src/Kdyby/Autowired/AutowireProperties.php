@@ -199,7 +199,7 @@ trait AutowireProperties
 			$expandedType = NULL;
 			if (method_exists('Nette\Reflection\AnnotationsParser', 'expandClassName')) {
 				$expandedType = Nette\Reflection\AnnotationsParser::expandClassName($annotationValue,
-					method_exists('Nette\Reflection\Helpers', 'getDeclaringClass') && $prop instanceof \ReflectionProperty
+					$prop instanceof \ReflectionProperty
 						? Nette\Reflection\Helpers::getDeclaringClass($prop)
 						: $prop->getDeclaringClass()
 				);
