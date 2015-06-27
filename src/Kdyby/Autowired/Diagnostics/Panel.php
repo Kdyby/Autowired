@@ -32,7 +32,11 @@ class Panel extends Nette\Object
 
 
 
-	public static function renderException(\Exception $e = NULL)
+	/**
+	 * @param \Exception|\Throwable $e
+	 * @return array|null
+	 */
+	public static function renderException($e = NULL)
 	{
 		if (!$e instanceof Kdyby\Autowired\Exception || !$e->getReflector()) {
 			return NULL;
