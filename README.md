@@ -4,6 +4,7 @@ Kdyby/Autowired
 [![Build Status](https://travis-ci.org/Kdyby/Autowired.svg?branch=master)](https://travis-ci.org/Kdyby/Autowired)
 [![Downloads this Month](https://img.shields.io/packagist/dm/kdyby/autowired.svg)](https://packagist.org/packages/kdyby/autowired)
 [![Latest stable](https://img.shields.io/packagist/v/kdyby/autowired.svg)](https://packagist.org/packages/kdyby/autowired)
+[![Join the chat at https://gitter.im/Kdyby/Help](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Kdyby/Help)
 
 **You shouldn't be using this, if you don't know what youre doing!**
 
