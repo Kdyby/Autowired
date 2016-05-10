@@ -79,12 +79,12 @@ trait AutowireComponentFactories
 			}
 
 			foreach ($method->getParameters() as $parameter) {
-				if (!$class = $parameter->getClassName()) { // has object type hint
+				if (!$class = $parameter->getClass()) { // has object type hint
 					continue;
 				}
 
 				if (!$this->findByTypeForFactory($class) && !$parameter->allowsNull()) {
-					throw new MissingServiceException("No service of type {$class} found. Make sure the type hint in $method is written correctly and service of this type is registered.");
+					throw new MissingServiceException("No service of type {$class->getName()} found. Make sure the type hint in {$method->getName()} is written correctly and service of this type is registered.");
 				}
 			}
 		}
@@ -109,8 +109,7 @@ trait AutowireComponentFactories
 	private function findByTypeForFactory($type)
 	{
 		if (method_exists($this->autowireComponentFactoriesLocator, 'findByType')) {
-			$found = $this->autowireComponentFactoriesLocator->findByType($type);
-
+			$found = $this->autowireComponentFactoriesLocator->findByType($type->getName());
 			return reset($found);
 		}
 
@@ -139,10 +138,10 @@ trait AutowireComponentFactories
 			if ($reflection->getName() !== $method) {
 				return;
 			}
-			$parameters = $reflection->parameters;
+			$parameters = $reflection->getParameters();
 
 			$args = array();
-			if (($first = reset($parameters)) && !$first->className) {
+			if (($first = reset($parameters)) && !$first->getClass()) {
 				$args[] = $name;
 			}
 
