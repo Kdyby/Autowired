@@ -12,6 +12,7 @@ namespace Kdyby\Autowired;
 
 use Nette;
 use Nette\Reflection\ClassType;
+use Nette\Reflection\Method;
 use Nette\Reflection\Property;
 use Nette\Utils\Strings;
 
@@ -21,7 +22,6 @@ use Nette\Utils\Strings;
  * @author matej21 <matej21@matej21.cz>
  * @author Filip Procházka <filip@prochazka.su>
  *
- * @method Nette\Application\UI\PresenterComponentReflection getReflection()
  * @method Nette\Application\UI\Presenter getPresenter()
  */
 trait AutowireComponentFactories
@@ -55,7 +55,7 @@ trait AutowireComponentFactories
 	 */
 	public function injectComponentFactories(Nette\DI\Container $dic)
 	{
-		if (!$this instanceof Nette\Application\UI\PresenterComponent) {
+		if (!$this instanceof Nette\Application\UI\PresenterComponent && !$this instanceof Nette\Application\UI\Component) {
 			throw new MemberAccessException('Trait ' . __TRAIT__ . ' can be used only in descendants of PresenterComponent.');
 		}
 
@@ -70,11 +70,10 @@ trait AutowireComponentFactories
 			return;
 		}
 
-		$rc = $this->getReflection();
 		$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
+		$rc = new ClassType($this);
 		foreach ($rc->getMethods() as $method) {
-			/** @var Property $prop */
-			if (in_array($method->getDeclaringClass()->getName(), $ignore) || !Strings::startsWith($method->getName(), 'createComponent')) {
+			if (in_array($method->getDeclaringClass()->getName(), $ignore, TRUE) || !Strings::startsWith($method->getName(), 'createComponent')) {
 				continue;
 			}
 
@@ -135,21 +134,21 @@ trait AutowireComponentFactories
 		$ucName = ucfirst($name);
 		$method = 'createComponent' . $ucName;
 		if ($ucName !== $name && method_exists($this, $method)) {
-			$reflection = $this->getReflection()->getMethod($method);
-			if ($reflection->getName() !== $method) {
+			$methodReflection = new Method($this, $method);
+			if ($methodReflection->getName() !== $method) {
 				return;
 			}
-			$parameters = $reflection->parameters;
+			$parameters = $methodReflection->getParameters();
 
 			$args = array();
 			if (($first = reset($parameters)) && !$first->className) {
 				$args[] = $name;
 			}
 
-			$args = Nette\DI\Helpers::autowireArguments($reflection, $args, $sl);
+			$args = Nette\DI\Helpers::autowireArguments($methodReflection, $args, $sl);
 			$component = call_user_func_array(array($this, $method), $args);
 			if (!$component instanceof Nette\ComponentModel\IComponent && !isset($this->components[$name])) {
-				throw new Nette\UnexpectedValueException("Method $reflection did not return or create the desired component.");
+				throw new Nette\UnexpectedValueException("Method $methodReflection did not return or create the desired component.");
 			}
 
 			return $component;
