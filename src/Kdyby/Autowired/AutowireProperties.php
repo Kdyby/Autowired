@@ -74,6 +74,8 @@ trait AutowireProperties
 
 		$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
 		foreach ($this->getReflection()->getProperties() as $prop) {
+			if(!$prop instanceof Property) $prop = new Property($prop->getDeclaringClass()->getName(), $prop->getName());
+
 			/** @var Property $prop */
 			if (!$this->validateProperty($prop, $ignore)) {
 				continue;
