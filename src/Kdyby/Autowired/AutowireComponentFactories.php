@@ -71,6 +71,10 @@ trait AutowireComponentFactories
 		}
 
 		$rc = $this->getReflection();
+		if(!$rc instanceof ClassType) {
+			$rc = new ClassType($rc->getName());
+		}
+
 		$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
 		foreach ($rc->getMethods() as $method) {
 			/** @var Property $prop */
@@ -135,11 +139,15 @@ trait AutowireComponentFactories
 		$ucName = ucfirst($name);
 		$method = 'createComponent' . $ucName;
 		if ($ucName !== $name && method_exists($this, $method)) {
-			$reflection = $this->getReflection()->getMethod($method);
+			$classReflection = $this->getReflection();
+			if(!$classReflection instanceof ClassType) {
+				$classReflection = new ClassType($classReflection->getName());
+			}
+			$reflection = $classReflection->getMethod($method);
 			if ($reflection->getName() !== $method) {
 				return;
 			}
-			$parameters = $reflection->parameters;
+			$parameters = $reflection->getParameters();
 
 			$args = array();
 			if (($first = reset($parameters)) && !$first->className) {
