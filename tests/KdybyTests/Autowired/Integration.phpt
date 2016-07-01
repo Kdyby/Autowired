@@ -79,7 +79,7 @@ class IntegrationPresenter extends Nette\Application\UI\Presenter
 
 
 
-class DatagridComponent extends Nette\Application\UI\PresenterComponent
+class DatagridComponent extends Nette\Application\UI\Component
 {
 
 	public function __construct()

@@ -22,7 +22,7 @@ use Nette\Utils\Strings;
 /**
  * @author Filip Procházka <filip@prochazka.su>
  *
- * @method Nette\Application\UI\PresenterComponentReflection getReflection()
+ * @method Nette\Application\UI\ComponentReflection getReflection()
  */
 trait AutowireProperties
 {
@@ -48,7 +48,7 @@ trait AutowireProperties
 	 */
 	public function injectProperties(Nette\DI\Container $dic)
 	{
-		if (!$this instanceof Nette\Application\UI\PresenterComponent) {
+		if (!$this instanceof Nette\Application\UI\Component) {
 			throw new MemberAccessException('Trait ' . __TRAIT__ . ' can be used only in descendants of PresenterComponent.');
 		}
 
@@ -74,7 +74,8 @@ trait AutowireProperties
 
 		$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
 		foreach ($this->getReflection()->getProperties() as $prop) {
-			/** @var Property $prop */
+			/** @var \ReflectionProperty $prop */
+			$prop = new Property($prop->class, $prop->getName());
 			if (!$this->validateProperty($prop, $ignore)) {
 				continue;
 			}

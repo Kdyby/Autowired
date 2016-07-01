@@ -21,7 +21,7 @@ use Nette\Utils\Strings;
  * @author matej21 <matej21@matej21.cz>
  * @author Filip Procházka <filip@prochazka.su>
  *
- * @method Nette\Application\UI\PresenterComponentReflection getReflection()
+ * @method Nette\Application\UI\ComponentReflection getReflection()
  * @method Nette\Application\UI\Presenter getPresenter()
  */
 trait AutowireComponentFactories
@@ -55,7 +55,7 @@ trait AutowireComponentFactories
 	 */
 	public function injectComponentFactories(Nette\DI\Container $dic)
 	{
-		if (!$this instanceof Nette\Application\UI\PresenterComponent) {
+		if (!$this instanceof Nette\Application\UI\Component) {
 			throw new MemberAccessException('Trait ' . __TRAIT__ . ' can be used only in descendants of PresenterComponent.');
 		}
 
@@ -73,18 +73,19 @@ trait AutowireComponentFactories
 		$rc = $this->getReflection();
 		$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
 		foreach ($rc->getMethods() as $method) {
-			/** @var Property $prop */
+			/** @var Nette\Application\UI\MethodReflection $method */
 			if (in_array($method->getDeclaringClass()->getName(), $ignore) || !Strings::startsWith($method->getName(), 'createComponent')) {
 				continue;
 			}
 
 			foreach ($method->getParameters() as $parameter) {
-				if (!$class = $parameter->getClassName()) { // has object type hint
+				if (!$class = $parameter->getClass()) { // has object type hint
 					continue;
 				}
 
-				if (!$this->findByTypeForFactory($class) && !$parameter->allowsNull()) {
-					throw new MissingServiceException("No service of type {$class} found. Make sure the type hint in $method is written correctly and service of this type is registered.");
+				if (!$this->findByTypeForFactory($class->getName()) && !$parameter->allowsNull()) {
+					$method = $method->getDeclaringClass()->getName() . '::' . $method->getName() . '()';
+					throw new MissingServiceException("No service of type {$class->getName()} found. Make sure the type hint in {$method} is written correctly and service of this type is registered.");
 				}
 			}
 		}
@@ -139,10 +140,10 @@ trait AutowireComponentFactories
 			if ($reflection->getName() !== $method) {
 				return;
 			}
-			$parameters = $reflection->parameters;
+			$parameters = $reflection->getParameters();
 
 			$args = array();
-			if (($first = reset($parameters)) && !$first->className) {
+			if (($first = reset($parameters)) && !$first->getClass()) {
 				$args[] = $name;
 			}
 
