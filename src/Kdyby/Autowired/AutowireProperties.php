@@ -21,8 +21,6 @@ use Nette\Utils\Strings;
 
 /**
  * @author Filip Procházka <filip@prochazka.su>
- *
- * @method Nette\Application\UI\PresenterComponentReflection getReflection()
  */
 trait AutowireProperties
 {
@@ -48,7 +46,7 @@ trait AutowireProperties
 	 */
 	public function injectProperties(Nette\DI\Container $dic)
 	{
-		if (!$this instanceof Nette\Application\UI\PresenterComponent) {
+		if (!$this instanceof Nette\Application\UI\PresenterComponent && !$this instanceof Nette\Application\UI\Component) {
 			throw new MemberAccessException('Trait ' . __TRAIT__ . ' can be used only in descendants of PresenterComponent.');
 		}
 
@@ -73,8 +71,8 @@ trait AutowireProperties
 		$this->autowireProperties = array();
 
 		$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
-		foreach ($this->getReflection()->getProperties() as $prop) {
-			/** @var Property $prop */
+		$rc = new ClassType($this);
+		foreach ($rc->getProperties() as $prop) {
 			if (!$this->validateProperty($prop, $ignore)) {
 				continue;
 			}
@@ -97,7 +95,7 @@ trait AutowireProperties
 
 	private function validateProperty(Property $property, array $ignore)
 	{
-		if (in_array($property->getDeclaringClass()->getName(), $ignore)) {
+		if (in_array($property->getDeclaringClass()->getName(), $ignore, TRUE)) {
 			return FALSE;
 		}
 
