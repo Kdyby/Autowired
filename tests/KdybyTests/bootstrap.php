@@ -11,6 +11,7 @@
 namespace KdybyTests\Autowired;
 
 use Nette\DI\ContainerBuilder;
+use Nette\DI\PhpGenerator;
 use Tester;
 
 if (@!include __DIR__ . '/../../vendor/autoload.php') {
@@ -53,10 +54,16 @@ abstract class ContainerTestCase extends \Tester\TestCase
 	 */
 	protected function compileContainer(ContainerBuilder $builder, $className = NULL)
 	{
-		$classes = $builder->generateClasses();
-		$classes[0]->setName($className = ($className ?: 'Container'))
-			->setExtends('Nette\DI\Container')
-			/*->addMethod('initialize')*/;
+		if (class_exists('Nette\DI\PhpGenerator')) {
+			$generator = new PhpGenerator($builder);
+			$classes = $generator->generate($className = ($className ?: 'Container'));
+
+		} else {
+			$classes = $builder->generateClasses();
+			$classes[0]->setName($className = ($className ?: 'Container'))
+				->setExtends('Nette\DI\Container')
+				/*->addMethod('initialize')*/;
+		}
 
 		$code = implode('', $classes);
 		$ns = 'DIC_' . md5($code);
