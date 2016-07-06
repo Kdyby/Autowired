@@ -17,6 +17,9 @@ use Tester;
 use Tester\Assert;
 
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/mocks/IntegrationPresenter.php';
+require_once __DIR__ . '/mocks/LoremService.php';
+require_once __DIR__ . '/mocks/DatagridComponent' . (class_exists('Nette\Application\UI\Component') ? '24' : '23') . '.php';
 
 
 
@@ -51,57 +54,6 @@ class IntegrationTest extends ContainerTestCase
 		$container->callMethod(array($presenter, 'injectProperties'));
 		$container->callMethod(array($presenter, 'injectComponentFactories'));
 	}
-
-}
-
-
-
-class IntegrationPresenter extends Nette\Application\UI\Presenter
-{
-
-	use Kdyby\Autowired\AutowireProperties;
-	use Kdyby\Autowired\AutowireComponentFactories;
-
-	/**
-	 * @var LoremService
-	 * @autowire
-	 */
-	public $service;
-
-
-
-	protected function createComponentSilly(IDatagridFactory $factory)
-	{
-		return $factory->create();
-	}
-
-}
-
-
-
-class DatagridComponent extends Nette\Application\UI\PresenterComponent
-{
-
-	public function __construct()
-	{
-		parent::__construct();
-	}
-
-}
-
-
-
-interface IDatagridFactory
-{
-
-	/** @return DatagridComponent */
-	function create();
-}
-
-
-
-class LoremService
-{
 
 }
 
