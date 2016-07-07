@@ -28,7 +28,7 @@ trait AutowireProperties
 	/**
 	 * @var array
 	 */
-	private $autowireProperties = array();
+	private $autowireProperties = [];
 
 	/**
 	 * @var Nette\DI\Container
@@ -58,7 +58,7 @@ trait AutowireProperties
 		$cache = new Nette\Caching\Cache($storage, 'Kdyby.Autowired.AutowireProperties');
 
 		$containerFileName = ClassType::from($this->autowirePropertiesLocator)->getFileName();
-		$cacheKey = array($presenterClass = get_class($this), $containerFileName);
+		$cacheKey = [$presenterClass = get_class($this), $containerFileName];
 
 		if (is_array($this->autowireProperties = $cache->load($cacheKey))) {
 			foreach ($this->autowireProperties as $propName => $tmp) {
@@ -68,9 +68,9 @@ trait AutowireProperties
 			return;
 		}
 
-		$this->autowireProperties = array();
+		$this->autowireProperties = [];
 
-		$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
+		$ignore = class_parents('Nette\Application\UI\Presenter') + ['ui' => 'Nette\Application\UI\Presenter'];
 		$rc = new ClassType($this);
 		foreach ($rc->getProperties() as $prop) {
 			if (!$this->validateProperty($prop, $ignore)) {
@@ -82,13 +82,13 @@ trait AutowireProperties
 
 		$files = array_map(function ($class) {
 			return ClassType::from($class)->getFileName();
-		}, array_diff(array_values(class_parents($presenterClass) + array('me' => $presenterClass)), $ignore));
+		}, array_diff(array_values(class_parents($presenterClass) + ['me' => $presenterClass]), $ignore));
 
 		$files[] = $containerFileName;
 
-		$cache->save($cacheKey, $this->autowireProperties, array(
+		$cache->save($cacheKey, $this->autowireProperties, [
 			$cache::FILES => $files,
-		));
+		]);
 	}
 
 
@@ -100,7 +100,7 @@ trait AutowireProperties
 		}
 
 		foreach ($property->getAnnotations() as $name => $value) {
-			if (!in_array(Strings::lower($name), array('autowire', 'autowired'), TRUE)) {
+			if (!in_array(Strings::lower($name), ['autowire', 'autowired'], TRUE)) {
 				continue;
 			}
 
@@ -149,10 +149,10 @@ trait AutowireProperties
 	private function resolveProperty(Property $prop)
 	{
 		$type = $this->resolveAnnotationClass($prop, $prop->getAnnotation('var'), 'var');
-		$metadata = array(
+		$metadata = [
 			'value' => NULL,
 			'type' => $type,
-		);
+		];
 
 		if (($args = (array) $prop->getAnnotation('autowire')) && !empty($args['factory'])) {
 			$factoryType = $this->resolveAnnotationClass($prop, $args['factory'], 'autowire');

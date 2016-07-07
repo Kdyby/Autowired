@@ -70,7 +70,7 @@ trait AutowireComponentFactories
 			return;
 		}
 
-		$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
+		$ignore = class_parents('Nette\Application\UI\Presenter') + ['ui' => 'Nette\Application\UI\Presenter'];
 		$rc = new ClassType($this);
 		foreach ($rc->getMethods() as $method) {
 			if (in_array($method->getDeclaringClass()->getName(), $ignore, TRUE) || !Strings::startsWith($method->getName(), 'createComponent')) {
@@ -90,13 +90,13 @@ trait AutowireComponentFactories
 
 		$files = array_map(function ($class) {
 			return ClassType::from($class)->getFileName();
-		}, array_diff(array_values(class_parents($presenterClass) + array('me' => $presenterClass)), $ignore));
+		}, array_diff(array_values(class_parents($presenterClass) + ['me' => $presenterClass]), $ignore));
 
 		$files[] = ClassType::from($this->autowireComponentFactoriesLocator)->getFileName();
 
-		$cache->save($presenterClass, TRUE, array(
+		$cache->save($presenterClass, TRUE, [
 			$cache::FILES => $files,
-		));
+		]);
 	}
 
 
@@ -140,13 +140,13 @@ trait AutowireComponentFactories
 			}
 			$parameters = $methodReflection->getParameters();
 
-			$args = array();
+			$args = [];
 			if (($first = reset($parameters)) && !$first->className) {
 				$args[] = $name;
 			}
 
 			$args = Nette\DI\Helpers::autowireArguments($methodReflection, $args, $sl);
-			$component = call_user_func_array(array($this, $method), $args);
+			$component = call_user_func_array([$this, $method], $args);
 			if (!$component instanceof Nette\ComponentModel\IComponent && !isset($this->components[$name])) {
 				throw new Nette\UnexpectedValueException("Method $methodReflection did not return or create the desired component.");
 			}

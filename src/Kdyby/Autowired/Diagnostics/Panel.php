@@ -27,7 +27,7 @@ class Panel extends Nette\Object
 
 	public static function registerBluescreen()
 	{
-		Debugger::getBlueScreen()->addPanel(array(get_called_class(), 'renderException'));
+		Debugger::getBlueScreen()->addPanel([get_called_class(), 'renderException']);
 	}
 
 
@@ -42,10 +42,10 @@ class Panel extends Nette\Object
 			return NULL;
 		}
 
-		return array(
+		return [
 			'tab' => 'Autowired',
 			'panel' => self::highlightException($e),
-		);
+		];
 	}
 
 

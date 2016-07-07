@@ -51,8 +51,8 @@ class IntegrationTest extends ContainerTestCase
 		$container = $this->compileContainer($builder);
 
 		$presenter = new IntegrationPresenter();
-		$container->callMethod(array($presenter, 'injectProperties'));
-		$container->callMethod(array($presenter, 'injectComponentFactories'));
+		$container->callMethod([$presenter, 'injectProperties']);
+		$container->callMethod([$presenter, 'injectComponentFactories']);
 	}
 
 }

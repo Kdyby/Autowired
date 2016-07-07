@@ -22,9 +22,9 @@ use Nette\PhpGenerator as Code;
 class AutowiredExtension extends Nette\DI\CompilerExtension
 {
 
-	public $defaults = array(
+	public $defaults = [
 		'cacheStorage' => '@Nette\Caching\IStorage',
-	);
+	];
 
 
 	public function loadConfiguration()

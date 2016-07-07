@@ -51,7 +51,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 	public function testFunctional()
 	{
 		$presenter = new SillyPresenter();
-		$this->container->callMethod(array($presenter, 'injectComponentFactories'));
+		$this->container->callMethod([$presenter, 'injectComponentFactories']);
 
 		Assert::true($presenter['silly'] instanceof SillyComponent);
 		Assert::true($presenter['dummy'] instanceof SillyComponent);
@@ -65,7 +65,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 
 		Assert::exception(function () use ($container) {
 			$presenter = new WithMissingServicePresenter_wcf();
-			$container->callMethod(array($presenter, 'injectComponentFactories'));
+			$container->callMethod([$presenter, 'injectComponentFactories']);
 		}, 'Kdyby\Autowired\MissingServiceException', 'No service of type SampleMissingService12345 found. Make sure the type hint in KdybyTests\Autowired\WithMissingServicePresenter_wcf::createComponentSilly() is written correctly and service of this type is registered.');
 	}
 
@@ -77,7 +77,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 
 		Assert::exception(function () use ($container) {
 			$component = new NonPresenterComponent_AcfProperties();
-			$container->callMethod(array($component, 'injectComponentFactories'));
+			$container->callMethod([$component, 'injectComponentFactories']);
 		}, 'Kdyby\Autowired\MemberAccessException', 'Trait Kdyby\Autowired\AutowireComponentFactories can be used only in descendants of PresenterComponent.');
 	}
 

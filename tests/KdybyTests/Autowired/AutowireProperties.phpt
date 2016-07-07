@@ -39,13 +39,13 @@ class AutowirePropertiesTest extends ContainerTestCase
 	{
 		$builder = new DI\ContainerBuilder;
 		$builder->addDefinition('sampleFactory')
-			->setFactory('KdybyTests\Autowired\SampleService', array(new PhpLiteral('$name'), new PhpLiteral('$secondName')))
-			->setParameters(array('name', 'secondName' => NULL))
+			->setFactory('KdybyTests\Autowired\SampleService', [new PhpLiteral('$name'), new PhpLiteral('$secondName')])
+			->setParameters(['name', 'secondName' => NULL])
 			->setImplement('KdybyTests\Autowired\ISampleServiceFactory')
 			->setAutowired(TRUE);
 
 		$builder->addDefinition('sample')
-			->setClass('KdybyTests\Autowired\SampleService', array('shared'));
+			->setClass('KdybyTests\Autowired\SampleService', ['shared']);
 
 		$builder->addDefinition('importedService')
 			->setClass('KdybyTests\Autowired\UseExpansion\ImportedService');
@@ -65,16 +65,16 @@ class AutowirePropertiesTest extends ContainerTestCase
 		Assert::null($presenter->factoryResult);
 		Assert::null($presenter->secondFactoryResult);
 
-		$this->container->callMethod(array($presenter, 'injectProperties'));
+		$this->container->callMethod([$presenter, 'injectProperties']);
 
 		Assert::true($presenter->service instanceof SampleService);
-		Assert::same(array('shared'), $presenter->service->args);
+		Assert::same(['shared'], $presenter->service->args);
 
 		Assert::true($presenter->factoryResult instanceof SampleService);
-		Assert::same(array('string argument', NULL), $presenter->factoryResult->args);
+		Assert::same(['string argument', NULL], $presenter->factoryResult->args);
 
 		Assert::true($presenter->secondFactoryResult instanceof SampleService);
-		Assert::same(array('string argument', 'and another'), $presenter->secondFactoryResult->args);
+		Assert::same(['string argument', 'and another'], $presenter->secondFactoryResult->args);
 	}
 
 
@@ -86,7 +86,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 		Assert::exception(function () use ($container) {
 			$presenter = new WithMissingServicePresenter_ap();
 			Assert::null($presenter->service);
-			$container->callMethod(array($presenter, 'injectProperties'));
+			$container->callMethod([$presenter, 'injectProperties']);
 		}, 'Kdyby\Autowired\MissingClassException', 'Class "SampleMissingService12345" was not found, please check the typehint on KdybyTests\Autowired\WithMissingServicePresenter_ap::$service in annotation @var.');
 	}
 
@@ -99,7 +99,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 		Assert::exception(function () use ($container) {
 			$presenter = new WithMissingServiceFactoryPresenter_ap();
 			Assert::null($presenter->secondFactoryResult);
-			$container->callMethod(array($presenter, 'injectProperties'));
+			$container->callMethod([$presenter, 'injectProperties']);
 		}, 'Kdyby\Autowired\MissingClassException', 'Class "SampleMissingService12345" was not found, please check the typehint on KdybyTests\Autowired\WithMissingServiceFactoryPresenter_ap::$secondFactoryResult in annotation @autowire.');
 	}
 
@@ -111,7 +111,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 		Assert::exception(function () use ($container) {
 			$component = new NonPresenterComponent_ap();
-			$container->callMethod(array($component, 'injectProperties'));
+			$container->callMethod([$component, 'injectProperties']);
 		}, 'Kdyby\Autowired\MemberAccessException', 'Trait Kdyby\Autowired\AutowireProperties can be used only in descendants of PresenterComponent.');
 	}
 
@@ -123,7 +123,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 		Assert::exception(function () use ($container) {
 			$component = new PrivateAutowiredPropertyPresenter();
-			$container->callMethod(array($component, 'injectProperties'));
+			$container->callMethod([$component, 'injectProperties']);
 		}, 'Kdyby\Autowired\MemberAccessException', 'Autowired properties must be protected or public. Please fix visibility of KdybyTests\Autowired\PrivateAutowiredPropertyPresenter::$service or remove the @autowire annotation.');
 	}
 
@@ -135,7 +135,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 		Assert::exception(function () use ($container) {
 			$component = new WrongCasePropertyAnnotationPresenter();
-			$container->callMethod(array($component, 'injectProperties'));
+			$container->callMethod([$component, 'injectProperties']);
 		}, 'Kdyby\Autowired\UnexpectedValueException', 'Annotation @Autowire on KdybyTests\Autowired\WrongCasePropertyAnnotationPresenter::$service should be fixed to lowercase @autowire.');
 	}
 
@@ -147,7 +147,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 		Assert::exception(function () use ($container) {
 			$component = new TypoPropertyAnnotationPresenter();
-			$container->callMethod(array($component, 'injectProperties'));
+			$container->callMethod([$component, 'injectProperties']);
 		}, 'Kdyby\Autowired\UnexpectedValueException', 'Annotation @autowired on KdybyTests\Autowired\TypoPropertyAnnotationPresenter::$service should be fixed to lowercase @autowire.');
 	}
 
@@ -155,7 +155,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 	{
 		$presenter = new PropertyWithUsePresenter();
 
-		$this->container->callMethod(array($presenter, 'injectProperties'));
+		$this->container->callMethod([$presenter, 'injectProperties']);
 		Assert::true($presenter->service instanceof AliasedService);
 	}
 
@@ -167,7 +167,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 		$presenter = new WithTraitPresenter();
 
-		$this->container->callMethod(array($presenter, 'injectProperties'));
+		$this->container->callMethod([$presenter, 'injectProperties']);
 		Assert::true($presenter->service instanceof SampleService);
 	}
 
