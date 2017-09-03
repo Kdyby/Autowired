@@ -143,7 +143,7 @@ class SillyComponent extends Nette\Application\UI\PresenterComponent
 
 
 
-class NonPresenterComponent_AcfProperties extends Nette\Object
+class NonPresenterComponent_AcfProperties
 {
 	use Kdyby\Autowired\AutowireComponentFactories;
 }
