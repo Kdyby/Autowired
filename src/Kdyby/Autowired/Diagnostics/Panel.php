@@ -21,8 +21,10 @@ use Tracy\Helpers;
 /**
  * @author Filip Procházka <filip@prochazka.su>
  */
-class Panel extends Nette\Object
+class Panel
 {
+
+	use Nette\SmartObject;
 
 
 	public static function registerBluescreen()

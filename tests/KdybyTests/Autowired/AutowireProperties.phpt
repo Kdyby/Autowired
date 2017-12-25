@@ -161,10 +161,6 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 	public function testTraitUsage()
 	{
-		if (!method_exists('Nette\Reflection\Helpers', 'getDeclaringClass')) {
-			Tester\Environment::skip('Correct raits usage requires nette/reflection 2.3.');
-		}
-
 		$presenter = new WithTraitPresenter();
 
 		$this->container->callMethod([$presenter, 'injectProperties']);
@@ -230,7 +226,7 @@ class WithMissingServiceFactoryPresenter_ap extends Nette\Application\UI\Present
 }
 
 
-class NonPresenterComponent_ap extends Nette\Object
+class NonPresenterComponent_ap
 {
 	use Kdyby\Autowired\AutowireProperties;
 }
