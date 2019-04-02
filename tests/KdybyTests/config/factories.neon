@@ -1,0 +1,5 @@
+services:
+    sampleFactory:
+        implement: KdybyTests\Autowired\ISillyComponentFactory
+
+    cacheStorage: Nette\Caching\Storages\MemoryStorage

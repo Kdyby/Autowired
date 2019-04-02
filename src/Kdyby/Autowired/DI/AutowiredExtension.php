@@ -30,14 +30,14 @@ class AutowiredExtension extends Nette\DI\CompilerExtension
 	public function loadConfiguration()
 	{
 		$builder = $this->getContainerBuilder();
-		$config = $this->getConfig($this->defaults);
+		$config = Nette\DI\Config\Helpers::merge($this->getConfig(), $this->defaults);
 
 		$storage = $builder->addDefinition($this->prefix('cacheStorage'))
-			->setClass('Nette\Caching\IStorage')
+			->setType('Nette\Caching\IStorage')
 			->setAutowired(FALSE);
 
 		$storage->factory = is_string($config['cacheStorage'])
-			? new Nette\DI\Statement($config['cacheStorage'])
+			? new Nette\DI\Definitions\Statement($config['cacheStorage'])
 			: $config['cacheStorage'];
 	}
 

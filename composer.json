@@ -17,15 +17,16 @@
 		"issues": "https://github.com/kdyby/autowired/issues"
 	},
 	"require": {
-		"nette/di": "^2.4.7|^3.0",
-		"nette/application": "^2.4|^3.0",
-		"nette/reflection": "^2.4.2",
-		"tracy/tracy": "^2.4"
+		"php": "^7.1",
+		"nette/di": "^3.0-RC2",
+		"nette/application": "3.0-RC3",
+		"nette/reflection": "^2.4",
+		"tracy/tracy": "^2.6"
 	},
 	"require-dev": {
-		"nette/bootstrap": "^2.4",
-		"nette/robot-loader": "^2.4|^3.0",
-		"nette/tester": "^1.7"
+		"nette/bootstrap": "^3.0",
+		"nette/robot-loader": "^3.2",
+		"nette/tester": "^2.2"
 	},
 	"autoload": {
 		"psr-0": {

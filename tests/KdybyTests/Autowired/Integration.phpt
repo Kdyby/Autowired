@@ -39,16 +39,16 @@ class IntegrationTest extends ContainerTestCase
 	public function testFunctional()
 	{
 		$builder = new DI\ContainerBuilder;
-		$builder->addDefinition('datagridFactory')
+		$builder->addFactoryDefinition('datagridFactory')
 			->setImplement('KdybyTests\Autowired\IDatagridFactory');
 
 		$builder->addDefinition('lorem')
-			->setClass('KdybyTests\Autowired\LoremService');
+			->setType('KdybyTests\Autowired\LoremService');
 
 		$builder->addDefinition('cacheStorage')
-			->setClass('Nette\Caching\Storages\MemoryStorage');
+			->setType('Nette\Caching\Storages\MemoryStorage');
 
-		$container = $this->compileContainer($builder);
+		$container = $this->compileContainer('integration');
 
 		$presenter = new IntegrationPresenter();
 		$container->callMethod([$presenter, 'injectProperties']);

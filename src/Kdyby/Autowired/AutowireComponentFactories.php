@@ -11,6 +11,7 @@
 namespace Kdyby\Autowired;
 
 use Nette;
+use Nette\ComponentModel\IComponent;
 use Nette\Reflection\ClassType;
 use Nette\Reflection\Method;
 use Nette\Reflection\Property;
@@ -127,7 +128,7 @@ trait AutowireComponentFactories
 	 * @return Nette\ComponentModel\IComponent
 	 * @throws Nette\UnexpectedValueException
 	 */
-	protected function createComponent($name)
+	protected function createComponent(string $name): ?IComponent
 	{
 		$sl = $this->getComponentFactoriesLocator();
 
@@ -136,7 +137,7 @@ trait AutowireComponentFactories
 		if ($ucName !== $name && method_exists($this, $method)) {
 			$methodReflection = new Method($this, $method);
 			if ($methodReflection->getName() !== $method) {
-				return;
+				return null;
 			}
 			$parameters = $methodReflection->getParameters();
 
@@ -145,7 +146,7 @@ trait AutowireComponentFactories
 				$args[] = $name;
 			}
 
-			$args = Nette\DI\Helpers::autowireArguments($methodReflection, $args, $sl);
+			$args = Nette\DI\Resolver::autowireArguments($methodReflection, $args, $sl);
 			$component = call_user_func_array([$this, $method], $args);
 			if (!$component instanceof Nette\ComponentModel\IComponent && !isset($this->components[$name])) {
 				throw new Nette\UnexpectedValueException("Method $methodReflection did not return or create the desired component.");
@@ -153,6 +154,8 @@ trait AutowireComponentFactories
 
 			return $component;
 		}
+
+		return null;
 	}
 
 }

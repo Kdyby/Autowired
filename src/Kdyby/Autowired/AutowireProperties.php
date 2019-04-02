@@ -252,8 +252,8 @@ trait AutowireProperties
 
 		if (empty($this->autowireProperties[$name]['value'])) {
 			if (!empty($this->autowireProperties[$name]['factory'])) {
-				$factory = Callback::closure($this->autowirePropertiesLocator->getService($this->autowireProperties[$name]['factory']), 'create');
-				$this->autowireProperties[$name]['value'] = Callback::invokeArgs($factory, $this->autowireProperties[$name]['arguments']);
+				$factory = \Closure::fromCallable([$this->autowirePropertiesLocator->getService($this->autowireProperties[$name]['factory']), 'create']);
+				$this->autowireProperties[$name]['value'] = call_user_func_array($factory, $this->autowireProperties[$name]['arguments']);
 
 			} else {
 				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getByType($this->autowireProperties[$name]['type']);
