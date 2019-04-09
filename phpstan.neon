@@ -9,6 +9,7 @@ parameters:
 		- %currentWorkingDirectory%/tests/KdybyTests/Autowired/mocks/LoremService.php
 		- %currentWorkingDirectory%/tests/KdybyTests/Autowired/mocks/IntegrationPresenter.php
 		- %currentWorkingDirectory%/tests/KdybyTests/Autowired/mocks/DatagridComponent.php
+	reportUnmatchedIgnoredErrors: false # for some reasons overriden annotation types are ok on CI
 	ignoreErrors:
 		-
 			message: '#Parameter \#1 $filename of function file_get_contents expects string, string|false given#'
