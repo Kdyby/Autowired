@@ -11,10 +11,10 @@
 namespace KdybyTests\Autowired;
 
 use Kdyby;
+use KdybyTests\ContainerTestCase;
 use Nette;
 use Nette\DI;
 use Nette\PhpGenerator\PhpLiteral;
-use Tester;
 use Tester\Assert;
 use KdybyTests\Autowired\UseExpansion\ImportedService as AliasedService;
 

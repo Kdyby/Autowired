@@ -24,6 +24,7 @@ install:
 
 script:
   - vendor/bin/tester $COVERAGE -s -p ${TESTER_RUNTIME:-php} -c ./tests/php.ini-unix ./tests/KdybyTests/
+  - php vendor/bin/phpstan analyse --ansi --no-progress
   - php /tmp/php-parallel-lint/parallel-lint.php -e php,phpt --exclude vendor .
   - php /tmp/code-checker/src/code-checker.php --short-arrays
 

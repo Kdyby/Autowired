@@ -51,6 +51,7 @@ trait AutowireProperties
 
 		$this->autowirePropertiesLocator = $dic;
 
+		/** @var Nette\Caching\IStorage $storage */
 		$storage = $dic->hasService('autowired.cacheStorage')
 			? $dic->getService('autowired.cacheStorage')
 			: $dic->getByType('Nette\Caching\IStorage');
@@ -124,17 +125,8 @@ trait AutowireProperties
 	 */
 	private function findByTypeForProperty(string $type)
 	{
-		if (method_exists($this->autowirePropertiesLocator, 'findByType')) {
-			$found = $this->autowirePropertiesLocator->findByType($type);
-
-			return reset($found);
-		}
-
-		$type = ltrim(strtolower($type), '\\');
-
-		return !empty($this->autowirePropertiesLocator->classes[$type])
-			? $this->autowirePropertiesLocator->classes[$type]
-			: FALSE;
+		$found = $this->autowirePropertiesLocator->findByType($type);
+		return reset($found);
 	}
 
 
@@ -151,7 +143,9 @@ trait AutowireProperties
 			'type' => $type,
 		];
 
-		if (($args = (array) $prop->getAnnotation('autowire')) && !empty($args['factory'])) {
+		$args = (array) $prop->getAnnotation('autowire');
+
+		if (!empty($args['factory'])) {
 			$factoryType = $this->resolveAnnotationClass($prop, $args['factory'], 'autowire');
 
 			if (!$this->findByTypeForProperty($factoryType)) {
@@ -179,10 +173,11 @@ trait AutowireProperties
 
 
 
+	/**
+	 * @param Property|Method $prop
+	 */
 	private function resolveAnnotationClass(\Reflector $prop, string $annotationValue, string $annotationName): string
 	{
-		/** @var Property|Method $prop */
-
 		if (!$type = ltrim($annotationValue, '\\')) {
 			throw new InvalidStateException("Missing annotation @{$annotationName} with typehint on {$prop}.", $prop);
 		}
@@ -191,14 +186,12 @@ trait AutowireProperties
 			if (substr(func_get_arg(1), 0, 1) === '\\') {
 				throw new MissingClassException("Class \"$type\" was not found, please check the typehint on {$prop} in annotation @{$annotationName}.", $prop);
 			}
-			$expandedType = NULL;
-			if (method_exists('Nette\Reflection\AnnotationsParser', 'expandClassName')) {
-				$expandedType = Nette\Reflection\AnnotationsParser::expandClassName($annotationValue,
-					$prop instanceof \ReflectionProperty
-						? Nette\Reflection\Helpers::getDeclaringClass($prop)
-						: $prop->getDeclaringClass()
-				);
-			}
+
+			$expandedType = Nette\Reflection\AnnotationsParser::expandClassName($annotationValue,
+				$prop instanceof \ReflectionProperty
+					? Nette\Reflection\Helpers::getDeclaringClass($prop)
+					: $prop->getDeclaringClass()
+			);
 
 			if ($expandedType && (class_exists($expandedType) || interface_exists($expandedType))) {
 				$type = $expandedType;
@@ -221,7 +214,8 @@ trait AutowireProperties
 	public function __set(string $name, $value)
 	{
 		if (!isset($this->autowireProperties[$name])) {
-			return parent::__set($name, $value);
+			parent::__set($name, $value);
+			return;
 
 		}
 
@@ -251,8 +245,7 @@ trait AutowireProperties
 
 		if (empty($this->autowireProperties[$name]['value'])) {
 			if (!empty($this->autowireProperties[$name]['factory'])) {
-				$factory = \Closure::fromCallable([$this->autowirePropertiesLocator->getService($this->autowireProperties[$name]['factory']), 'create']);
-				$this->autowireProperties[$name]['value'] = call_user_func_array($factory, $this->autowireProperties[$name]['arguments']);
+				$this->autowireProperties[$name]['value'] = call_user_func_array([$this->autowirePropertiesLocator->getService($this->autowireProperties[$name]['factory']), 'create'], $this->autowireProperties[$name]['arguments']);
 
 			} else {
 				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getByType($this->autowireProperties[$name]['type']);

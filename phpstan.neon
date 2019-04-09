@@ -1,0 +1,26 @@
+parameters:
+	bootstrap: %currentWorkingDirectory%/phpstan.bootstrap.php
+	level: 7
+	paths:
+		- src
+		- tests/KdybyTests
+	autoload_files:
+		- %currentWorkingDirectory%/tests/KdybyTests/ContainerTestCase.php
+		- %currentWorkingDirectory%/tests/KdybyTests/Autowired/mocks/LoremService.php
+		- %currentWorkingDirectory%/tests/KdybyTests/Autowired/mocks/IntegrationPresenter.php
+		- %currentWorkingDirectory%/tests/KdybyTests/Autowired/mocks/DatagridComponent.php
+	ignoreErrors:
+		-
+			message: '#Parameter \#1 $filename of function file_get_contents expects string, string|false given#'
+			path: src/Kdyby/Autowired/Diagnostics/Panel.php
+		# $this in Trait is resolved as NEVER
+		- '#Instanceof between \*NEVER\* and Nette\\Application\\UI\\Component will always evaluate to false#'
+		- '#::resolveAnnotationClass\(\) expects string, Nette\\Reflection\\IAnnotation given#'
+		# even if annotated..
+		- '#Parameter \#1 $storage of class Nette\\Caching\\Cache constructor expects Nette\\Caching\\IStorage, object|null given#'
+		- '#undefined method Reflector::getDeclaringClass\(\)#'
+		# wild callable constructions
+		- '#function call_user_func_array expects callable\(\): mixed, array#'
+		- '#Tracy\\BlueScreen::addPanel\(\) expects callable\(\): mixed, array#'
+		# bootstrap file
+		- '#Function KdybyTests\\Autowired\\run not found while trying to analyse it#'

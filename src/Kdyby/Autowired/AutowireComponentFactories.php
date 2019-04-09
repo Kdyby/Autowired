@@ -14,7 +14,6 @@ use Nette;
 use Nette\ComponentModel\IComponent;
 use Nette\Reflection\ClassType;
 use Nette\Reflection\Method;
-use Nette\Reflection\Property;
 use Nette\Utils\Strings;
 
 
@@ -58,6 +57,7 @@ trait AutowireComponentFactories
 
 		$this->autowireComponentFactoriesLocator = $dic;
 
+		/** @var Nette\Caching\IStorage $storage */
 		$storage = $dic->hasService('autowired.cacheStorage')
 			? $dic->getService('autowired.cacheStorage')
 			: $dic->getByType('Nette\Caching\IStorage');
@@ -103,17 +103,8 @@ trait AutowireComponentFactories
 	 */
 	private function findByTypeForFactory(string $type)
 	{
-		if (method_exists($this->autowireComponentFactoriesLocator, 'findByType')) {
-			$found = $this->autowireComponentFactoriesLocator->findByType($type);
-
-			return reset($found);
-		}
-
-		$type = ltrim(strtolower($type), '\\');
-
-		return !empty($this->autowireComponentFactoriesLocator->classes[$type])
-			? $this->autowireComponentFactoriesLocator->classes[$type]
-			: FALSE;
+		$found = $this->autowireComponentFactoriesLocator->findByType($type);
+		return reset($found);
 	}
 
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Kdyby (http://www.kdyby.org)
@@ -17,7 +17,7 @@ interface Exception
 	/**
 	 * @return \Reflector|\Nette\Reflection\Property|\Nette\Reflection\Method
 	 */
-	function getReflector();
+	function getReflector(): ?\Reflector;
 
 }
 
@@ -31,13 +31,13 @@ class InvalidStateException extends \RuntimeException implements Exception
 {
 
 	/**
-	 * @var \Reflector
+	 * @var \Reflector|null
 	 */
 	private $reflector;
 
 
 
-	public function __construct($message = "", \Reflector $reflector = NULL, $previous = NULL)
+	public function __construct($message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
@@ -48,7 +48,7 @@ class InvalidStateException extends \RuntimeException implements Exception
 	/**
 	 * @return \Reflector
 	 */
-	public function getReflector()
+	public function getReflector(): ?\Reflector
 	{
 		return $this->reflector;
 	}
@@ -64,13 +64,13 @@ class InvalidArgumentException extends \InvalidArgumentException implements Exce
 {
 
 	/**
-	 * @var \Reflector
+	 * @var \Reflector|null
 	 */
 	private $reflector;
 
 
 
-	public function __construct($message = "", \Reflector $reflector = NULL, $previous = NULL)
+	public function __construct($message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
@@ -81,7 +81,7 @@ class InvalidArgumentException extends \InvalidArgumentException implements Exce
 	/**
 	 * @return \Reflector
 	 */
-	public function getReflector()
+	public function getReflector(): ?\Reflector
 	{
 		return $this->reflector;
 	}
@@ -96,13 +96,13 @@ class UnexpectedValueException extends \UnexpectedValueException implements Exce
 {
 
 	/**
-	 * @var \Reflector
+	 * @var \Reflector|null
 	 */
 	private $reflector;
 
 
 
-	public function __construct($message = "", \Reflector $reflector = NULL, $previous = NULL)
+	public function __construct($message = "", ?\Reflector $reflector = NULL, \Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
@@ -113,7 +113,7 @@ class UnexpectedValueException extends \UnexpectedValueException implements Exce
 	/**
 	 * @return \Reflector
 	 */
-	public function getReflector()
+	public function getReflector(): ?\Reflector
 	{
 		return $this->reflector;
 	}
@@ -125,13 +125,13 @@ class MemberAccessException extends \Nette\MemberAccessException implements Exce
 {
 
 	/**
-	 * @var \Reflector
+	 * @var \Reflector|null
 	 */
 	private $reflector;
 
 
 
-	public function __construct($message = "", \Reflector $reflector = NULL, $previous = NULL)
+	public function __construct($message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
@@ -142,7 +142,7 @@ class MemberAccessException extends \Nette\MemberAccessException implements Exce
 	/**
 	 * @return \Reflector
 	 */
-	public function getReflector()
+	public function getReflector(): ?\Reflector
 	{
 		return $this->reflector;
 	}
@@ -155,13 +155,13 @@ class MissingServiceException extends \Nette\DI\MissingServiceException implemen
 {
 
 	/**
-	 * @var \Reflector
+	 * @var \Reflector|null
 	 */
 	private $reflector;
 
 
 
-	public function __construct($message = "", \Reflector $reflector = NULL, $previous = NULL)
+	public function __construct($message = "", ?\Reflector $reflector = NULL, \Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
@@ -172,7 +172,7 @@ class MissingServiceException extends \Nette\DI\MissingServiceException implemen
 	/**
 	 * @return \Reflector
 	 */
-	public function getReflector()
+	public function getReflector(): ?\Reflector
 	{
 		return $this->reflector;
 	}

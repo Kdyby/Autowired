@@ -5,13 +5,8 @@ namespace KdybyTests\Autowired;
 use Kdyby;
 use Nette;
 
-class DatagridComponent extends Nette\Application\UI\PresenterComponent
+class DatagridComponent extends Nette\Application\UI\Component
 {
-
-	public function __construct()
-	{
-		parent::__construct();
-	}
 
 }
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Kdyby (http://www.kdyby.org)
@@ -10,15 +10,14 @@
 
 namespace KdybyTests\Autowired;
 
-use Nette\Configurator;
-use Nette\DI\Container;
-use Nette\DI\ContainerBuilder;
 use Tester;
 
 if (@!include __DIR__ . '/../../vendor/autoload.php') {
 	echo 'Install Nette Tester using `composer update --dev`';
 	exit(1);
 }
+
+require_once __DIR__ . '/ContainerTestCase.php';
 
 // configure environment
 Tester\Environment::setup();
@@ -35,30 +34,6 @@ $_SERVER = array_intersect_key($_SERVER, array_flip([
 $_SERVER['REQUEST_TIME'] = 1234567890;
 $_ENV = $_GET = $_POST = [];
 
-function id($val) {
-	return $val;
-}
-
 function run(Tester\TestCase $testCase) {
 	$testCase->run();
-}
-
-
-
-abstract class ContainerTestCase extends \Tester\TestCase
-{
-
-	protected function compileContainer(?string $configFile = null): Container
-	{
-		$configurator = new Configurator;
-		$configurator->setTempDirectory(TEMP_DIR);
-		$configurator->addParameters(array('container' => array('class' => 'SystemContainer_'.md5(TEMP_DIR))));
-
-		if ($configFile !== null) {
-			$configurator->addConfig(__DIR__ . '/config/' . $configFile . '.neon');
-		}
-
-		return $configurator->createContainer();
-	}
-
 }
