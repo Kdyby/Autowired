@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Kdyby (http://www.kdyby.org)
@@ -35,10 +35,7 @@ trait AutowireComponentFactories
 
 
 
-	/**
-	 * @return Nette\DI\Container
-	 */
-	protected function getComponentFactoriesLocator()
+	protected function getComponentFactoriesLocator(): Nette\DI\Container
 	{
 		if ($this->autowireComponentFactoriesLocator === NULL) {
 			$this->injectComponentFactories($this->getPresenter()->getContext());
@@ -50,11 +47,10 @@ trait AutowireComponentFactories
 
 
 	/**
-	 * @param \Nette\DI\Container $dic
 	 * @throws MemberAccessException
 	 * @internal
 	 */
-	public function injectComponentFactories(Nette\DI\Container $dic)
+	public function injectComponentFactories(Nette\DI\Container $dic): void
 	{
 		if (!$this instanceof Nette\Application\UI\PresenterComponent && !$this instanceof Nette\Application\UI\Component) {
 			throw new MemberAccessException('Trait ' . __TRAIT__ . ' can be used only in descendants of PresenterComponent.');
@@ -103,10 +99,9 @@ trait AutowireComponentFactories
 
 
 	/**
-	 * @param string $type
 	 * @return string|bool
 	 */
-	private function findByTypeForFactory($type)
+	private function findByTypeForFactory(string $type)
 	{
 		if (method_exists($this->autowireComponentFactoriesLocator, 'findByType')) {
 			$found = $this->autowireComponentFactoriesLocator->findByType($type);
@@ -124,8 +119,6 @@ trait AutowireComponentFactories
 
 
 	/**
-	 * @param $name
-	 * @return Nette\ComponentModel\IComponent
 	 * @throws Nette\UnexpectedValueException
 	 */
 	protected function createComponent(string $name): ?IComponent

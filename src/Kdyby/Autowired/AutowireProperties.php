@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Kdyby (http://www.kdyby.org)
@@ -38,7 +38,6 @@ trait AutowireProperties
 
 
 	/**
-	 * @param \Nette\DI\Container $dic
 	 * @throws MemberAccessException
 	 * @throws MissingServiceException
 	 * @throws InvalidStateException
@@ -93,7 +92,7 @@ trait AutowireProperties
 
 
 
-	private function validateProperty(Property $property, array $ignore)
+	private function validateProperty(Property $property, array $ignore): bool
 	{
 		if (in_array($property->getDeclaringClass()->getName(), $ignore, TRUE)) {
 			return FALSE;
@@ -121,10 +120,9 @@ trait AutowireProperties
 
 
 	/**
-	 * @param string $type
 	 * @return string|bool
 	 */
-	private function findByTypeForProperty($type)
+	private function findByTypeForProperty(string $type)
 	{
 		if (method_exists($this->autowirePropertiesLocator, 'findByType')) {
 			$found = $this->autowirePropertiesLocator->findByType($type);
@@ -142,11 +140,10 @@ trait AutowireProperties
 
 
 	/**
-	 * @param Property $prop
 	 * @throws MissingServiceException
 	 * @throws UnexpectedValueException
 	 */
-	private function resolveProperty(Property $prop)
+	private function resolveProperty(Property $prop): void
 	{
 		$type = $this->resolveAnnotationClass($prop, $prop->getAnnotation('var'), 'var');
 		$metadata = [
@@ -182,7 +179,7 @@ trait AutowireProperties
 
 
 
-	private function resolveAnnotationClass(\Reflector $prop, $annotationValue, $annotationName)
+	private function resolveAnnotationClass(\Reflector $prop, string $annotationValue, string $annotationName): string
 	{
 		/** @var Property|Method $prop */
 
@@ -217,20 +214,23 @@ trait AutowireProperties
 
 
 	/**
-	 * @param string $name
 	 * @param mixed $value
 	 * @throws MemberAccessException
 	 * @return mixed
 	 */
-	public function __set($name, $value)
+	public function __set(string $name, $value)
 	{
 		if (!isset($this->autowireProperties[$name])) {
 			return parent::__set($name, $value);
 
-		} elseif ($this->autowireProperties[$name]['value']) {
+		}
+
+		if ($this->autowireProperties[$name]['value']) {
 			throw new MemberAccessException("Property \$$name has already been set.");
 
-		} elseif (!$value instanceof $this->autowireProperties[$name]['type']) {
+		}
+
+		if (!$value instanceof $this->autowireProperties[$name]['type']) {
 			throw new MemberAccessException("Property \$$name must be an instance of " . $this->autowireProperties[$name]['type'] . ".");
 		}
 
@@ -240,11 +240,10 @@ trait AutowireProperties
 
 
 	/**
-	 * @param $name
 	 * @throws MemberAccessException
 	 * @return mixed
 	 */
-	public function &__get($name)
+	public function &__get(string $name)
 	{
 		if (!isset($this->autowireProperties[$name])) {
 			return parent::__get($name);

@@ -18,8 +18,8 @@
 	},
 	"require": {
 		"php": "^7.1",
-		"nette/di": "^3.0-RC2",
-		"nette/application": "3.0-RC3",
+		"nette/di": "^3.0",
+		"nette/application": "3.0",
 		"nette/reflection": "^2.4",
 		"tracy/tracy": "^2.6"
 	},
