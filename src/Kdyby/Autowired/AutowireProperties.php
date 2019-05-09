@@ -191,7 +191,8 @@ trait AutowireProperties
 				throw new MissingClassException("Class \"$type\" was not found, please check the typehint on {$prop} in annotation @{$annotationName}.", $prop);
 			}
 
-			$expandedType = Nette\Reflection\AnnotationsParser::expandClassName($annotationValue,
+			$expandedType = Nette\Reflection\AnnotationsParser::expandClassName(
+				$annotationValue,
 				$prop instanceof \ReflectionProperty
 					? Nette\Reflection\Helpers::getDeclaringClass($prop)
 					: $prop->getDeclaringClass()
