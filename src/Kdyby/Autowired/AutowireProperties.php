@@ -137,7 +137,9 @@ trait AutowireProperties
 	 */
 	private function resolveProperty(Property $prop): void
 	{
-		$type = $this->resolveAnnotationClass($prop, $prop->getAnnotation('var'), 'var');
+		/** @var Nette\Reflection\Annotation $propAnnotation */
+		$propAnnotation = $prop->getAnnotation('var');
+		$type = $this->resolveAnnotationClass($prop, (string) $propAnnotation, 'var');
 		$metadata = [
 			'value' => NULL,
 			'type' => $type,
@@ -145,7 +147,7 @@ trait AutowireProperties
 
 		$args = (array) $prop->getAnnotation('autowire');
 
-		if (!empty($args['factory'])) {
+		if (array_key_exists('factory', $args)) {
 			$factoryType = $this->resolveAnnotationClass($prop, $args['factory'], 'autowire');
 
 			if (!$this->findByTypeForProperty($factoryType)) {
@@ -153,7 +155,9 @@ trait AutowireProperties
 			}
 
 			$factoryMethod = Method::from($factoryType, 'create');
-			$createsType = $this->resolveAnnotationClass($factoryMethod, $factoryMethod->getAnnotation('return'), 'return');
+			/** @var Nette\Reflection\Annotation $returnAnnotation */
+			$returnAnnotation = $factoryMethod->getAnnotation('return');
+			$createsType = $this->resolveAnnotationClass($factoryMethod, (string) $returnAnnotation, 'return');
 			if ($createsType !== $type) {
 				throw new UnexpectedValueException("The property $prop requires $type, but factory of type $factoryType, that creates $createsType was provided.", $prop);
 			}
@@ -243,9 +247,9 @@ trait AutowireProperties
 			return parent::__get($name);
 		}
 
-		if (empty($this->autowireProperties[$name]['value'])) {
-			if (!empty($this->autowireProperties[$name]['factory'])) {
-				$this->autowireProperties[$name]['value'] = call_user_func_array([$this->autowirePropertiesLocator->getService($this->autowireProperties[$name]['factory']), 'create'], $this->autowireProperties[$name]['arguments']);
+		if ($this->autowireProperties[$name]['value'] == null) { // intentionally ==
+			if (array_key_exists('factory', $this->autowireProperties[$name])) {
+				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getService($this->autowireProperties[$name]['factory'])->create(...$this->autowireProperties[$name]['arguments']);
 
 			} else {
 				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getByType($this->autowireProperties[$name]['type']);

@@ -126,12 +126,13 @@ trait AutowireComponentFactories
 			$parameters = $methodReflection->getParameters();
 
 			$args = [];
-			if (($first = reset($parameters)) && !$first->className) {
+			$first = reset($parameters);
+			if ($first !== false && !$first->getClassName()) {
 				$args[] = $name;
 			}
 
 			$args = Nette\DI\Resolver::autowireArguments($methodReflection, $args, $sl);
-			$component = call_user_func_array([$this, $method], $args);
+			$component = $this->{$method}(...$args);
 			if (!$component instanceof Nette\ComponentModel\IComponent && !isset($this->components[$name])) {
 				throw new Nette\UnexpectedValueException("Method $methodReflection did not return or create the desired component.");
 			}

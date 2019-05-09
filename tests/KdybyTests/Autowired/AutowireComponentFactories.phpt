@@ -147,5 +147,4 @@ interface ISillyComponentFactory
 	function create();
 }
 
-
-run(new AutowireComponentFactoriesTest());
+(new AutowireComponentFactoriesTest())->run();

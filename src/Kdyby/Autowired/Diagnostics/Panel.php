@@ -79,7 +79,7 @@ class Panel
 
 		$context = 'file';
 		$contextBrackets = 0;
-		foreach (token_get_all(file_get_contents($class->getFileName())) as $token) {
+		foreach (token_get_all((string) file_get_contents((string) $class->getFileName())) as $token) {
 			if ($token === '{') {
 				$contextBrackets += 1;
 

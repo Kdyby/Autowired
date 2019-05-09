@@ -324,7 +324,7 @@ interface ISampleServiceFactory
 }
 
 
-run(new AutowirePropertiesTest());
+(new AutowirePropertiesTest())->run();
 
 namespace KdybyTests\Autowired\UseExpansion;
 

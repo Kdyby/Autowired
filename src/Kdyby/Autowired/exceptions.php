@@ -15,7 +15,7 @@ interface Exception
 {
 
 	/**
-	 * @return \Reflector|\Nette\Reflection\Property|\Nette\Reflection\Method
+	 * @return \Reflector|\Nette\Reflection\Property|\Nette\Reflection\Method|null
 	 */
 	function getReflector(): ?\Reflector;
 
@@ -45,9 +45,6 @@ class InvalidStateException extends \RuntimeException implements Exception
 
 
 
-	/**
-	 * @return \Reflector
-	 */
 	public function getReflector(): ?\Reflector
 	{
 		return $this->reflector;
@@ -78,9 +75,6 @@ class InvalidArgumentException extends \InvalidArgumentException implements Exce
 
 
 
-	/**
-	 * @return \Reflector
-	 */
 	public function getReflector(): ?\Reflector
 	{
 		return $this->reflector;
@@ -102,7 +96,7 @@ class UnexpectedValueException extends \UnexpectedValueException implements Exce
 
 
 
-	public function __construct($message = "", ?\Reflector $reflector = NULL, \Throwable $previous = NULL)
+	public function __construct($message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
@@ -110,9 +104,6 @@ class UnexpectedValueException extends \UnexpectedValueException implements Exce
 
 
 
-	/**
-	 * @return \Reflector
-	 */
 	public function getReflector(): ?\Reflector
 	{
 		return $this->reflector;
@@ -139,9 +130,6 @@ class MemberAccessException extends \Nette\MemberAccessException implements Exce
 
 
 
-	/**
-	 * @return \Reflector
-	 */
 	public function getReflector(): ?\Reflector
 	{
 		return $this->reflector;
@@ -161,7 +149,7 @@ class MissingServiceException extends \Nette\DI\MissingServiceException implemen
 
 
 
-	public function __construct($message = "", ?\Reflector $reflector = NULL, \Throwable $previous = NULL)
+	public function __construct($message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
@@ -169,9 +157,6 @@ class MissingServiceException extends \Nette\DI\MissingServiceException implemen
 
 
 
-	/**
-	 * @return \Reflector
-	 */
 	public function getReflector(): ?\Reflector
 	{
 		return $this->reflector;

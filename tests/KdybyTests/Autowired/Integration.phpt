@@ -56,4 +56,4 @@ class IntegrationTest extends ContainerTestCase
 
 }
 
-run(new IntegrationTest());
+(new IntegrationTest())->run();
