@@ -11,10 +11,8 @@
 namespace KdybyTests\Autowired;
 
 use Kdyby;
+use KdybyTests\ContainerTestCase;
 use Nette;
-use Nette\DI;
-use Nette\PhpGenerator\PhpLiteral;
-use Tester;
 use Tester\Assert;
 
 require_once __DIR__ . '/../bootstrap.php';
@@ -36,14 +34,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 
 	protected function setUp()
 	{
-		$builder = new DI\ContainerBuilder;
-		$builder->addDefinition('sampleFactory')
-			->setImplement('KdybyTests\Autowired\ISillyComponentFactory');
-
-		$builder->addDefinition('cacheStorage')
-			->setClass('Nette\Caching\Storages\MemoryStorage');
-
-		$this->container = $this->compileContainer($builder);
+		$this->container = $this->compileContainer('factories');
 	}
 
 
@@ -136,7 +127,6 @@ class SillyComponent extends Nette\Application\UI\PresenterComponent
 
 	public function __construct()
 	{
-		parent::__construct();
 	}
 
 }
@@ -157,5 +147,4 @@ interface ISillyComponentFactory
 	function create();
 }
 
-
-run(new AutowireComponentFactoriesTest());
+(new AutowireComponentFactoriesTest())->run();

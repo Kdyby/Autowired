@@ -1,0 +1,7 @@
+services:
+    datagridFactory:
+        implement: KdybyTests\Autowired\IDatagridFactory
+
+    lorem: KdybyTests\Autowired\LoremService
+
+    cacheStorage: Nette\Caching\Storages\MemoryStorage

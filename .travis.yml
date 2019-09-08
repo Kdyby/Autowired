@@ -7,36 +7,19 @@ cache:
         - $HOME/.composer/cache
 
 php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
   - 7.1
   - 7.2
-
-env:
-  matrix:
-    - NETTE=nette-2.4-dev
-    - NETTE=nette-2.4
+  - 7.3
 
 matrix:
   include:
-    - php: 5.6
-      env: NETTE=nette-2.4 COMPOSER_EXTRA_ARGS="--prefer-lowest --prefer-stable"
-    - php: 7.0
-      env: NETTE=nette-2.4 COVERAGE="--coverage ./coverage.xml --coverage-src ./src" TESTER_RUNTIME="phpdbg"
-  exclude:
-    - php: 5.4
-      env: NETTE=nette-2.4-dev
-    - php: 5.4
-      env: NETTE=nette-2.4
-    - php: 5.5
-      env: NETTE=nette-2.4-dev
-    - php: 5.5
-      env: NETTE=nette-2.4
+      - php: 7.1
+        env: COMPOSER_EXTRA_ARGS="--prefer-lowest --prefer-stable"
+      - php: 7.3
+        env: COVERAGE="--coverage ./coverage.xml --coverage-src ./src" TESTER_RUNTIME="phpdbg"
   allow_failures:
-    - php: 7.0
-      env: NETTE=nette-2.4 COVERAGE="--coverage ./coverage.xml --coverage-src ./src" TESTER_RUNTIME="phpdbg"
+    - php: 7.3
+      env: NETTE=nette-2.5 COVERAGE="--coverage ./coverage.xml --coverage-src ./src" TESTER_RUNTIME="phpdbg"
 
 before_install:
   - travis_retry composer self-update
@@ -51,8 +34,8 @@ install:
 
 script:
   - vendor/bin/tester $COVERAGE -s -p ${TESTER_RUNTIME:-php} -c ./tests/php.ini-unix ./tests/KdybyTests/
+  - php vendor/bin/phpstan analyse --ansi --no-progress
   - php /tmp/php-parallel-lint/parallel-lint.php -e php,phpt --exclude vendor .
-  - php /tmp/code-checker/src/code-checker.php --short-arrays
 
 after_script:
   - if [ "$COVERAGE" != "" ]; then php /tmp/coveralls.phar --verbose --config tests/.coveralls.yml || true; fi

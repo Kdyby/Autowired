@@ -1,0 +1,14 @@
+services:
+    sampleFactory:
+        implement: KdybyTests\Autowired\ISampleServiceFactory
+        parameters:
+            - 'name'
+            secondName: null
+        factory: KdybyTests\Autowired\SampleService(%name%, %secondName%)
+
+    sample: KdybyTests\Autowired\SampleService('shared')
+
+
+    importedService: KdybyTests\Autowired\UseExpansion\ImportedService
+
+    cacheStorage: Nette\Caching\Storages\MemoryStorage

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Kdyby (http://www.kdyby.org)
@@ -11,9 +11,9 @@
 namespace Kdyby\Autowired;
 
 use Nette;
+use Nette\ComponentModel\IComponent;
 use Nette\Reflection\ClassType;
 use Nette\Reflection\Method;
-use Nette\Reflection\Property;
 use Nette\Utils\Strings;
 
 
@@ -34,10 +34,7 @@ trait AutowireComponentFactories
 
 
 
-	/**
-	 * @return Nette\DI\Container
-	 */
-	protected function getComponentFactoriesLocator()
+	protected function getComponentFactoriesLocator(): Nette\DI\Container
 	{
 		if ($this->autowireComponentFactoriesLocator === NULL) {
 			$this->injectComponentFactories($this->getPresenter()->getContext());
@@ -49,11 +46,10 @@ trait AutowireComponentFactories
 
 
 	/**
-	 * @param \Nette\DI\Container $dic
 	 * @throws MemberAccessException
 	 * @internal
 	 */
-	public function injectComponentFactories(Nette\DI\Container $dic)
+	public function injectComponentFactories(Nette\DI\Container $dic): void
 	{
 		if (!$this instanceof Nette\Application\UI\PresenterComponent && !$this instanceof Nette\Application\UI\Component) {
 			throw new MemberAccessException('Trait ' . __TRAIT__ . ' can be used only in descendants of PresenterComponent.');
@@ -61,6 +57,7 @@ trait AutowireComponentFactories
 
 		$this->autowireComponentFactoriesLocator = $dic;
 
+		/** @var Nette\Caching\IStorage $storage */
 		$storage = $dic->hasService('autowired.cacheStorage')
 			? $dic->getService('autowired.cacheStorage')
 			: $dic->getByType('Nette\Caching\IStorage');
@@ -102,32 +99,20 @@ trait AutowireComponentFactories
 
 
 	/**
-	 * @param string $type
 	 * @return string|bool
 	 */
-	private function findByTypeForFactory($type)
+	private function findByTypeForFactory(string $type)
 	{
-		if (method_exists($this->autowireComponentFactoriesLocator, 'findByType')) {
-			$found = $this->autowireComponentFactoriesLocator->findByType($type);
-
-			return reset($found);
-		}
-
-		$type = ltrim(strtolower($type), '\\');
-
-		return !empty($this->autowireComponentFactoriesLocator->classes[$type])
-			? $this->autowireComponentFactoriesLocator->classes[$type]
-			: FALSE;
+		$found = $this->autowireComponentFactoriesLocator->findByType($type);
+		return reset($found);
 	}
 
 
 
 	/**
-	 * @param $name
-	 * @return Nette\ComponentModel\IComponent
 	 * @throws Nette\UnexpectedValueException
 	 */
-	protected function createComponent($name)
+	protected function createComponent(string $name): ?IComponent
 	{
 		$sl = $this->getComponentFactoriesLocator();
 
@@ -136,23 +121,26 @@ trait AutowireComponentFactories
 		if ($ucName !== $name && method_exists($this, $method)) {
 			$methodReflection = new Method($this, $method);
 			if ($methodReflection->getName() !== $method) {
-				return;
+				return null;
 			}
 			$parameters = $methodReflection->getParameters();
 
 			$args = [];
-			if (($first = reset($parameters)) && !$first->className) {
+			$first = reset($parameters);
+			if ($first !== false && !$first->getClassName()) {
 				$args[] = $name;
 			}
 
-			$args = Nette\DI\Helpers::autowireArguments($methodReflection, $args, $sl);
-			$component = call_user_func_array([$this, $method], $args);
+			$args = Nette\DI\Resolver::autowireArguments($methodReflection, $args, $sl);
+			$component = $this->{$method}(...$args);
 			if (!$component instanceof Nette\ComponentModel\IComponent && !isset($this->components[$name])) {
 				throw new Nette\UnexpectedValueException("Method $methodReflection did not return or create the desired component.");
 			}
 
 			return $component;
 		}
+
+		return null;
 	}
 
 }

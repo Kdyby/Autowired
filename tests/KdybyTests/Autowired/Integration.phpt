@@ -11,15 +11,14 @@
 namespace KdybyTests\Autowired;
 
 use Kdyby;
-use Nette;
+use KdybyTests\ContainerTestCase;
 use Nette\DI;
 use Tester;
-use Tester\Assert;
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/mocks/IntegrationPresenter.php';
 require_once __DIR__ . '/mocks/LoremService.php';
-require_once __DIR__ . '/mocks/DatagridComponent' . (class_exists('Nette\Application\UI\Component') ? '24' : '23') . '.php';
+require_once __DIR__ . '/mocks/DatagridComponent.php';
 
 
 
@@ -39,16 +38,16 @@ class IntegrationTest extends ContainerTestCase
 	public function testFunctional()
 	{
 		$builder = new DI\ContainerBuilder;
-		$builder->addDefinition('datagridFactory')
+		$builder->addFactoryDefinition('datagridFactory')
 			->setImplement('KdybyTests\Autowired\IDatagridFactory');
 
 		$builder->addDefinition('lorem')
-			->setClass('KdybyTests\Autowired\LoremService');
+			->setType('KdybyTests\Autowired\LoremService');
 
 		$builder->addDefinition('cacheStorage')
-			->setClass('Nette\Caching\Storages\MemoryStorage');
+			->setType('Nette\Caching\Storages\MemoryStorage');
 
-		$container = $this->compileContainer($builder);
+		$container = $this->compileContainer('integration');
 
 		$presenter = new IntegrationPresenter();
 		$container->callMethod([$presenter, 'injectProperties']);
@@ -57,4 +56,4 @@ class IntegrationTest extends ContainerTestCase
 
 }
 
-run(new IntegrationTest());
+(new IntegrationTest())->run();

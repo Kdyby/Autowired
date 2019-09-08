@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * This file is part of the Kdyby (http://www.kdyby.org)
@@ -22,23 +22,18 @@ use Nette\PhpGenerator as Code;
 class AutowiredExtension extends Nette\DI\CompilerExtension
 {
 
-	public $defaults = [
-		'cacheStorage' => '@Nette\Caching\IStorage',
-	];
-
-
 	public function loadConfiguration()
 	{
 		$builder = $this->getContainerBuilder();
-		$config = $this->getConfig($this->defaults);
+		$config = (array) $this->getConfig();
 
 		$storage = $builder->addDefinition($this->prefix('cacheStorage'))
-			->setClass('Nette\Caching\IStorage')
+			->setType('Nette\Caching\IStorage')
 			->setAutowired(FALSE);
 
-		$storage->factory = is_string($config['cacheStorage'])
-			? new Nette\DI\Statement($config['cacheStorage'])
-			: $config['cacheStorage'];
+		$storage->setFactory(is_string($config['cacheStorage'])
+			? new Nette\DI\Definitions\Statement($config['cacheStorage'])
+			: $config['cacheStorage']);
 	}
 
 
@@ -49,6 +44,14 @@ class AutowiredExtension extends Nette\DI\CompilerExtension
 		$initialize->addBody('Kdyby\Autowired\Diagnostics\Panel::registerBluescreen();');
 	}
 
+
+
+	public function getConfigSchema(): Nette\Schema\Schema
+	{
+		return Nette\Schema\Expect::structure([
+			'cacheStorage' => Nette\Schema\Expect::string('@Nette\Caching\IStorage'),
+		]);
+	}
 
 
 	/**

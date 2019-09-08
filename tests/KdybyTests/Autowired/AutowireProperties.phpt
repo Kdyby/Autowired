@@ -11,10 +11,10 @@
 namespace KdybyTests\Autowired;
 
 use Kdyby;
+use KdybyTests\ContainerTestCase;
 use Nette;
 use Nette\DI;
 use Nette\PhpGenerator\PhpLiteral;
-use Tester;
 use Tester\Assert;
 use KdybyTests\Autowired\UseExpansion\ImportedService as AliasedService;
 
@@ -38,22 +38,24 @@ class AutowirePropertiesTest extends ContainerTestCase
 	protected function setUp()
 	{
 		$builder = new DI\ContainerBuilder;
-		$builder->addDefinition('sampleFactory')
-			->setFactory('KdybyTests\Autowired\SampleService', [new PhpLiteral('$name'), new PhpLiteral('$secondName')])
-			->setParameters(['name', 'secondName' => NULL])
+		$builder->addFactoryDefinition('sampleFactory')
 			->setImplement('KdybyTests\Autowired\ISampleServiceFactory')
-			->setAutowired(TRUE);
+			->setParameters(['name', 'secondName' => NULL])
+			->setAutowired(TRUE)
+			->getResultDefinition()
+			->setFactory('KdybyTests\Autowired\SampleService', [new PhpLiteral('$name'), new PhpLiteral('$secondName')]);
 
 		$builder->addDefinition('sample')
-			->setClass('KdybyTests\Autowired\SampleService', ['shared']);
+			->setType('KdybyTests\Autowired\SampleService')
+			->setArguments(['shared']);
 
 		$builder->addDefinition('importedService')
-			->setClass('KdybyTests\Autowired\UseExpansion\ImportedService');
+			->setType('KdybyTests\Autowired\UseExpansion\ImportedService');
 
 		$builder->addDefinition('cacheStorage')
-			->setClass('Nette\Caching\Storages\MemoryStorage');
+			->setType('Nette\Caching\Storages\MemoryStorage');
 
-		$this->container = $this->compileContainer($builder);
+		$this->container = $this->compileContainer('properties');
 	}
 
 
@@ -322,7 +324,7 @@ interface ISampleServiceFactory
 }
 
 
-run(new AutowirePropertiesTest());
+(new AutowirePropertiesTest())->run();
 
 namespace KdybyTests\Autowired\UseExpansion;
 

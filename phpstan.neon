@@ -1,0 +1,20 @@
+parameters:
+	bootstrap: %currentWorkingDirectory%/phpstan.bootstrap.php
+	level: 7
+	paths:
+		- src
+		- tests/KdybyTests
+	ignoreErrors:
+		# Annotation class with SmartObject has public properties set dynamically.
+		# Casting it to array propagates public properties to that array.
+		- '#Call to function array_key_exists\(\) with ([^\s])+ and array\(\) will always evaluate to false#'
+		# $this in Trait is resolved as NEVER
+		- '#Instanceof between \*NEVER\* and Nette\\Application\\UI\\Component will always evaluate to false#'
+		# Wild callable constructions
+		- '#Tracy\\BlueScreen::addPanel\(\) expects callable\(\): mixed, array#'
+		# Yes, you can. It's actually Nette\\Reflection\\Annotation
+#		- '#Cannot cast Nette\\Reflection\\IAnnotation to string#'
+
+includes:
+	- vendor/phpstan/phpstan-nette/extension.neon
+	- vendor/phpstan/phpstan-nette/rules.neon
