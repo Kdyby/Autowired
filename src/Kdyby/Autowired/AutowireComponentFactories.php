@@ -130,8 +130,9 @@ trait AutowireComponentFactories
 			if ($first !== false && !$first->getClassName()) {
 				$args[] = $name;
 			}
-
-			$args = Nette\DI\Resolver::autowireArguments($methodReflection, $args, $sl);
+			
+			$resolver = [$sl, 'findAutowired'];
+			$args = Nette\DI\Resolver::autowireArguments($methodReflection, $args, $resolver);
 			$component = $this->{$method}(...$args);
 			if (!$component instanceof Nette\ComponentModel\IComponent && !isset($this->components[$name])) {
 				throw new Nette\UnexpectedValueException("Method $methodReflection did not return or create the desired component.");
