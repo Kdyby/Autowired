@@ -115,7 +115,7 @@ trait AutowireComponentFactories
 	protected function createComponent(string $name): ?IComponent
 	{
 		$getter = function (string $type) {
-		    return $this->getComponentFactoriesLocator()->getByType($type);
+			return $this->getComponentFactoriesLocator()->getByType($type);
 		};
 
 		$ucName = ucfirst($name);
