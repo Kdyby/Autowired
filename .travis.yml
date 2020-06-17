@@ -26,14 +26,14 @@ before_install:
 
 install:
   - travis_retry composer update --no-interaction --prefer-dist $COMPOSER_EXTRA_ARGS
-  - travis_retry composer create-project --no-interaction jakub-onderka/php-parallel-lint /tmp/php-parallel-lint
+  - travis_retry composer create-project --no-interaction php-parallel-lint/php-parallel-lint /tmp/php-parallel-lint
   - travis_retry composer create-project --no-interaction kdyby/code-checker:dev-kdyby /tmp/code-checker
   - travis_retry wget -O /tmp/coveralls.phar https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar
 
 script:
   - vendor/bin/tester $COVERAGE -s -p ${TESTER_RUNTIME:-php} -c ./tests/php.ini-unix ./tests/KdybyTests/
   - php vendor/bin/phpstan analyse --ansi --no-progress
-  - php /tmp/php-parallel-lint/parallel-lint.php -e php,phpt --exclude vendor --exclude tests/KdybyTests/Autowired/mocks/Php74PropertyTypesPresenter.php .
+  - php /tmp/php-parallel-lint/parallel-lint -e php,phpt --exclude vendor --exclude tests/KdybyTests/Autowired/mocks/Php74PropertyTypesPresenter.php .
 
 after_script:
   - if [ "$COVERAGE" != "" ]; then php /tmp/coveralls.phar --verbose --config tests/.coveralls.yml || true; fi
