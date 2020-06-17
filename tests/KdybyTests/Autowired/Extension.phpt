@@ -30,6 +30,7 @@ class ExtensionTest extends Tester\TestCase
 	{
 		$config = new Nette\Configurator();
 		$config->setTempDirectory(TEMP_DIR);
+		$config->addConfig(__DIR__ . '/../config/application.neon');
 		Kdyby\Autowired\DI\AutowiredExtension::register($config);
 		$config->createContainer(); // init panel
 
