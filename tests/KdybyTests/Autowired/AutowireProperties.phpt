@@ -37,24 +37,6 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 	protected function setUp()
 	{
-		$builder = new DI\ContainerBuilder;
-		$builder->addFactoryDefinition('sampleFactory')
-			->setImplement('KdybyTests\Autowired\ISampleServiceFactory')
-			->setParameters(['name', 'secondName' => NULL])
-			->setAutowired(TRUE)
-			->getResultDefinition()
-			->setFactory('KdybyTests\Autowired\SampleService', [new PhpLiteral('$name'), new PhpLiteral('$secondName')]);
-
-		$builder->addDefinition('sample')
-			->setType('KdybyTests\Autowired\SampleService')
-			->setArguments(['shared']);
-
-		$builder->addDefinition('importedService')
-			->setType('KdybyTests\Autowired\UseExpansion\ImportedService');
-
-		$builder->addDefinition('cacheStorage')
-			->setType('Nette\Caching\Storages\MemoryStorage');
-
 		$this->container = $this->compileContainer('properties');
 	}
 
