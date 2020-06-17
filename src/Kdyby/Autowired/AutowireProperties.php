@@ -153,9 +153,7 @@ trait AutowireProperties
 			}
 
 			$factoryMethod = Method::from($factoryType, 'create');
-			/** @var Nette\Reflection\Annotation $returnAnnotation */
-			$returnAnnotation = $factoryMethod->getAnnotation('return');
-			$createsType = $this->resolveAnnotationClass($factoryMethod, (string) $returnAnnotation, 'return');
+			$createsType = $this->resolveReturnType($factoryMethod);
 			if ($createsType !== $type) {
 				throw new UnexpectedValueException("The property $prop requires $type, but factory of type $factoryType, that creates $createsType was provided.", $prop);
 			}
@@ -188,6 +186,22 @@ trait AutowireProperties
 		/** @var Nette\Reflection\Annotation $propAnnotation */
 		$propAnnotation = $prop->getAnnotation('var');
 		return $this->resolveAnnotationClass($prop, (string) $propAnnotation, 'var');
+	}
+
+
+	private function resolveReturnType(Method $method): string
+	{
+		if ($method->hasReturnType()) {
+			$type = $method->getReturnType()->getName();
+			if (!class_exists($type) && !interface_exists($type)) {
+				throw new MissingClassException("Class \"{$type}\" not found, please check the return type on {$method}.", $method);
+			}
+			return $type;
+		}
+
+		/** @var Nette\Reflection\Annotation $returnAnnotation */
+		$returnAnnotation = $method->getAnnotation('return');
+		return $this->resolveAnnotationClass($method, (string) $returnAnnotation, 'return');
 	}
 
 

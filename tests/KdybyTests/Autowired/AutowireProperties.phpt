@@ -50,6 +50,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 		Assert::null($presenter->service);
 		Assert::null($presenter->factoryResult);
 		Assert::null($presenter->secondFactoryResult);
+		Assert::null($presenter->typedFactoryResult);
 
 		$this->container->callMethod([$presenter, 'injectProperties']);
 
@@ -61,6 +62,9 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 		Assert::true($presenter->secondFactoryResult instanceof SampleService);
 		Assert::same(['string argument', 'and another'], $presenter->secondFactoryResult->args);
+
+		Assert::true($presenter->typedFactoryResult instanceof SampleService);
+		Assert::same(['foo'], $presenter->typedFactoryResult->args);
 	}
 
 
@@ -194,6 +198,12 @@ class DummyPresenter extends Nette\Application\UI\Presenter
 	 */
 	public $secondFactoryResult;
 
+	/**
+	 * @var SampleService
+	 * @autowire(factory=\KdybyTests\Autowired\ITypedSampleServiceFactory)
+	 */
+	public $typedFactoryResult;
+
 }
 
 
@@ -319,6 +329,13 @@ interface ISampleServiceFactory
 {
 	/** @return SampleService */
 	function create($name, $secondName = NULL);
+}
+
+
+
+interface ITypedSampleServiceFactory
+{
+	function create(): SampleService;
 }
 
 
