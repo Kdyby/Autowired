@@ -6,6 +6,10 @@ services:
             secondName: null
         factory: KdybyTests\Autowired\SampleService(%name%, %secondName%)
 
+    typedSampleFactory:
+        implement: KdybyTests\Autowired\ITypedSampleServiceFactory
+        factory: KdybyTests\Autowired\SampleService('foo')
+
     sample: KdybyTests\Autowired\SampleService('shared')
 
 
