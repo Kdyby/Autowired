@@ -137,9 +137,7 @@ trait AutowireProperties
 	 */
 	private function resolveProperty(Property $prop): void
 	{
-		/** @var Nette\Reflection\Annotation $propAnnotation */
-		$propAnnotation = $prop->getAnnotation('var');
-		$type = $this->resolveAnnotationClass($prop, (string) $propAnnotation, 'var');
+		$type = $this->resolvePropertyType($prop);
 		$metadata = [
 			'value' => NULL,
 			'type' => $type,
@@ -173,6 +171,23 @@ trait AutowireProperties
 		// unset property to pass control to __set() and __get()
 		unset($this->{$prop->getName()});
 		$this->autowireProperties[$prop->getName()] = $metadata;
+	}
+
+
+
+	private function resolvePropertyType(Property $prop): string
+	{
+		if (PHP_VERSION_ID >= 70400 && $prop->hasType()) {
+			$type = $prop->getType()->getName();
+			if (!class_exists($type) && !interface_exists($type)) {
+				throw new MissingClassException("Class \"{$type}\" not found, please check the typehint on {$prop}.", $prop);
+			}
+			return $type;
+		}
+
+		/** @var Nette\Reflection\Annotation $propAnnotation */
+		$propAnnotation = $prop->getAnnotation('var');
+		return $this->resolveAnnotationClass($prop, (string) $propAnnotation, 'var');
 	}
 
 

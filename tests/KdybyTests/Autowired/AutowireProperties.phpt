@@ -17,6 +17,8 @@ use Nette\DI;
 use Nette\PhpGenerator\PhpLiteral;
 use Tester\Assert;
 use KdybyTests\Autowired\UseExpansion\ImportedService as AliasedService;
+use Tester\Environment;
+
 
 require_once __DIR__ . '/../bootstrap.php';
 
@@ -149,6 +151,20 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 		$this->container->callMethod([$presenter, 'injectProperties']);
 		Assert::true($presenter->service instanceof SampleService);
+	}
+
+
+	public function testTypedProperty(): void
+	{
+		if (PHP_VERSION_ID < 70400) {
+			Environment::skip('Typed properties only in PHP >= 7.4');
+		}
+
+		require_once __DIR__ . '/mocks/Php74PropertyTypesPresenter.php';
+		$presenter = new Php74PropertyTypesPresenter();
+
+		$this->container->callMethod([$presenter, 'injectProperties']);
+		Assert::type(SampleService::class, $presenter->service);
 	}
 
 }
