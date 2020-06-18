@@ -57,7 +57,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 		Assert::exception(function () use ($container) {
 			$presenter = new WithMissingServicePresenter_wcf();
 			$container->callMethod([$presenter, 'injectComponentFactories']);
-		}, 'Kdyby\Autowired\MissingServiceException', 'No service of type SampleMissingService12345 found. Make sure the type hint in KdybyTests\Autowired\WithMissingServicePresenter_wcf::createComponentSilly() is written correctly and service of this type is registered.');
+		}, 'Kdyby\Autowired\MissingServiceException', 'No service of type KdybyTests\Autowired\SampleMissingService12345 found. Make sure the type hint in KdybyTests\Autowired\WithMissingServicePresenter_wcf::createComponentSilly() is written correctly and service of this type is registered.');
 	}
 
 
@@ -114,7 +114,7 @@ class WithMissingServicePresenter_wcf extends Nette\Application\UI\Presenter
 
 
 
-	protected function createComponentSilly(\SampleMissingService12345 $factory)
+	protected function createComponentSilly(SampleMissingService12345 $factory)
 	{
 
 	}
@@ -146,5 +146,13 @@ interface ISillyComponentFactory
 	/** @return SillyComponent */
 	function create();
 }
+
+
+
+class SampleMissingService12345
+{
+
+}
+
 
 (new AutowireComponentFactoriesTest())->run();
