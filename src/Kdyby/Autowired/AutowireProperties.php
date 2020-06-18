@@ -15,6 +15,7 @@ use Nette\Reflection\Method;
 use Nette\Reflection\Property;
 use Nette\Reflection\ClassType;
 use Nette\Utils\Callback;
+use Nette\Utils\Reflection;
 use Nette\Utils\Strings;
 
 
@@ -152,7 +153,7 @@ trait AutowireProperties
 				throw new MissingServiceException("Factory of type \"$factoryType\" not found for $prop in annotation @autowire.", $prop);
 			}
 
-			$factoryMethod = Method::from($factoryType, 'create');
+			$factoryMethod = new \ReflectionMethod($factoryType, 'create');
 			$createsType = $this->resolveReturnType($factoryMethod);
 			if ($createsType !== $type) {
 				throw new UnexpectedValueException("The property $prop requires $type, but factory of type $factoryType, that creates $createsType was provided.", $prop);
@@ -189,19 +190,14 @@ trait AutowireProperties
 	}
 
 
-	private function resolveReturnType(Method $method): string
-	{
-		if ($method->hasReturnType()) {
-			$type = $method->getReturnType()->getName();
-			if (!class_exists($type) && !interface_exists($type)) {
-				throw new MissingClassException("Class \"{$type}\" not found, please check the return type on {$method}.", $method);
-			}
-			return $type;
-		}
 
-		/** @var Nette\Reflection\Annotation $returnAnnotation */
-		$returnAnnotation = $method->getAnnotation('return');
-		return $this->resolveAnnotationClass($method, (string) $returnAnnotation, 'return');
+	private function resolveReturnType(\ReflectionMethod $method): string
+	{
+		$type = Nette\DI\Helpers::getReturnType($method);
+		if (!class_exists($type) && !interface_exists($type)) {
+			throw new MissingClassException(sprintf('Class "%s" not found, please check the typehint on %s.', $type, Reflection::toString($method)), $method);
+		}
+		return $type;
 	}
 
 
