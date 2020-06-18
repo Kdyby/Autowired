@@ -12,8 +12,7 @@ namespace Kdyby\Autowired;
 
 use Nette;
 use Nette\ComponentModel\IComponent;
-use Nette\Reflection\ClassType;
-use Nette\Reflection\Method;
+use Nette\Utils\Reflection;
 use Nette\Utils\Strings;
 
 
@@ -68,28 +67,28 @@ trait AutowireComponentFactories
 		}
 
 		$ignore = class_parents('Nette\Application\UI\Presenter') + ['ui' => 'Nette\Application\UI\Presenter'];
-		$rc = new ClassType($this);
+		$rc = new \ReflectionClass($this);
 		foreach ($rc->getMethods() as $method) {
 			if (in_array($method->getDeclaringClass()->getName(), $ignore, TRUE) || !Strings::startsWith($method->getName(), 'createComponent')) {
 				continue;
 			}
 
 			foreach ($method->getParameters() as $parameter) {
-				if (!$class = $parameter->getClassName()) { // has object type hint
+				if ($parameter->getClass() === NULL || !$class = $parameter->getClass()->getName()) { // has object type hint
 					continue;
 				}
 
 				if (!$this->findByTypeForFactory($class) && !$parameter->allowsNull()) {
-					throw new MissingServiceException("No service of type {$class} found. Make sure the type hint in $method is written correctly and service of this type is registered.");
+					throw new MissingServiceException(sprintf('No service of type %s found. Make sure the type hint in %s() is written correctly and service of this type is registered.', $class, Reflection::toString($method)));
 				}
 			}
 		}
 
 		$files = array_map(function ($class) {
-			return ClassType::from($class)->getFileName();
+			return (new \ReflectionClass($class))->getFileName();
 		}, array_diff(array_values(class_parents($presenterClass) + ['me' => $presenterClass]), $ignore));
 
-		$files[] = ClassType::from($this->autowireComponentFactoriesLocator)->getFileName();
+		$files[] = (new \ReflectionClass($this->autowireComponentFactoriesLocator))->getFileName();
 
 		$cache->save($presenterClass, TRUE, [
 			$cache::FILES => $files,
@@ -121,7 +120,7 @@ trait AutowireComponentFactories
 		$ucName = ucfirst($name);
 		$method = 'createComponent' . $ucName;
 		if ($ucName !== $name && method_exists($this, $method)) {
-			$methodReflection = new Method($this, $method);
+			$methodReflection = new \ReflectionMethod($this, $method);
 			if ($methodReflection->getName() !== $method) {
 				return null;
 			}
@@ -129,14 +128,14 @@ trait AutowireComponentFactories
 
 			$args = [];
 			$first = reset($parameters);
-			if ($first !== false && !$first->getClassName()) {
+			if ($first !== false && !($first->getClass() && $first->getClass()->getName())) {
 				$args[] = $name;
 			}
 
 			$args = Nette\DI\Resolver::autowireArguments($methodReflection, $args, $getter);
 			$component = $this->{$method}(...$args);
 			if (!$component instanceof Nette\ComponentModel\IComponent && !isset($this->components[$name])) {
-				throw new Nette\UnexpectedValueException("Method $methodReflection did not return or create the desired component.");
+				throw new Nette\UnexpectedValueException(sprintf('Method %s() did not return or create the desired component.', Reflection::toString($methodReflection)));
 			}
 
 			return $component;
