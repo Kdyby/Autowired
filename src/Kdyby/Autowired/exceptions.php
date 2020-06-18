@@ -15,7 +15,7 @@ interface Exception
 {
 
 	/**
-	 * @return \Reflector|\Nette\Reflection\Property|\Nette\Reflection\Method|null
+	 * @return \Reflector|null
 	 */
 	function getReflector(): ?\Reflector;
 

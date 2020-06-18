@@ -35,7 +35,7 @@ class ExtensionTest extends Tester\TestCase
 		$config->createContainer(); // init panel
 
 		Debugger::$logDirectory = TEMP_DIR;
-		$refl = new Nette\Reflection\Property('\Nette\Application\UI\Presenter', 'onShutdown');
+		$refl = new \ReflectionProperty('\Nette\Application\UI\Presenter', 'onShutdown');
 		$file = Debugger::log(new Kdyby\Autowired\MissingServiceException("Missing service blabla", $refl));
 
 		Assert::match('%A%<div%a% class="panel">%A?%<h2><a%a% class="tracy-toggle">Autowired</a></h2>%A%', file_get_contents($file));
