@@ -77,7 +77,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 			$presenter = new WithMissingServicePresenter_ap();
 			Assert::null($presenter->service);
 			$container->callMethod([$presenter, 'injectProperties']);
-		}, 'Kdyby\Autowired\MissingClassException', 'Class "SampleMissingService12345" was not found, please check the typehint on KdybyTests\Autowired\WithMissingServicePresenter_ap::$service in annotation @var.');
+		}, 'Kdyby\Autowired\MissingClassException', 'Class "KdybyTests\Autowired\SampleMissingService12345" not found, please check the typehint on KdybyTests\Autowired\WithMissingServicePresenter_ap::$service.');
 	}
 
 
@@ -213,7 +213,7 @@ class WithMissingServicePresenter_ap extends Nette\Application\UI\Presenter
 	use Kdyby\Autowired\AutowireProperties;
 
 	/**
-	 * @var \SampleMissingService12345
+	 * @var SampleMissingService12345
 	 * @autowire
 	 */
 	public $service;
@@ -358,5 +358,10 @@ trait TraitSample
 	 * @autowire
 	 */
 	public $service;
+
+}
+
+class SampleMissingService12345
+{
 
 }

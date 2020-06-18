@@ -174,19 +174,20 @@ trait AutowireProperties
 
 
 
-	private function resolvePropertyType(Property $prop): string
+	private function resolvePropertyType(\ReflectionProperty $prop): string
 	{
-		if (PHP_VERSION_ID >= 70400 && $prop->hasType()) {
-			$type = $prop->getType()->getName();
-			if (!class_exists($type) && !interface_exists($type)) {
-				throw new MissingClassException("Class \"{$type}\" not found, please check the typehint on {$prop}.", $prop);
-			}
-			return $type;
+		if ($type = Reflection::getPropertyType($prop)) {
+		} elseif ($type = Nette\DI\Helpers::parseAnnotation($prop, 'var')) {
+			$type = Reflection::expandClassName($type, Reflection::getPropertyDeclaringClass($prop));
+		} else {
+			throw new InvalidStateException(sprintf('Missing property typehint or annotation @var on %s.', Reflection::toString($prop)), $prop);
 		}
 
-		/** @var Nette\Reflection\Annotation $propAnnotation */
-		$propAnnotation = $prop->getAnnotation('var');
-		return $this->resolveAnnotationClass($prop, (string) $propAnnotation, 'var');
+		if (!class_exists($type) && !interface_exists($type)) {
+			throw new MissingClassException(sprintf('Class "%s" not found, please check the typehint on %s.', $type, Reflection::toString($prop)), $prop);
+		}
+
+		return $type;
 	}
 
 
