@@ -95,7 +95,7 @@ trait AutowireProperties
 			return FALSE;
 		}
 
-		foreach (Nette\Reflection\AnnotationsParser::getAll($property) as $name => $value) {
+		foreach (PhpDocParser::parseComment((string) $property->getDocComment()) as $name => $value) {
 			if (!in_array(Strings::lower($name), ['autowire', 'autowired'], TRUE)) {
 				continue;
 			}
@@ -139,7 +139,7 @@ trait AutowireProperties
 			'type' => $type,
 		];
 
-		$annotations = Nette\Reflection\AnnotationsParser::getAll($prop);
+		$annotations = PhpDocParser::parseComment((string) $prop->getDocComment());
 		$args = (array) end($annotations['autowire']);
 
 		if (array_key_exists('factory', $args)) {
