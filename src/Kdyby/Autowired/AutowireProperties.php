@@ -11,10 +11,8 @@
 namespace Kdyby\Autowired;
 
 use Nette;
-use Nette\Reflection\Method;
 use Nette\Reflection\Property;
 use Nette\Reflection\ClassType;
-use Nette\Utils\Callback;
 use Nette\Utils\Reflection;
 use Nette\Utils\Strings;
 
@@ -147,16 +145,16 @@ trait AutowireProperties
 		$args = (array) $prop->getAnnotation('autowire');
 
 		if (array_key_exists('factory', $args)) {
-			$factoryType = $this->resolveAnnotationClass($prop, $args['factory'], 'autowire');
+			$factoryType = $this->resolveFactoryType($prop, $args['factory'], 'autowire');
 
 			if (!$this->findByTypeForProperty($factoryType)) {
-				throw new MissingServiceException("Factory of type \"$factoryType\" not found for $prop in annotation @autowire.", $prop);
+				throw new MissingServiceException(sprintf('Factory of type "%s" not found for %s in annotation @autowire.', $factoryType, Reflection::toString($prop)), $prop);
 			}
 
 			$factoryMethod = new \ReflectionMethod($factoryType, 'create');
 			$createsType = $this->resolveReturnType($factoryMethod);
 			if ($createsType !== $type) {
-				throw new UnexpectedValueException("The property $prop requires $type, but factory of type $factoryType, that creates $createsType was provided.", $prop);
+				throw new UnexpectedValueException(sprintf('The property %s requires %s, but factory of type %s, that creates %s was provided.', Reflection::toString($prop), $type, $factoryType, $createsType), $prop);
 			}
 
 			unset($args['factory']);
@@ -164,7 +162,7 @@ trait AutowireProperties
 			$metadata['factory'] = $this->findByTypeForProperty($factoryType);
 
 		} elseif (!$this->findByTypeForProperty($type)) {
-			throw new MissingServiceException("Service of type \"$type\" not found for $prop in annotation @var.", $prop);
+			throw new MissingServiceException(sprintf('Service of type "%s" not found for %s in annotation @var.', $type, Reflection::toString($prop)), $prop);
 		}
 
 		// unset property to pass control to __set() and __get()
@@ -203,32 +201,27 @@ trait AutowireProperties
 
 
 
-	/**
-	 * @param Property|Method $prop
-	 */
-	private function resolveAnnotationClass(\Reflector $prop, string $annotationValue, string $annotationName): string
+	private function resolveFactoryType(\ReflectionProperty $prop, string $annotationValue, string $annotationName): string
 	{
 		if (!$type = ltrim($annotationValue, '\\')) {
-			throw new InvalidStateException("Missing annotation @{$annotationName} with typehint on {$prop}.", $prop);
+			throw new InvalidStateException(sprintf('Missing annotation @%s with typehint on %s.', $annotationName, Reflection::toString($prop)), $prop);
 		}
 
 		if (!class_exists($type) && !interface_exists($type)) {
 			if (substr(func_get_arg(1), 0, 1) === '\\') {
-				throw new MissingClassException("Class \"$type\" was not found, please check the typehint on {$prop} in annotation @{$annotationName}.", $prop);
+				throw new MissingClassException(sprintf('Class "%s" was not found, please check the typehint on %s in annotation @%s.', $type, Reflection::toString($prop), $annotationName), $prop);
 			}
 
-			$expandedType = Nette\Reflection\AnnotationsParser::expandClassName(
+			$expandedType = Reflection::expandClassName(
 				$annotationValue,
-				$prop instanceof \ReflectionProperty
-					? Nette\Reflection\Helpers::getDeclaringClass($prop)
-					: $prop->getDeclaringClass()
+				Reflection::getPropertyDeclaringClass($prop)
 			);
 
 			if ($expandedType && (class_exists($expandedType) || interface_exists($expandedType))) {
 				$type = $expandedType;
 
 			} elseif(!class_exists($type = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $type) && !interface_exists($type)) {
-				throw new MissingClassException("Neither class \"" . func_get_arg(1) . "\" or \"{$type}\" was found, please check the typehint on {$prop} in annotation @{$annotationName}.", $prop);
+				throw new MissingClassException(sprintf('Neither class "%s" or "%s" was found, please check the typehint on %s in annotation @%s.', func_get_arg(1), $type, Reflection::toString($prop), $annotationName), $prop);
 			}
 		}
 
