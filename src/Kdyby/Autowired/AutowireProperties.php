@@ -11,11 +11,8 @@
 namespace Kdyby\Autowired;
 
 use Nette;
-use Nette\Reflection\Property;
-use Nette\Reflection\ClassType;
 use Nette\Utils\Reflection;
 use Nette\Utils\Strings;
-
 
 
 /**
@@ -56,7 +53,7 @@ trait AutowireProperties
 			: $dic->getByType('Nette\Caching\IStorage');
 		$cache = new Nette\Caching\Cache($storage, 'Kdyby.Autowired.AutowireProperties');
 
-		$containerFileName = ClassType::from($this->autowirePropertiesLocator)->getFileName();
+		$containerFileName = (new \ReflectionClass($this->autowirePropertiesLocator))->getFileName();
 		$cacheKey = [$presenterClass = get_class($this), $containerFileName];
 
 		if (is_array($this->autowireProperties = $cache->load($cacheKey))) {
@@ -70,7 +67,7 @@ trait AutowireProperties
 		$this->autowireProperties = [];
 
 		$ignore = class_parents('Nette\Application\UI\Presenter') + ['ui' => 'Nette\Application\UI\Presenter'];
-		$rc = new ClassType($this);
+		$rc = new \ReflectionClass($this);
 		foreach ($rc->getProperties() as $prop) {
 			if (!$this->validateProperty($prop, $ignore)) {
 				continue;
@@ -80,7 +77,7 @@ trait AutowireProperties
 		}
 
 		$files = array_map(function ($class) {
-			return ClassType::from($class)->getFileName();
+			return (new \ReflectionClass($class))->getFileName();
 		}, array_diff(array_values(class_parents($presenterClass) + ['me' => $presenterClass]), $ignore));
 
 		$files[] = $containerFileName;
@@ -92,23 +89,23 @@ trait AutowireProperties
 
 
 
-	private function validateProperty(Property $property, array $ignore): bool
+	private function validateProperty(\ReflectionProperty $property, array $ignore): bool
 	{
 		if (in_array($property->getDeclaringClass()->getName(), $ignore, TRUE)) {
 			return FALSE;
 		}
 
-		foreach ($property->getAnnotations() as $name => $value) {
+		foreach (Nette\Reflection\AnnotationsParser::getAll($property) as $name => $value) {
 			if (!in_array(Strings::lower($name), ['autowire', 'autowired'], TRUE)) {
 				continue;
 			}
 
 			if (Strings::lower($name) !== $name || $name !== 'autowire') {
-				throw new UnexpectedValueException("Annotation @$name on $property should be fixed to lowercase @autowire.", $property);
+				throw new UnexpectedValueException(sprintf('Annotation @%s on %s should be fixed to lowercase @autowire.', $name, Reflection::toString($property)), $property);
 			}
 
 			if ($property->isPrivate()) {
-				throw new MemberAccessException("Autowired properties must be protected or public. Please fix visibility of $property or remove the @autowire annotation.", $property);
+				throw new MemberAccessException(sprintf('Autowired properties must be protected or public. Please fix visibility of %s or remove the @autowire annotation.', Reflection::toString($property)), $property);
 			}
 
 			return TRUE;
@@ -134,7 +131,7 @@ trait AutowireProperties
 	 * @throws MissingServiceException
 	 * @throws UnexpectedValueException
 	 */
-	private function resolveProperty(Property $prop): void
+	private function resolveProperty(\ReflectionProperty $prop): void
 	{
 		$type = $this->resolvePropertyType($prop);
 		$metadata = [
@@ -142,7 +139,8 @@ trait AutowireProperties
 			'type' => $type,
 		];
 
-		$args = (array) $prop->getAnnotation('autowire');
+		$annotations = Nette\Reflection\AnnotationsParser::getAll($prop);
+		$args = (array) end($annotations['autowire']);
 
 		if (array_key_exists('factory', $args)) {
 			$factoryType = $this->resolveFactoryType($prop, $args['factory'], 'autowire');
@@ -225,7 +223,7 @@ trait AutowireProperties
 			}
 		}
 
-		return ClassType::from($type)->getName();
+		return (new \ReflectionClass($type))->getName();
 	}
 
 
