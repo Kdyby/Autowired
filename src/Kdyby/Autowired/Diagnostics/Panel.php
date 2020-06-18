@@ -58,14 +58,14 @@ class Panel
 	 */
 	protected static function highlightException(Kdyby\Autowired\Exception $e)
 	{
-		/** @var \Nette\Reflection\Property|\Nette\Reflection\Method $refl */
+		/** @var \ReflectionProperty|\ReflectionMethod $refl */
 		$refl = $e->getReflector();
 
 		/** @var string $file */
 		$file = $refl->getDeclaringClass()->getFileName();
 
 		/** @var int $line */
-		$line = $refl instanceof Nette\Reflection\Property ? self::getPropertyLine($refl) : $refl->getStartLine();
+		$line = $refl instanceof \ReflectionProperty ? self::getPropertyLine($refl) : $refl->getStartLine();
 
 		return '<p><b>File:</b> ' . Helpers::editorLink($file, $line) . '</p>' .
 			BlueScreen::highlightFile($file, $line);
