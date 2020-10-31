@@ -17,7 +17,7 @@
 		"issues": "https://github.com/kdyby/autowired/issues"
 	},
 	"require": {
-		"php": "^7.1",
+		"php": ">=7.1",
 		"nette/di": "^3.0.2",
 		"nette/application": "^3.0",
 		"nette/caching": "^3.0",
