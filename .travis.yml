@@ -11,12 +11,13 @@ php:
   - 7.2
   - 7.3
   - 7.4
+  - 8.0snapshot
 
 matrix:
   include:
       - php: 7.1
         env: COMPOSER_EXTRA_ARGS="--prefer-lowest --prefer-stable"
-      - php: 7.4
+      - php: 8.0snapshot
         env: COVERAGE="--coverage ./coverage.xml --coverage-src ./src" TESTER_RUNTIME="phpdbg"
 
 before_install:
