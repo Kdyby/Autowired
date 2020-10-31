@@ -68,7 +68,9 @@ trait AutowireProperties
 
 		$this->autowireProperties = [];
 
-		$ignore = class_parents('Nette\Application\UI\Presenter') + ['ui' => 'Nette\Application\UI\Presenter'];
+		$nettePresenterParents = class_parents(Nette\Application\UI\Presenter::class);
+		assert(is_array($nettePresenterParents));
+		$ignore = $nettePresenterParents + ['ui' => Nette\Application\UI\Presenter::class];
 		$rc = new \ReflectionClass($presenterClass);
 		foreach ($rc->getProperties() as $prop) {
 			if (!$this->validateProperty($prop, $ignore)) {
@@ -78,9 +80,11 @@ trait AutowireProperties
 			$this->resolveProperty($prop);
 		}
 
+		$presenterParents = class_parents($presenterClass);
+		assert(is_array($presenterParents));
 		$files = array_map(function ($class) {
 			return (new \ReflectionClass($class))->getFileName();
-		}, array_diff(array_values(class_parents($presenterClass) + ['me' => $presenterClass]), $ignore));
+		}, array_diff(array_values($presenterParents + ['me' => $presenterClass]), $ignore));
 
 		$files[] = $containerFileName;
 

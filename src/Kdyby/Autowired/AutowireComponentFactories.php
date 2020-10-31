@@ -68,7 +68,9 @@ trait AutowireComponentFactories
 			return;
 		}
 
-		$ignore = class_parents('Nette\Application\UI\Presenter') + ['ui' => 'Nette\Application\UI\Presenter'];
+		$nettePresenterParents = class_parents(Nette\Application\UI\Presenter::class);
+		assert(is_array($nettePresenterParents));
+		$ignore = $nettePresenterParents + ['ui' => Nette\Application\UI\Presenter::class];
 		$rc = new \ReflectionClass($presenterClass);
 		foreach ($rc->getMethods() as $method) {
 			if (in_array($method->getDeclaringClass()->getName(), $ignore, TRUE) || !Strings::startsWith($method->getName(), 'createComponent')) {
@@ -76,9 +78,12 @@ trait AutowireComponentFactories
 			}
 
 			foreach ($method->getParameters() as $parameter) {
-				if ($parameter->getClass() === NULL || !$class = $parameter->getClass()->getName()) { // has object type hint
+				$parameterType = $parameter->getType();
+				if (! $parameterType instanceof \ReflectionNamedType || $parameterType->isBuiltin()) { // has object type hint
 					continue;
 				}
+
+				$class = $parameterType->getName();
 
 				if (!$this->findByTypeForFactory($class) && !$parameter->allowsNull()) {
 					throw new MissingServiceException(sprintf('No service of type %s found. Make sure the type hint in %s() is written correctly and service of this type is registered.', $class, Reflection::toString($method)));
@@ -86,9 +91,11 @@ trait AutowireComponentFactories
 			}
 		}
 
+		$presenterParents = class_parents($presenterClass);
+		assert(is_array($presenterParents));
 		$files = array_map(function ($class) {
 			return (new \ReflectionClass($class))->getFileName();
-		}, array_diff(array_values(class_parents($presenterClass) + ['me' => $presenterClass]), $ignore));
+		}, array_diff(array_values($presenterParents + ['me' => $presenterClass]), $ignore));
 
 		$files[] = (new \ReflectionClass($this->autowireComponentFactoriesLocator))->getFileName();
 
@@ -130,8 +137,11 @@ trait AutowireComponentFactories
 
 			$args = [];
 			$first = reset($parameters);
-			if ($first !== false && !($first->getClass() && $first->getClass()->getName())) {
-				$args[] = $name;
+			if ($first !== false) {
+				$parameterType = $first->getType();
+				if (! $parameterType instanceof \ReflectionNamedType || $parameterType->isBuiltin()) {
+					$args[] = $name;
+				}
 			}
 
 			$args = Nette\DI\Resolver::autowireArguments($methodReflection, $args, $getter);
