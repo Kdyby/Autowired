@@ -54,7 +54,9 @@ trait AutowireProperties
 		$cache = new Nette\Caching\Cache($storage, 'Kdyby.Autowired.AutowireProperties');
 
 		$containerFileName = (new \ReflectionClass($this->autowirePropertiesLocator))->getFileName();
-		$cacheKey = [$presenterClass = get_class($this), $containerFileName];
+		/** @var class-string<self> $presenterClass */
+		$presenterClass = get_class($this);
+		$cacheKey = [$presenterClass, $containerFileName];
 
 		if (is_array($this->autowireProperties = $cache->load($cacheKey))) {
 			foreach ($this->autowireProperties as $propName => $tmp) {
@@ -67,7 +69,7 @@ trait AutowireProperties
 		$this->autowireProperties = [];
 
 		$ignore = class_parents('Nette\Application\UI\Presenter') + ['ui' => 'Nette\Application\UI\Presenter'];
-		$rc = new \ReflectionClass($this);
+		$rc = new \ReflectionClass($presenterClass);
 		foreach ($rc->getProperties() as $prop) {
 			if (!$this->validateProperty($prop, $ignore)) {
 				continue;
@@ -223,6 +225,7 @@ trait AutowireProperties
 			}
 		}
 
+		/** @var class-string $type */
 		return (new \ReflectionClass($type))->getName();
 	}
 

@@ -62,12 +62,14 @@ trait AutowireComponentFactories
 			: $dic->getByType('Nette\Caching\IStorage');
 		$cache = new Nette\Caching\Cache($storage, 'Kdyby.Autowired.AutowireComponentFactories');
 
-		if ($cache->load($presenterClass = get_class($this)) !== NULL) {
+		/** @var class-string<self> $presenterClass */
+		$presenterClass = get_class($this);
+		if ($cache->load($presenterClass) !== NULL) {
 			return;
 		}
 
 		$ignore = class_parents('Nette\Application\UI\Presenter') + ['ui' => 'Nette\Application\UI\Presenter'];
-		$rc = new \ReflectionClass($this);
+		$rc = new \ReflectionClass($presenterClass);
 		foreach ($rc->getMethods() as $method) {
 			if (in_array($method->getDeclaringClass()->getName(), $ignore, TRUE) || !Strings::startsWith($method->getName(), 'createComponent')) {
 				continue;
