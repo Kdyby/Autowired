@@ -17,6 +17,10 @@ class IntegrationPresenter extends Nette\Application\UI\Presenter
 	 */
 	public $service;
 
+	/**
+	 * @autowire
+	 */
+	public LoremService $typedService;
 
 
 	protected function createComponentSilly(IDatagridFactory $factory)

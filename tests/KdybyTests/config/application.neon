@@ -1,2 +1,2 @@
 application:
-    scanDirs: false # prevent autoloading of Php74PropertyTypesPresenter incompatible with PHP <7.4
+    scanDirs: false
