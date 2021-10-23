@@ -18,7 +18,7 @@
 	},
 	"require": {
 		"php": ">=7.1",
-		"nette/di": "^3.0.2",
+		"nette/di": "^3.0.2 <3.0.10",
 		"nette/application": "^3.0",
 		"nette/caching": "^3.0",
 		"tracy/tracy": "^2.6"
