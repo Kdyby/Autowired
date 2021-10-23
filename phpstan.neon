@@ -12,9 +12,6 @@ parameters:
 		# $this in Trait is resolved as NEVER
 		- '#Instanceof between \*NEVER\* and Nette\\Application\\UI\\Component will always evaluate to false#'
 
-	excludes_analyse:
-		- tests/KdybyTests/Autowired/mocks/Php74PropertyTypesPresenter.php # incompatible with PHP <7.4
-
 	reportUnmatchedIgnoredErrors: false
 
 includes:

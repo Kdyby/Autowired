@@ -13,7 +13,7 @@ $ composer require kdyby/autowired
 Include in application
 ----------------------
 
-Package contains two traits that you can include in your PresenterComponents.
+Package contains two traits that you can include in your Components.
 
 The first one is just for properties and the second one is for component factories.
 
@@ -56,15 +56,13 @@ class ArticlePresenter extends BasePresenter
 
 	/**
 	 * @autowire
-	 * @var App\ArticleRepository
 	 */
-	protected $articleRepository;
+	protected App\ArticleRepository $articleRepository;
 
 	/**
-	 * @var Kdyby\Doctrine\EntityDao
 	 * @autowire(MyApp\Blog\Article, factory=\Kdyby\Doctrine\EntityDaoFactory)
 	 */
-	protected $factoryResult;
+	protected Kdyby\Doctrine\EntityDao $factoryResult;
 
 	// ..
 
@@ -76,7 +74,7 @@ class ArticlePresenter extends BasePresenter
 Autowired component factories
 -----------------------------
 
-There is often needed to inject a component factory object to the presenter and then use it in lazy component factory method that connects the created component to the component tree.
+There is often need to inject a component factory object to the presenter and then use it in lazy component factory method that connects the created component to the component tree.
 
 What if the component factory object from DI Container could be passed directly to the component factory method, without all that boilerplate code?
 
@@ -87,10 +85,7 @@ class ArticlePresenter extends BasePresenter
 
 	// ..
 
-	/**
-	 * @return My\Awesome\Datagrid
-	 */
-	protected function createComponentDatagrid($name, IDatagridFactory $factory)
+	protected function createComponentDatagrid($name, IDatagridFactory $factory): My\Awesome\Datagrid
 	{
 		return $factory->create();
 	}

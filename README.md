@@ -15,7 +15,7 @@ discussion: http://forum.nette.org/cs/13084-presentery-property-lazy-autowire-na
 Requirements
 ------------
 
-Kdyby/Autowired requires PHP 7.1 or higher.
+Kdyby/Autowired requires PHP 7.4 or higher.
 
 - [Nette Framework](https://github.com/nette/nette)
 
