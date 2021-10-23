@@ -60,7 +60,35 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 				$container->callMethod([$presenter, 'injectComponentFactories']);
 			},
 			Kdyby\Autowired\MissingServiceException::class,
-			'No service of type KdybyTests\Autowired\ComponentFactoriesFixtures\ComponentFactoryWithMissingService found. Make sure the type hint in KdybyTests\Autowired\ComponentFactoriesFixtures\WithMissingServicePresenter::createComponentSilly%S?% is written correctly and service of this type is registered.',
+			'Service of type KdybyTests\Autowired\ComponentFactoriesFixtures\ComponentFactoryWithMissingService required by $factory in KdybyTests\Autowired\ComponentFactoriesFixtures\WithMissingServicePresenter::createComponentSilly() not found. Did you add it to configuration file?',
+		);
+	}
+
+	public function testMultipleServicesException(): void
+	{
+		$container = $this->container;
+
+		Assert::exception(
+			function () use ($container): void {
+				$presenter = new ComponentFactoriesFixtures\WithMultipleServicesPresenter();
+				$container->callMethod([$presenter, 'injectComponentFactories']);
+			},
+			Kdyby\Autowired\MissingServiceException::class,
+			'Service of type KdybyTests\Autowired\ComponentFactoriesFixtures\ComponentFactoryWithMultipleServices required by $factory in KdybyTests\Autowired\ComponentFactoriesFixtures\WithMultipleServicesPresenter::createComponentSilly() not found. Did you add it to configuration file?',
+		);
+	}
+
+	public function testDisabledAutowiringException(): void
+	{
+		$container = $this->container;
+
+		Assert::exception(
+			function () use ($container): void {
+				$presenter = new ComponentFactoriesFixtures\WithDisabledAutowiringPresenter();
+				$container->callMethod([$presenter, 'injectComponentFactories']);
+			},
+			Kdyby\Autowired\MissingServiceException::class,
+			'Service of type KdybyTests\Autowired\ComponentFactoriesFixtures\ComponentFactoryWithDisabledAutowiring required by $factory in KdybyTests\Autowired\ComponentFactoriesFixtures\WithDisabledAutowiringPresenter::createComponentSilly() not found. Did you add it to configuration file?',
 		);
 	}
 

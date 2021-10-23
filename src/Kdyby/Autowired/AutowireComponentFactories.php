@@ -77,17 +77,10 @@ trait AutowireComponentFactories
 				continue;
 			}
 
-			foreach ($method->getParameters() as $parameter) {
-				$parameterType = $parameter->getType();
-				if (! $parameterType instanceof \ReflectionNamedType || $parameterType->isBuiltin()) { // has object type hint
-					continue;
-				}
-
-				$class = $parameterType->getName();
-
-				if (!$this->findByTypeForFactory($class) && !$parameter->allowsNull()) {
-					throw new MissingServiceException(sprintf('No service of type %s found. Make sure the type hint in %s is written correctly and service of this type is registered.', $class, Reflection::toString($method)));
-				}
+			try {
+				$this->resolveMethodArguments($method);
+			} catch (Nette\DI\MissingServiceException | Nette\DI\ServiceCreationException $exception) {
+				throw new MissingServiceException($exception->getMessage(), $method, $exception);
 			}
 		}
 
@@ -107,26 +100,10 @@ trait AutowireComponentFactories
 
 
 	/**
-	 * @return string|bool
-	 */
-	private function findByTypeForFactory(string $type)
-	{
-		$found = $this->autowireComponentFactoriesLocator->findByType($type);
-		return reset($found);
-	}
-
-
-
-	/**
 	 * @throws Nette\UnexpectedValueException
 	 */
 	protected function createComponent(string $name): ?IComponent
 	{
-		$getter = function (string $type) {
-			/** @var class-string<object> $type */
-			return $this->getComponentFactoriesLocator()->getByType($type);
-		};
-
 		$ucName = ucfirst($name);
 		$method = 'createComponent' . $ucName;
 		if ($ucName !== $name && method_exists($this, $method)) {
@@ -134,18 +111,8 @@ trait AutowireComponentFactories
 			if ($methodReflection->getName() !== $method) {
 				return null;
 			}
-			$parameters = $methodReflection->getParameters();
 
-			$args = [];
-			$first = reset($parameters);
-			if ($first !== false) {
-				$parameterType = $first->getType();
-				if (! $parameterType instanceof \ReflectionNamedType || $parameterType->isBuiltin()) {
-					$args[] = $name;
-				}
-			}
-
-			$args = Nette\DI\Resolver::autowireArguments($methodReflection, $args, $getter);
+			$args = $this->resolveMethodArguments($methodReflection, $name);
 			$component = $this->{$method}(...$args);
 			if ($component instanceof IComponent) {
 				return $component;
@@ -157,6 +124,30 @@ trait AutowireComponentFactories
 		}
 
 		return null;
+	}
+
+
+	/**
+	 * @return array<int, mixed>
+	 */
+	private function resolveMethodArguments(\ReflectionMethod $method, string $componentName = 'componentName'): array
+	{
+		$getter = function (string $type): object {
+			/** @var class-string<object> $type */
+			return $this->getComponentFactoriesLocator()->getByType($type);
+		};
+		$parameters = $method->getParameters();
+
+		$args = [];
+		$first = reset($parameters);
+		if ($first !== false) {
+			$parameterType = Nette\Utils\Type::fromReflection($first);
+			if ($parameterType === null || $parameterType->allows('string')) {
+				$args[] = $componentName;
+			}
+		}
+
+		return Nette\DI\Resolver::autowireArguments($method, $args, $getter);
 	}
 
 }

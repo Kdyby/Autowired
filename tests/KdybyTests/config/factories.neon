@@ -2,3 +2,10 @@ services:
     cacheStorage: Nette\Caching\Storages\MemoryStorage
 
     - KdybyTests\Autowired\ComponentFactoriesFixtures\ComponentFactory
+
+    -
+        implement: KdybyTests\Autowired\ComponentFactoriesFixtures\ComponentFactoryWithDisabledAutowiring
+        autowired: false
+
+    one: KdybyTests\Autowired\ComponentFactoriesFixtures\ComponentFactoryWithMultipleServices
+    two: KdybyTests\Autowired\ComponentFactoriesFixtures\ComponentFactoryWithMultipleServices
