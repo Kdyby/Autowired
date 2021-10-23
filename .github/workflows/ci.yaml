@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - 7.1
+          - 7.2
+          - 7.3
+          - 7.4
+        composer_args:
+          - ''
+          - '--prefer-stable'
+          - '--prefer-stable --prefer-lowest'
+    name: PHP ${{ matrix.php }} ${{ matrix.composer_args }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: Build
+        env:
+          COMPOSER_ARGS: ${{ matrix.composer_args }}
+        run: composer update --no-interaction --no-progress --prefer-dist $COMPOSER_ARGS
+      - name: Lint
+        if: matrix.php == '7.1' || matrix.php == '7.2' || matrix.php == '7.3'
+        run: vendor/bin/parallel-lint -e php,phpt --exclude tests/tmp --exclude tests/KdybyTests/Autowired/mocks/Php74PropertyTypesPresenter.php src tests
+      - name: Lint
+        if: matrix.php == '7.4'
+        run: vendor/bin/parallel-lint -e php,phpt --exclude tests/tmp src tests
+      - name: Tests
+        run: vendor/bin/tester -c tests/php.ini-unix -s tests
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse
+      - if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: output
+          path: tests/**/output
+
+  code_coverage:
+    runs-on: ubuntu-latest
+    needs: [ tests ]
+    continue-on-error: true
+    name: Code Coverage
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.1
+          coverage: xdebug
+      - run: composer global require php-coveralls/php-coveralls
+      - name: Build
+        run: composer update --no-interaction --no-progress --prefer-dist --prefer-stable
+      - name: Calculate coverage
+        run: vendor/bin/tester -c tests/php.ini-unix -p phpdbg -s tests --coverage coverage.xml --coverage-src src
+      - name: Upload Coverage Report
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: php-coveralls --verbose --config tests/.coveralls.yml
+

@@ -1,0 +1,4 @@
+[php]
+extension=mbstring.so
+extension=json.so
+extension=tokenizer.so

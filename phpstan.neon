@@ -1,9 +1,10 @@
 parameters:
-	bootstrap: %currentWorkingDirectory%/phpstan.bootstrap.php
 	level: 7
 	paths:
 		- src
 		- tests/KdybyTests
+	bootstrapFiles:
+	    - phpstan.bootstrap.php
 	ignoreErrors:
 		# Annotation class with SmartObject has public properties set dynamically.
 		# Casting it to array propagates public properties to that array.
