@@ -37,7 +37,7 @@ class InvalidStateException extends \RuntimeException implements Exception
 
 
 
-	public function __construct($message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
+	public function __construct(string $message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
@@ -67,7 +67,7 @@ class InvalidArgumentException extends \InvalidArgumentException implements Exce
 
 
 
-	public function __construct($message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
+	public function __construct(string $message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
@@ -96,7 +96,7 @@ class UnexpectedValueException extends \UnexpectedValueException implements Exce
 
 
 
-	public function __construct($message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
+	public function __construct(string $message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
@@ -122,7 +122,7 @@ class MemberAccessException extends \Nette\MemberAccessException implements Exce
 
 
 
-	public function __construct($message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
+	public function __construct(string $message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
@@ -149,7 +149,7 @@ class MissingServiceException extends \Nette\DI\MissingServiceException implemen
 
 
 
-	public function __construct($message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
+	public function __construct(string $message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
