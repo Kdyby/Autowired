@@ -12,6 +12,7 @@ namespace Kdyby\Autowired\DI;
 
 use Kdyby;
 use Nette;
+use Nette\DI\Definitions\ServiceDefinition;
 use Nette\PhpGenerator as Code;
 
 
@@ -27,7 +28,7 @@ class AutowiredExtension extends Nette\DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 		$config = (array) $this->getConfig();
 
-		$storage = $builder->addDefinition($this->prefix('cacheStorage'))
+		$storage = $builder->addDefinition($this->prefix('cacheStorage'), new ServiceDefinition())
 			->setType('Nette\Caching\IStorage')
 			->setAutowired(FALSE);
 

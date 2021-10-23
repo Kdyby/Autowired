@@ -123,6 +123,7 @@ trait AutowireComponentFactories
 	protected function createComponent(string $name): ?IComponent
 	{
 		$getter = function (string $type) {
+			/** @var class-string<object> $type */
 			return $this->getComponentFactoriesLocator()->getByType($type);
 		};
 
