@@ -11,8 +11,11 @@
 namespace Kdyby\Autowired;
 
 use Nette;
+use Nette\DI\Helpers;
+use Nette\DI\ServiceCreationException;
 use Nette\Utils\Reflection;
 use Nette\Utils\Strings;
+use Nette\Utils\Type;
 
 
 /**
@@ -196,11 +199,18 @@ trait AutowireProperties
 
 	private function resolveReturnType(\ReflectionMethod $method): string
 	{
-		$type = Nette\DI\Helpers::getReturnType($method);
-		if ($type === null || (!class_exists($type) && !interface_exists($type))) {
-			throw new MissingClassException(sprintf('Class "%s" not found, please check the typehint on %s.', $type, Reflection::toString($method)), $method);
+		$type = Type::fromReflection($method) ?? Helpers::getReturnTypeAnnotation($method);
+		if ($type === null) {
+			throw new MissingClassException(sprintf('Missing return typehint on %s.', Reflection::toString($method)), $method);
+		} elseif (!$type->isClass() || $type->isUnion()) {
+			throw new MissingClassException(sprintf('Return type of %s is not expected to be nullable/union/intersection/built-in, "%s" given.', Reflection::toString($method), $type), $method);
 		}
-		return $type;
+		$class = $type->getSingleName();
+		assert(is_string($class));
+		if (!class_exists($class) && !interface_exists($class)) {
+			throw new MissingClassException(sprintf('Class "%s" not found, please check the typehint on %s.', $class, Reflection::toString($method)), $method);
+		}
+		return $class;
 	}
 
 
@@ -277,7 +287,9 @@ trait AutowireProperties
 				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getService($this->autowireProperties[$name]['factory'])->create(...$this->autowireProperties[$name]['arguments']);
 
 			} else {
-				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getByType($this->autowireProperties[$name]['type']);
+				/** @var class-string<object> $type */
+				$type = $this->autowireProperties[$name]['type'];
+				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getByType($type);
 			}
 		}
 
