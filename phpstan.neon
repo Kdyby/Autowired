@@ -1,18 +1,10 @@
 parameters:
-	level: 7
+	level: max
 	paths:
 		- src
 		- tests/KdybyTests
 	bootstrapFiles:
 	    - phpstan.bootstrap.php
-	ignoreErrors:
-		# Annotation class with SmartObject has public properties set dynamically.
-		# Casting it to array propagates public properties to that array.
-		- '#Call to function array_key_exists\(\) with ([^\s])+ and array\(\) will always evaluate to false#'
-		# $this in Trait is resolved as NEVER
-		- '#Instanceof between \*NEVER\* and Nette\\Application\\UI\\Component will always evaluate to false#'
-
-	reportUnmatchedIgnoredErrors: false
 
 includes:
 	- vendor/phpstan/phpstan-nette/extension.neon

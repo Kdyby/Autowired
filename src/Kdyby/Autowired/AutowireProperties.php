@@ -197,7 +197,7 @@ trait AutowireProperties
 	private function resolveReturnType(\ReflectionMethod $method): string
 	{
 		$type = Nette\DI\Helpers::getReturnType($method);
-		if (!class_exists($type) && !interface_exists($type)) {
+		if ($type === null || (!class_exists($type) && !interface_exists($type))) {
 			throw new MissingClassException(sprintf('Class "%s" not found, please check the typehint on %s.', $type, Reflection::toString($method)), $method);
 		}
 		return $type;

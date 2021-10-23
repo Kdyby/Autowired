@@ -36,7 +36,7 @@ final class PhpDocParser
 		static $tokens = ['true' => true, 'false' => false, 'null' => null, '' => true];
 
 		$res = [];
-		$comment = preg_replace('#^\s*\*\s?#ms', '', trim($comment, '/*'));
+		$comment = (string) preg_replace('#^\s*\*\s?#ms', '', trim($comment, '/*'));
 		$parts = preg_split('#^\s*(?=@' . self::RE_IDENTIFIER . ')#m', $comment, 2);
 
 		$description = trim($parts[0]);
