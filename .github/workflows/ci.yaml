@@ -13,7 +13,6 @@ jobs:
           - 7.4
           - 8.0
         composer_args:
-          - ''
           - '--prefer-stable'
           - '--prefer-stable --prefer-lowest'
     name: PHP ${{ matrix.php }} ${{ matrix.composer_args }}
