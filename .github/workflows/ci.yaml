@@ -11,6 +11,7 @@ jobs:
       matrix:
         php:
           - 7.4
+          - 8.0
         composer_args:
           - ''
           - '--prefer-stable'
