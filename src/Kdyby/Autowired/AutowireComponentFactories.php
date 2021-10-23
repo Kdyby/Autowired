@@ -86,7 +86,7 @@ trait AutowireComponentFactories
 				$class = $parameterType->getName();
 
 				if (!$this->findByTypeForFactory($class) && !$parameter->allowsNull()) {
-					throw new MissingServiceException(sprintf('No service of type %s found. Make sure the type hint in %s() is written correctly and service of this type is registered.', $class, Reflection::toString($method)));
+					throw new MissingServiceException(sprintf('No service of type %s found. Make sure the type hint in %s is written correctly and service of this type is registered.', $class, Reflection::toString($method)));
 				}
 			}
 		}
@@ -147,7 +147,7 @@ trait AutowireComponentFactories
 			$args = Nette\DI\Resolver::autowireArguments($methodReflection, $args, $getter);
 			$component = $this->{$method}(...$args);
 			if (!$component instanceof Nette\ComponentModel\IComponent && !isset($this->components[$name])) {
-				throw new Nette\UnexpectedValueException(sprintf('Method %s() did not return or create the desired component.', Reflection::toString($methodReflection)));
+				throw new Nette\UnexpectedValueException(sprintf('Method %s did not return or create the desired component.', Reflection::toString($methodReflection)));
 			}
 
 			return $component;

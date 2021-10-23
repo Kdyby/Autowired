@@ -57,7 +57,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 		Assert::exception(function () use ($container) {
 			$presenter = new WithMissingServicePresenter_wcf();
 			$container->callMethod([$presenter, 'injectComponentFactories']);
-		}, 'Kdyby\Autowired\MissingServiceException', 'No service of type KdybyTests\Autowired\SampleMissingService12345 found. Make sure the type hint in KdybyTests\Autowired\WithMissingServicePresenter_wcf::createComponentSilly() is written correctly and service of this type is registered.');
+		}, 'Kdyby\Autowired\MissingServiceException', 'No service of type KdybyTests\Autowired\SampleMissingService12345 found. Make sure the type hint in KdybyTests\Autowired\WithMissingServicePresenter_wcf::createComponentSilly%S?% is written correctly and service of this type is registered.');
 	}
 
 
