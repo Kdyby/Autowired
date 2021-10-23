@@ -1,7 +1,7 @@
 Kdyby/Autowired
 ======
 
-[![Build Status](https://travis-ci.org/Kdyby/Autowired.svg?branch=master)](https://travis-ci.org/Kdyby/Autowired)
+[![Build Status](https://github.com/Kdyby/Autowired/workflows/CI/badge.svg)](https://github.com/Kdyby/Autowired/actions?query=workflow%3ACI+branch%3Amaster)
 [![Downloads this Month](https://img.shields.io/packagist/dm/kdyby/autowired.svg)](https://packagist.org/packages/kdyby/autowired)
 [![Latest stable](https://img.shields.io/packagist/v/kdyby/autowired.svg)](https://packagist.org/packages/kdyby/autowired)
 [![Coverage Status](https://coveralls.io/repos/github/Kdyby/Autowired/badge.svg?branch=master)](https://coveralls.io/github/Kdyby/Autowired?branch=master)
