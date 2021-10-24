@@ -25,7 +25,7 @@ trait AutowireProperties
 {
 
 	/**
-	 * @var array
+	 * @var array<array>
 	 */
 	private $autowireProperties = [];
 
@@ -42,7 +42,7 @@ trait AutowireProperties
 	 * @throws InvalidStateException
 	 * @throws UnexpectedValueException
 	 */
-	public function injectProperties(Nette\DI\Container $dic)
+	public function injectProperties(Nette\DI\Container $dic): void
 	{
 		if (!$this instanceof Nette\Application\UI\PresenterComponent && !$this instanceof Nette\Application\UI\Component) {
 			throw new MemberAccessException('Trait ' . __TRAIT__ . ' can be used only in descendants of PresenterComponent.');
@@ -97,7 +97,9 @@ trait AutowireProperties
 	}
 
 
-
+	/**
+	 * @param array<string> $ignore
+	 */
 	private function validateProperty(\ReflectionProperty $property, array $ignore): bool
 	{
 		if (in_array($property->getDeclaringClass()->getName(), $ignore, TRUE)) {

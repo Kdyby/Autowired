@@ -1,21 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Property KdybyTests\\\\Autowired\\\\IntegrationPresenter\\:\\:\\$autowireProperties type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: tests/KdybyTests/Autowired/mocks/IntegrationPresenter.php
-
-		-
-			message: "#^Method KdybyTests\\\\Autowired\\\\IntegrationPresenter\\:\\:injectProperties\\(\\) has no return typehint specified\\.$#"
-			count: 1
-			path: tests/KdybyTests/Autowired/mocks/IntegrationPresenter.php
-
-		-
-			message: "#^Method KdybyTests\\\\Autowired\\\\IntegrationPresenter\\:\\:validateProperty\\(\\) has parameter \\$ignore with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: tests/KdybyTests/Autowired/mocks/IntegrationPresenter.php
-
-		-
 			message: "#^Method KdybyTests\\\\Autowired\\\\IntegrationPresenter\\:\\:createComponentSilly\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: tests/KdybyTests/Autowired/mocks/IntegrationPresenter.php
