@@ -171,7 +171,7 @@ trait AutowireProperties
 			$metadata['factory'] = $this->findByTypeForProperty($factoryType);
 
 		} elseif (!$this->findByTypeForProperty($type)) {
-			throw new MissingServiceException(sprintf('Service of type "%s" not found for %s in annotation @var.', $type, Reflection::toString($prop)), $prop);
+			throw new MissingServiceException(sprintf('Service of type "%s" not found for %s.', $type, Reflection::toString($prop)), $prop);
 		}
 
 		// unset property to pass control to __set() and __get()
