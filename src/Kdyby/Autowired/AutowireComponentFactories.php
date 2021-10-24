@@ -147,11 +147,13 @@ trait AutowireComponentFactories
 
 			$args = Nette\DI\Resolver::autowireArguments($methodReflection, $args, $getter);
 			$component = $this->{$method}(...$args);
-			if (!$component instanceof Nette\ComponentModel\IComponent && !isset($this->components[$name])) {
+			if ($component instanceof IComponent) {
+				return $component;
+			}
+			$components = iterator_to_array($this->getComponents());
+			if (!isset($components[$name])) {
 				throw new Nette\UnexpectedValueException(sprintf('Method %s did not return or create the desired component.', Reflection::toString($methodReflection)));
 			}
-
-			return $component;
 		}
 
 		return null;
