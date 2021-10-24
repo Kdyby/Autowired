@@ -50,8 +50,8 @@ trait AutowireComponentFactories
 	 */
 	public function injectComponentFactories(Nette\DI\Container $dic): void
 	{
-		if (!$this instanceof Nette\Application\UI\PresenterComponent && !$this instanceof Nette\Application\UI\Component) {
-			throw new MemberAccessException('Trait ' . __TRAIT__ . ' can be used only in descendants of PresenterComponent.');
+		if (!$this instanceof Nette\Application\UI\Component) {
+			throw new MemberAccessException('Trait ' . __TRAIT__ . ' can be used only in descendants of ' . Nette\Application\UI\Component::class . '.');
 		}
 
 		$this->autowireComponentFactoriesLocator = $dic;

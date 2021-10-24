@@ -102,7 +102,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 				$container->callMethod([$component, 'injectComponentFactories']);
 			},
 			Kdyby\Autowired\MemberAccessException::class,
-			'Trait Kdyby\Autowired\AutowireComponentFactories can be used only in descendants of PresenterComponent.',
+			'Trait Kdyby\Autowired\AutowireComponentFactories can be used only in descendants of Nette\Application\UI\Component.',
 		);
 	}
 
