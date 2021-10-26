@@ -132,12 +132,14 @@ trait AutowireProperties
 
 
 	/**
-	 * @param class-string $type
+	 * @template T of object
+	 * @param class-string<T> $type
+	 * @return T
 	 */
-	private function assertTypeIsAutowirable(string $type, string $subject, \ReflectionProperty $property): void
+	private function getAutowiredService(string $type, string $subject, \ReflectionProperty $property): object
 	{
 		try {
-			$this->autowirePropertiesLocator->getByType($type, true);
+			return $this->autowirePropertiesLocator->getByType($type, true);
 		} catch (Nette\DI\MissingServiceException $exception) {
 			$message = sprintf(
 				'Unable to autowire %s for %s: %s',
@@ -165,20 +167,24 @@ trait AutowireProperties
 
 		if (array_key_exists('factory', $args)) {
 			$factoryType = $this->resolveFactoryType($prop, $args['factory'], 'autowire');
-			$this->assertTypeIsAutowirable($factoryType, 'service factory', $prop);
+			unset($args['factory']);
+			$arguments = array_values($args);
 
-			$factoryMethod = new \ReflectionMethod($factoryType, 'create');
-			$createsType = $this->resolveReturnType($factoryMethod);
+			$factory = $this->getAutowiredService($factoryType, 'service factory', $prop);
+			if (! method_exists($factory, 'create')) {
+				throw new InvalidStateException(sprintf('Service factory %s for property %s is missing create() method.', $factoryType, Reflection::toString($prop)), $prop);
+			}
+			$service = $factory->create(...$arguments);
+			$createsType = is_object($service) ? get_class($service) : gettype($service);
+
 			if ($createsType !== $type) {
 				throw new UnexpectedValueException(sprintf('The property %s requires %s, but factory of type %s, that creates %s was provided.', Reflection::toString($prop), $type, $factoryType, $createsType), $prop);
 			}
-
-			unset($args['factory']);
-			$metadata['arguments'] = array_values($args);
+			$metadata['arguments'] = $arguments;
 			$metadata['factory'] = $factoryType;
 
 		} else {
-			$this->assertTypeIsAutowirable($type, 'service', $prop);
+			$this->getAutowiredService($type, 'service', $prop);
 		}
 
 		// unset property to pass control to __set() and __get()
@@ -204,24 +210,6 @@ trait AutowireProperties
 		}
 
 		return $type;
-	}
-
-
-
-	private function resolveReturnType(\ReflectionMethod $method): string
-	{
-		$type = Type::fromReflection($method) ?? Helpers::getReturnTypeAnnotation($method);
-		if ($type === null) {
-			throw new MissingClassException(sprintf('Missing return typehint on %s.', Reflection::toString($method)), $method);
-		} elseif (!$type->isClass() || $type->isUnion()) {
-			throw new MissingClassException(sprintf('Return type of %s is not expected to be nullable/union/intersection/built-in, "%s" given.', Reflection::toString($method), $type), $method);
-		}
-		$class = $type->getSingleName();
-		assert(is_string($class));
-		if (!class_exists($class) && !interface_exists($class)) {
-			throw new MissingClassException(sprintf('Class "%s" not found, please check the typehint on %s.', $class, Reflection::toString($method)), $method);
-		}
-		return $class;
 	}
 
 

@@ -18,3 +18,5 @@ services:
 
     one: KdybyTests\Autowired\PropertiesFixtures\FactoryWithMultipleServices
     two: KdybyTests\Autowired\PropertiesFixtures\FactoryWithMultipleServices
+
+    - KdybyTests\Autowired\PropertiesFixtures\GenericFactory

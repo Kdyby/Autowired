@@ -12,6 +12,7 @@ namespace KdybyTests\Autowired;
 
 use Kdyby;
 use KdybyTests\Autowired\PropertiesFixtures\AutowireAnnotationPresenter;
+use KdybyTests\Autowired\PropertiesFixtures\GenericFactory;
 use KdybyTests\Autowired\PropertiesFixtures\SampleService;
 use KdybyTests\Autowired\PropertiesFixtures\SampleServiceFactory;
 use KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService;
@@ -57,6 +58,11 @@ class AutowirePropertiesTest extends ContainerTestCase
 			'type' => SampleService::class,
 			'arguments' => ['annotation', 'aliased'],
 			'factory' => ImportedService::class,
+		],
+		'genericFactoryResult' => [
+			'type' => ImportedService::class,
+			'arguments' => [ImportedService::class],
+			'factory' => GenericFactory::class,
 		],
 		'typedServiceInTrait' => [
 			'type' => SampleService::class,
@@ -133,6 +139,9 @@ class AutowirePropertiesTest extends ContainerTestCase
 		Assert::false(isset($presenter->aliasedFactoryResultInTrait));
 		Assert::type(SampleService::class, $presenter->aliasedFactoryResultInTrait);
 		Assert::same(['annotation trait', 'aliased'], $presenter->aliasedFactoryResultInTrait->args);
+
+		Assert::false(isset($presenter->genericFactoryResult));
+		Assert::type(ImportedService::class, $presenter->genericFactoryResult);
 
 		Assert::same(
 			self::AUTOWIRE_ANNOTATION_PRESENTER_CACHE,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace KdybyTests\Autowired\PropertiesFixtures;
 
 use Kdyby;
+use KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService;
 use Nette;
 use KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService as AliasedService;
 
@@ -51,5 +52,10 @@ class AutowireAnnotationPresenter extends Nette\Application\UI\Presenter
 	 * @autowire("annotation", "aliased", factory=AliasedService)
 	 */
 	public SampleService $aliasedFactoryResult;
+
+	/**
+	 * @autowire("KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService", factory=GenericFactory)
+	 */
+	public ImportedService $genericFactoryResult;
 
 }
