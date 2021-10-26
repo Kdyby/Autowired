@@ -25,9 +25,15 @@ trait AutowireProperties
 {
 
 	/**
-	 * @var array<array>
+	 * @var array<array{"type": class-string, "factory"?: class-string, "arguments"?: array<mixed>}>
 	 */
-	private $autowireProperties = [];
+	private array $autowirePropertiesMeta = [];
+
+	/**
+	 * @var array<string, object>
+	 */
+	private array $autowireProperties = [];
+
 
 	/**
 	 * @var Nette\DI\Container
@@ -61,15 +67,14 @@ trait AutowireProperties
 		$presenterClass = get_class($this);
 		$cacheKey = [$presenterClass, $containerFileName];
 
-		if (is_array($this->autowireProperties = $cache->load($cacheKey))) {
-			foreach ($this->autowireProperties as $propName => $tmp) {
+		$metadata = $cache->load($cacheKey);
+		if (is_array($metadata)) {
+			$this->autowirePropertiesMeta = $metadata;
+			foreach ($this->autowirePropertiesMeta as $propName => $tmp) {
 				unset($this->{$propName});
 			}
-
 			return;
 		}
-
-		$this->autowireProperties = [];
 
 		$nettePresenterParents = class_parents(Nette\Application\UI\Presenter::class);
 		assert(is_array($nettePresenterParents));
@@ -91,7 +96,7 @@ trait AutowireProperties
 
 		$files[] = $containerFileName;
 
-		$cache->save($cacheKey, $this->autowireProperties, [
+		$cache->save($cacheKey, $this->autowirePropertiesMeta, [
 			$cache::FILES => $files,
 		]);
 	}
@@ -152,7 +157,6 @@ trait AutowireProperties
 	{
 		$type = $this->resolvePropertyType($prop);
 		$metadata = [
-			'value' => NULL,
 			'type' => $type,
 		];
 
@@ -179,7 +183,7 @@ trait AutowireProperties
 
 		// unset property to pass control to __set() and __get()
 		unset($this->{$prop->getName()});
-		$this->autowireProperties[$prop->getName()] = $metadata;
+		$this->autowirePropertiesMeta[$prop->getName()] = $metadata;
 	}
 
 
@@ -257,26 +261,26 @@ trait AutowireProperties
 	/**
 	 * @param mixed $value
 	 * @throws MemberAccessException
-	 * @return mixed
+	 * @return void
 	 */
 	public function __set(string $name, $value)
 	{
-		if (!isset($this->autowireProperties[$name])) {
+		if (!isset($this->autowirePropertiesMeta[$name])) {
 			parent::__set($name, $value);
 			return;
 
 		}
 
-		if ($this->autowireProperties[$name]['value']) {
+		if (isset($this->autowireProperties[$name])) {
 			throw new MemberAccessException("Property \$$name has already been set.");
 
 		}
 
-		if (!$value instanceof $this->autowireProperties[$name]['type']) {
-			throw new MemberAccessException("Property \$$name must be an instance of " . $this->autowireProperties[$name]['type'] . ".");
+		if (!$value instanceof $this->autowirePropertiesMeta[$name]['type']) {
+			throw new MemberAccessException("Property \$$name must be an instance of " . $this->autowirePropertiesMeta[$name]['type'] . ".");
 		}
 
-		return $this->autowireProperties[$name]['value'] = $value;
+		$this->autowireProperties[$name] = $value;
 	}
 
 
@@ -287,24 +291,30 @@ trait AutowireProperties
 	 */
 	public function &__get(string $name)
 	{
-		if (!isset($this->autowireProperties[$name])) {
+		if (!isset($this->autowirePropertiesMeta[$name])) {
 			return parent::__get($name);
 		}
 
-		if ($this->autowireProperties[$name]['value'] == null) { // intentionally ==
-			if (array_key_exists('factory', $this->autowireProperties[$name])) {
-				/** @var class-string<object> $type */
-				$type = $this->autowireProperties[$name]['factory'];
-				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getByType($type)->create(...$this->autowireProperties[$name]['arguments']);
-
-			} else {
-				/** @var class-string<object> $type */
-				$type = $this->autowireProperties[$name]['type'];
-				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getByType($type);
-			}
+		if (!isset($this->autowireProperties[$name])) {
+			$this->autowireProperties[$name] = $this->createAutowiredPropertyService($name);
 		}
 
-		return $this->autowireProperties[$name]['value'];
+		return $this->autowireProperties[$name];
+	}
+
+
+	private function createAutowiredPropertyService(string $name): object
+	{
+		if (array_key_exists('factory', $this->autowirePropertiesMeta[$name])) {
+			/** @var class-string<object> $factoryType */
+			$factoryType = $this->autowirePropertiesMeta[$name]['factory'];
+			$arguments = $this->autowirePropertiesMeta[$name]['arguments'] ?? [];
+			return $this->autowirePropertiesLocator->getByType($factoryType)->create(...$arguments);
+		}
+
+		/** @var class-string<object> $type */
+		$type = $this->autowirePropertiesMeta[$name]['type'];
+		return $this->autowirePropertiesLocator->getByType($type);
 	}
 
 }

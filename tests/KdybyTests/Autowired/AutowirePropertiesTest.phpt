@@ -32,55 +32,44 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 	private const AUTOWIRE_ANNOTATION_PRESENTER_CACHE = [
 		'typedService' => [
-			'value' => null,
 			'type' => SampleService::class,
 		],
 		'fqnAnnotatedService' => [
-			'value' => null,
 			'type' => SampleService::class,
 		],
 		'annotatedService' => [
-			'value' => null,
 			'type' => SampleService::class,
 		],
 		'aliasedAnnotatedService' => [
-			'value' => null,
 			'type' => ImportedService::class,
 		],
 		'fqnFactoryResult' => [
-			'value' => null,
 			'type' => SampleService::class,
 			'arguments' => ['annotation', 'fqn'],
 			'factory' => SampleServiceFactory::class,
 		],
 		'factoryResult' => [
-			'value' => null,
 			'type' => SampleService::class,
 			'arguments' => ['annotation', 'unqualified'],
 			'factory' => SampleServiceFactory::class,
 		],
 		'aliasedFactoryResult' => [
-			'value' => null,
 			'type' => SampleService::class,
 			'arguments' => ['annotation', 'aliased'],
 			'factory' => ImportedService::class,
 		],
 		'typedServiceInTrait' => [
-			'value' => null,
 			'type' => SampleService::class,
 		],
 		'aliasedAnnotatedServiceInTrait' => [
-			'value' => null,
 			'type' => ImportedService::class,
 		],
 		'fqnFactoryResultInTrait' => [
-			'value' => null,
 			'type' => SampleService::class,
 			'arguments' => ['annotation trait', 'fqn'],
 			'factory' => SampleServiceFactory::class,
 		],
 		'aliasedFactoryResultInTrait' => [
-			'value' => null,
 			'type' => SampleService::class,
 			'arguments' => ['annotation trait', 'aliased'],
 			'factory' => ImportedService::class,
