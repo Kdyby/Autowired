@@ -126,17 +126,23 @@ trait AutowireProperties
 	}
 
 
-
 	/**
-	 * @return string|bool
+	 * @param class-string $type
 	 */
-	private function findByTypeForProperty(string $type)
+	private function assertTypeIsAutowirable(string $type, string $subject, \ReflectionProperty $property): void
 	{
-		$found = $this->autowirePropertiesLocator->findByType($type);
-		return reset($found);
+		try {
+			$this->autowirePropertiesLocator->getByType($type, true);
+		} catch (Nette\DI\MissingServiceException $exception) {
+			$message = sprintf(
+				'Unable to autowire %s for %s: %s',
+				$subject,
+				Reflection::toString($property),
+				$exception->getMessage()
+			);
+			throw new MissingServiceException($message, $property, $exception);
+		}
 	}
-
-
 
 	/**
 	 * @throws MissingServiceException
@@ -155,10 +161,7 @@ trait AutowireProperties
 
 		if (array_key_exists('factory', $args)) {
 			$factoryType = $this->resolveFactoryType($prop, $args['factory'], 'autowire');
-
-			if (!$this->findByTypeForProperty($factoryType)) {
-				throw new MissingServiceException(sprintf('Factory of type "%s" not found for %s in annotation @autowire.', $factoryType, Reflection::toString($prop)), $prop);
-			}
+			$this->assertTypeIsAutowirable($factoryType, 'service factory', $prop);
 
 			$factoryMethod = new \ReflectionMethod($factoryType, 'create');
 			$createsType = $this->resolveReturnType($factoryMethod);
@@ -168,10 +171,10 @@ trait AutowireProperties
 
 			unset($args['factory']);
 			$metadata['arguments'] = array_values($args);
-			$metadata['factory'] = $this->findByTypeForProperty($factoryType);
+			$metadata['factory'] = $factoryType;
 
-		} elseif (!$this->findByTypeForProperty($type)) {
-			throw new MissingServiceException(sprintf('Service of type "%s" not found for %s.', $type, Reflection::toString($prop)), $prop);
+		} else {
+			$this->assertTypeIsAutowirable($type, 'service', $prop);
 		}
 
 		// unset property to pass control to __set() and __get()
@@ -180,7 +183,9 @@ trait AutowireProperties
 	}
 
 
-
+	/**
+	 * @return class-string
+	 */
 	private function resolvePropertyType(\ReflectionProperty $prop): string
 	{
 		if ($type = Reflection::getPropertyType($prop)) {
@@ -216,7 +221,9 @@ trait AutowireProperties
 	}
 
 
-
+	/**
+	 * @return class-string
+	 */
 	private function resolveFactoryType(\ReflectionProperty $prop, string $annotationValue, string $annotationName): string
 	{
 		if (!$type = ltrim($annotationValue, '\\')) {
@@ -286,7 +293,9 @@ trait AutowireProperties
 
 		if ($this->autowireProperties[$name]['value'] == null) { // intentionally ==
 			if (array_key_exists('factory', $this->autowireProperties[$name])) {
-				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getService($this->autowireProperties[$name]['factory'])->create(...$this->autowireProperties[$name]['arguments']);
+				/** @var class-string<object> $type */
+				$type = $this->autowireProperties[$name]['factory'];
+				$this->autowireProperties[$name]['value'] = $this->autowirePropertiesLocator->getByType($type)->create(...$this->autowireProperties[$name]['arguments']);
 
 			} else {
 				/** @var class-string<object> $type */

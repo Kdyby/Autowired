@@ -13,6 +13,7 @@ namespace KdybyTests\Autowired;
 use Kdyby;
 use KdybyTests\Autowired\PropertiesFixtures\AutowireAnnotationPresenter;
 use KdybyTests\Autowired\PropertiesFixtures\SampleService;
+use KdybyTests\Autowired\PropertiesFixtures\SampleServiceFactory;
 use KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService;
 use KdybyTests\ContainerTestCase;
 use Nette;
@@ -50,19 +51,19 @@ class AutowirePropertiesTest extends ContainerTestCase
 			'value' => null,
 			'type' => SampleService::class,
 			'arguments' => ['annotation', 'fqn'],
-			'factory' => 'sampleFactory',
+			'factory' => SampleServiceFactory::class,
 		],
 		'factoryResult' => [
 			'value' => null,
 			'type' => SampleService::class,
 			'arguments' => ['annotation', 'unqualified'],
-			'factory' => 'sampleFactory',
+			'factory' => SampleServiceFactory::class,
 		],
 		'aliasedFactoryResult' => [
 			'value' => null,
 			'type' => SampleService::class,
 			'arguments' => ['annotation', 'aliased'],
-			'factory' => 'importedService',
+			'factory' => ImportedService::class,
 		],
 		'typedServiceInTrait' => [
 			'value' => null,
@@ -76,13 +77,13 @@ class AutowirePropertiesTest extends ContainerTestCase
 			'value' => null,
 			'type' => SampleService::class,
 			'arguments' => ['annotation trait', 'fqn'],
-			'factory' => 'sampleFactory',
+			'factory' => SampleServiceFactory::class,
 		],
 		'aliasedFactoryResultInTrait' => [
 			'value' => null,
 			'type' => SampleService::class,
 			'arguments' => ['annotation trait', 'aliased'],
-			'factory' => 'importedService',
+			'factory' => ImportedService::class,
 		],
 	];
 
@@ -175,7 +176,35 @@ class AutowirePropertiesTest extends ContainerTestCase
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\MissingServiceException::class,
-			'Factory of type "KdybyTests\Autowired\PropertiesFixtures\MissingService" not found for KdybyTests\Autowired\PropertiesFixtures\WithMissingServiceFactoryPresenter::$service in annotation @autowire.'
+			'Unable to autowire service factory for KdybyTests\Autowired\PropertiesFixtures\WithMissingServiceFactoryPresenter::$service: Service of type KdybyTests\Autowired\PropertiesFixtures\MissingService not found. Did you add it to configuration file?'
+		);
+	}
+
+	public function testMultipleServiceFactoriesException(): void
+	{
+		$container = $this->container;
+
+		Assert::exception(
+			function () use ($container) {
+				$presenter = new PropertiesFixtures\WithMultipleServiceFactoriesPresenter();
+				$container->callMethod([$presenter, 'injectProperties']);
+			},
+			Kdyby\Autowired\MissingServiceException::class,
+			'Unable to autowire service factory for KdybyTests\Autowired\PropertiesFixtures\WithMultipleServiceFactoriesPresenter::$service: Multiple services of type KdybyTests\Autowired\PropertiesFixtures\FactoryWithMultipleServices found: one, two.'
+		);
+	}
+
+	public function testDisabledAutowiringServiceFactoryException(): void
+	{
+		$container = $this->container;
+
+		Assert::exception(
+			function () use ($container) {
+				$presenter = new PropertiesFixtures\WithDisabledAutowiringServiceFactoryPresenter();
+				$container->callMethod([$presenter, 'injectProperties']);
+			},
+			Kdyby\Autowired\MissingServiceException::class,
+			'Unable to autowire service factory for KdybyTests\Autowired\PropertiesFixtures\WithDisabledAutowiringServiceFactoryPresenter::$service: Service of type KdybyTests\Autowired\PropertiesFixtures\FactoryWithDisabledAutowiring is not autowired or is missing in di › export › types.'
 		);
 	}
 
@@ -193,6 +222,34 @@ class AutowirePropertiesTest extends ContainerTestCase
 		);
 	}
 
+	public function testDisabledAutowiringServiceException(): void
+	{
+		$container = $this->container;
+
+		Assert::exception(
+			function () use ($container) {
+				$presenter = new PropertiesFixtures\WithDisabledAutowiringServicePresenter();
+				$container->callMethod([$presenter, 'injectProperties']);
+			},
+			Kdyby\Autowired\MissingServiceException::class,
+			'Unable to autowire service for KdybyTests\Autowired\PropertiesFixtures\WithDisabledAutowiringServicePresenter::$service: Service of type KdybyTests\Autowired\PropertiesFixtures\FactoryWithDisabledAutowiring is not autowired or is missing in di › export › types.'
+		);
+	}
+
+	public function testMultipleServicesException(): void
+	{
+		$container = $this->container;
+
+		Assert::exception(
+			function () use ($container) {
+				$presenter = new PropertiesFixtures\WithMultipleServicesPresenter();
+				$container->callMethod([$presenter, 'injectProperties']);
+			},
+			Kdyby\Autowired\MissingServiceException::class,
+			'Unable to autowire service for KdybyTests\Autowired\PropertiesFixtures\WithMultipleServicesPresenter::$service: Multiple services of type KdybyTests\Autowired\PropertiesFixtures\FactoryWithMultipleServices found: one, two.'
+		);
+	}
+
 	public function testMissingServiceException(): void
 	{
 		$container = $this->container;
@@ -203,7 +260,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\MissingServiceException::class,
-			'Service of type "KdybyTests\Autowired\PropertiesFixtures\MissingService" not found for KdybyTests\Autowired\PropertiesFixtures\WithMissingServicePresenter::$service.'
+			'Unable to autowire service for KdybyTests\Autowired\PropertiesFixtures\WithMissingServicePresenter::$service: Service of type KdybyTests\Autowired\PropertiesFixtures\MissingService not found. Did you add it to configuration file?'
 		);
 	}
 

@@ -11,3 +11,10 @@ services:
     - KdybyTests\Autowired\PropertiesFixtures\SampleService('shared')
 
     importedService: KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService
+
+    -
+        type: KdybyTests\Autowired\PropertiesFixtures\FactoryWithDisabledAutowiring
+        autowired: false
+
+    one: KdybyTests\Autowired\PropertiesFixtures\FactoryWithMultipleServices
+    two: KdybyTests\Autowired\PropertiesFixtures\FactoryWithMultipleServices
