@@ -1,12 +1,5 @@
-<?php declare(strict_types=1);
-
-/**
- * This file is part of the Kdyby (http://www.kdyby.org)
- *
- * Copyright (c) 2008 Filip Procházka (filip@prochazka.su)
- *
- * For the full copyright and license information, please view the file license.txt that was distributed with this source code.
- */
+<?php
+declare(strict_types=1);
 
 namespace Kdyby\Autowired;
 
@@ -20,29 +13,21 @@ use Nette\Utils\Strings;
 /**
  * @author matej21 <matej21@matej21.cz>
  * @author Filip Procházka <filip@prochazka.su>
- *
  * @method Nette\Application\UI\Presenter getPresenter()
  */
 trait AutowireComponentFactories
 {
 
-	/**
-	 * @var Nette\DI\Container
-	 */
-	private $autowireComponentFactoriesLocator;
-
-
+	private Nette\DI\Container $autowireComponentFactoriesLocator;
 
 	protected function getComponentFactoriesLocator(): Nette\DI\Container
 	{
-		if ($this->autowireComponentFactoriesLocator === NULL) {
+		if (! isset($this->autowireComponentFactoriesLocator)) {
 			$this->injectComponentFactories($this->getPresenter()->getContext());
 		}
 
 		return $this->autowireComponentFactoriesLocator;
 	}
-
-
 
 	/**
 	 * @throws MemberAccessException
@@ -50,7 +35,7 @@ trait AutowireComponentFactories
 	 */
 	public function injectComponentFactories(Nette\DI\Container $dic): void
 	{
-		if (!$this instanceof Nette\Application\UI\Component) {
+		if (! $this instanceof Nette\Application\UI\Component) {
 			throw new MemberAccessException('Trait ' . __TRAIT__ . ' can be used only in descendants of ' . Nette\Application\UI\Component::class . '.');
 		}
 
@@ -64,7 +49,7 @@ trait AutowireComponentFactories
 
 		$containerFileName = (new \ReflectionClass($this->autowireComponentFactoriesLocator))->getFileName();
 		/** @var class-string<self> $presenterClass */
-		$presenterClass = get_class($this);
+		$presenterClass = static::class;
 		$cacheKey = [$presenterClass, $containerFileName];
 
 		if ($cache->load($cacheKey) !== NULL) {
@@ -76,7 +61,7 @@ trait AutowireComponentFactories
 		$ignore = $nettePresenterParents + ['ui' => Nette\Application\UI\Presenter::class];
 		$rc = new \ReflectionClass($presenterClass);
 		foreach ($rc->getMethods() as $method) {
-			if (in_array($method->getDeclaringClass()->getName(), $ignore, TRUE) || !Strings::startsWith($method->getName(), 'createComponent')) {
+			if (in_array($method->getDeclaringClass()->getName(), $ignore, TRUE) || ! Strings::startsWith($method->getName(), 'createComponent')) {
 				continue;
 			}
 
@@ -89,9 +74,7 @@ trait AutowireComponentFactories
 
 		$presenterParents = class_parents($presenterClass);
 		assert(is_array($presenterParents));
-		$files = array_map(function ($class) {
-			return (new \ReflectionClass($class))->getFileName();
-		}, array_diff(array_values($presenterParents + ['me' => $presenterClass]), $ignore));
+		$files = array_map(fn ($class) => (new \ReflectionClass($class))->getFileName(), array_diff(array_values($presenterParents + ['me' => $presenterClass]), $ignore));
 
 		$files[] = $containerFileName;
 
@@ -99,8 +82,6 @@ trait AutowireComponentFactories
 			$cache::FILES => $files,
 		]);
 	}
-
-
 
 	/**
 	 * @throws Nette\UnexpectedValueException
@@ -112,7 +93,7 @@ trait AutowireComponentFactories
 		if ($ucName !== $name && method_exists($this, $method)) {
 			$methodReflection = new \ReflectionMethod($this, $method);
 			if ($methodReflection->getName() !== $method) {
-				return null;
+				return NULL;
 			}
 
 			$args = $this->resolveMethodArguments($methodReflection, $name);
@@ -121,14 +102,13 @@ trait AutowireComponentFactories
 				return $component;
 			}
 			$components = iterator_to_array($this->getComponents());
-			if (!isset($components[$name])) {
+			if (! isset($components[$name])) {
 				throw new Nette\UnexpectedValueException(sprintf('Method %s did not return or create the desired component.', Reflection::toString($methodReflection)));
 			}
 		}
 
-		return null;
+		return NULL;
 	}
-
 
 	/**
 	 * @return array<int, mixed>
@@ -137,15 +117,16 @@ trait AutowireComponentFactories
 	{
 		$getter = function (string $type): object {
 			/** @var class-string<object> $type */
-			return $this->getComponentFactoriesLocator()->getByType($type);
+			$serviceLocator = $this->getComponentFactoriesLocator();
+			return $serviceLocator->getByType($type);
 		};
 		$parameters = $method->getParameters();
 
 		$args = [];
 		$first = reset($parameters);
-		if ($first !== false) {
+		if ($first !== FALSE) {
 			$parameterType = Nette\Utils\Type::fromReflection($first);
-			if ($parameterType === null || $parameterType->allows('string')) {
+			if ($parameterType === NULL || $parameterType->allows('string')) {
 				$args[] = $componentName;
 			}
 		}

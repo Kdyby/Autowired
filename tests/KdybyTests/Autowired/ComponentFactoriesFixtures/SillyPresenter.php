@@ -12,7 +12,6 @@ class SillyPresenter extends Nette\Application\UI\Presenter
 
 	use Kdyby\Autowired\AutowireComponentFactories;
 
-
 	protected function createComponentAutowired(ComponentFactory $factory): SillyComponent
 	{
 		return $factory->create();
@@ -30,7 +29,6 @@ class SillyPresenter extends Nette\Application\UI\Presenter
 	{
 		return $factory->create();
 	}
-
 
 	protected function createComponentTypehintedName(string $name, ComponentFactory $factory): SillyComponent
 	{

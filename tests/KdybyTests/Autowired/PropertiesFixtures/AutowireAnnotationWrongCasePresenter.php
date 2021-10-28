@@ -12,7 +12,6 @@ class AutowireAnnotationWrongCasePresenter extends Nette\Application\UI\Presente
 
 	use Kdyby\Autowired\AutowireProperties;
 
-
 	/**
 	 * @Autowire
 	 */

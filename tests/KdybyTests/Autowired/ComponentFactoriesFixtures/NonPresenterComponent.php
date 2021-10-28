@@ -10,4 +10,5 @@ class NonPresenterComponent
 {
 
 	use Kdyby\Autowired\AutowireComponentFactories;
+
 }

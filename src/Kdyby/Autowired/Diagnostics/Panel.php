@@ -1,12 +1,5 @@
-<?php declare(strict_types=1);
-
-/**
- * This file is part of the Kdyby (http://www.kdyby.org)
- *
- * Copyright (c) 2008 Filip Procházka (filip@prochazka.su)
- *
- * For the full copyright and license information, please view the file license.txt that was distributed with this source code.
- */
+<?php
+declare(strict_types=1);
 
 namespace Kdyby\Autowired\Diagnostics;
 
@@ -26,21 +19,18 @@ class Panel
 
 	use Nette\SmartObject;
 
-
-	public static function registerBluescreen()
+	public static function registerBluescreen(): void
 	{
-		Debugger::getBlueScreen()->addPanel([get_called_class(), 'renderException']);
+		Debugger::getBlueScreen()->addPanel([static::class, 'renderException']);
 	}
 
-
-
 	/**
-	 * @param \Exception|\Throwable $e
-	 * @return array|null
+	 * @param \Throwable|null $e
+	 * @return array<mixed>|null
 	 */
-	public static function renderException($e = NULL)
+	public static function renderException(?\Throwable $e = NULL): ?array
 	{
-		if (!$e instanceof Kdyby\Autowired\Exception || !$e->getReflector()) {
+		if (! $e instanceof Kdyby\Autowired\Exception || ! $e->getReflector()) {
 			return NULL;
 		}
 
@@ -50,13 +40,7 @@ class Panel
 		];
 	}
 
-
-
-	/**
-	 * @param \Kdyby\Autowired\Exception $e
-	 * @return string
-	 */
-	protected static function highlightException(Kdyby\Autowired\Exception $e)
+	protected static function highlightException(Kdyby\Autowired\Exception $e): string
 	{
 		/** @var \ReflectionProperty|\ReflectionMethod $refl */
 		$refl = $e->getReflector();
@@ -70,8 +54,6 @@ class Panel
 		return '<p><b>File:</b> ' . Helpers::editorLink($file, $line) . '</p>' .
 			BlueScreen::highlightFile($file, $line);
 	}
-
-
 
 	protected static function getPropertyLine(\ReflectionProperty $property): ?int
 	{
@@ -87,7 +69,7 @@ class Panel
 				$contextBrackets -= 1;
 			}
 
-			if (!is_array($token)) {
+			if (! is_array($token)) {
 				continue;
 			}
 

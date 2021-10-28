@@ -12,7 +12,6 @@ class WithInvalidPropertyTypePresenter extends Nette\Application\UI\Presenter
 
 	use Kdyby\Autowired\AutowireProperties;
 
-
 	/**
 	 * @autowire
 	 */

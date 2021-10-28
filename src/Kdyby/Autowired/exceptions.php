@@ -1,23 +1,16 @@
-<?php declare(strict_types=1);
-
-/**
- * This file is part of the Kdyby (http://www.kdyby.org)
- *
- * Copyright (c) 2008 Filip Procházka (filip@prochazka.su)
- *
- * For the full copyright and license information, please view the file license.txt that was distributed with this source code.
- */
+<?php
+declare(strict_types=1);
 
 namespace Kdyby\Autowired;
+
+use Nette\DI\MissingServiceException as NetteMissingServiceException;
+use Nette\MemberAccessException as NetteMemberAccessException;
 
 
 interface Exception
 {
 
-	/**
-	 * @return \Reflector|null
-	 */
-	function getReflector(): ?\Reflector;
+	public function getReflector(): ?\Reflector;
 
 }
 
@@ -30,20 +23,13 @@ interface Exception
 class InvalidStateException extends \RuntimeException implements Exception
 {
 
-	/**
-	 * @var \Reflector|null
-	 */
-	private $reflector;
+	private ?\Reflector $reflector = NULL;
 
-
-
-	public function __construct(string $message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
+	public function __construct(string $message = '', ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
 	}
-
-
 
 	public function getReflector(): ?\Reflector
 	{
@@ -60,20 +46,13 @@ class InvalidStateException extends \RuntimeException implements Exception
 class UnexpectedValueException extends \UnexpectedValueException implements Exception
 {
 
-	/**
-	 * @var \Reflector|null
-	 */
-	private $reflector;
+	private ?\Reflector $reflector = NULL;
 
-
-
-	public function __construct(string $message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
+	public function __construct(string $message = '', ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
 	}
-
-
 
 	public function getReflector(): ?\Reflector
 	{
@@ -83,23 +62,16 @@ class UnexpectedValueException extends \UnexpectedValueException implements Exce
 }
 
 
-class MemberAccessException extends \Nette\MemberAccessException implements Exception
+class MemberAccessException extends NetteMemberAccessException implements Exception
 {
 
-	/**
-	 * @var \Reflector|null
-	 */
-	private $reflector;
+	private ?\Reflector $reflector = NULL;
 
-
-
-	public function __construct(string $message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
+	public function __construct(string $message = '', ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
 	}
-
-
 
 	public function getReflector(): ?\Reflector
 	{
@@ -110,23 +82,16 @@ class MemberAccessException extends \Nette\MemberAccessException implements Exce
 
 
 
-class MissingServiceException extends \Nette\DI\MissingServiceException implements Exception
+class MissingServiceException extends NetteMissingServiceException implements Exception
 {
 
-	/**
-	 * @var \Reflector|null
-	 */
-	private $reflector;
+	private ?\Reflector $reflector = NULL;
 
-
-
-	public function __construct(string $message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
+	public function __construct(string $message = '', ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
 	{
 		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
 		$this->reflector = $reflector;
 	}
-
-
 
 	public function getReflector(): ?\Reflector
 	{

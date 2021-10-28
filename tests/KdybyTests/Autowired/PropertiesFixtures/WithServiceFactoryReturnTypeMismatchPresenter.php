@@ -13,7 +13,6 @@ class WithServiceFactoryReturnTypeMismatchPresenter extends Nette\Application\UI
 
 	use Kdyby\Autowired\AutowireProperties;
 
-
 	/**
 	 * @autowire("missmatch", factory=\KdybyTests\Autowired\PropertiesFixtures\SampleServiceFactory)
 	 */

@@ -12,7 +12,6 @@ class WithInvalidFactoryTypePresenter extends Nette\Application\UI\Presenter
 
 	use Kdyby\Autowired\AutowireProperties;
 
-
 	/**
 	 * @autowire("string argument", "and another", factory=string)
 	 */

@@ -1,12 +1,5 @@
 <?php
-
-/**
- * Test: Kdyby\Autowired\AutowireProperties.
- *
- * @testCase KdybyTests\Autowired\AutowirePropertiesTest
- * @author Filip Procházka <filip@prochazka.su>
- * @package Kdyby\Autowired
- */
+declare(strict_types=1);
 
 namespace KdybyTests\Autowired;
 
@@ -86,8 +79,6 @@ class AutowirePropertiesTest extends ContainerTestCase
 	private Nette\DI\Container $container;
 
 	private Nette\Caching\Cache $cache;
-
-
 
 	protected function setUp(): void
 	{
@@ -185,12 +176,12 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\WithServiceFactoryReturnTypeMismatchPresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\UnexpectedValueException::class,
-			'The property KdybyTests\Autowired\PropertiesFixtures\WithServiceFactoryReturnTypeMismatchPresenter::$service requires KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService, but factory of type KdybyTests\Autowired\PropertiesFixtures\SampleServiceFactory, that creates KdybyTests\Autowired\PropertiesFixtures\SampleService was provided.'
+			'The property KdybyTests\Autowired\PropertiesFixtures\WithServiceFactoryReturnTypeMismatchPresenter::$service requires KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService, but factory of type KdybyTests\Autowired\PropertiesFixtures\SampleServiceFactory, that creates KdybyTests\Autowired\PropertiesFixtures\SampleService was provided.',
 		);
 	}
 
@@ -199,12 +190,12 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\WithMissingServiceFactoryPresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\MissingServiceException::class,
-			'Unable to autowire service factory for KdybyTests\Autowired\PropertiesFixtures\WithMissingServiceFactoryPresenter::$service: Service of type KdybyTests\Autowired\PropertiesFixtures\MissingService not found. Did you add it to configuration file?'
+			'Unable to autowire service factory for KdybyTests\Autowired\PropertiesFixtures\WithMissingServiceFactoryPresenter::$service: Service of type KdybyTests\Autowired\PropertiesFixtures\MissingService not found. Did you add it to configuration file?',
 		);
 	}
 
@@ -213,12 +204,12 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\WithMultipleServiceFactoriesPresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\MissingServiceException::class,
-			'Unable to autowire service factory for KdybyTests\Autowired\PropertiesFixtures\WithMultipleServiceFactoriesPresenter::$service: Multiple services of type KdybyTests\Autowired\PropertiesFixtures\FactoryWithMultipleServices found: one, two.'
+			'Unable to autowire service factory for KdybyTests\Autowired\PropertiesFixtures\WithMultipleServiceFactoriesPresenter::$service: Multiple services of type KdybyTests\Autowired\PropertiesFixtures\FactoryWithMultipleServices found: one, two.',
 		);
 	}
 
@@ -227,12 +218,12 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\WithDisabledAutowiringServiceFactoryPresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\MissingServiceException::class,
-			'Unable to autowire service factory for KdybyTests\Autowired\PropertiesFixtures\WithDisabledAutowiringServiceFactoryPresenter::$service: Service of type KdybyTests\Autowired\PropertiesFixtures\FactoryWithDisabledAutowiring is not autowired or is missing in di › export › types.'
+			'Unable to autowire service factory for KdybyTests\Autowired\PropertiesFixtures\WithDisabledAutowiringServiceFactoryPresenter::$service: Service of type KdybyTests\Autowired\PropertiesFixtures\FactoryWithDisabledAutowiring is not autowired or is missing in di › export › types.',
 		);
 	}
 
@@ -241,12 +232,12 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\WithInvalidFactoryTypePresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\MissingClassException::class,
-			'Neither class "string" or "KdybyTests\Autowired\PropertiesFixtures\string" was found, please check the typehint on KdybyTests\Autowired\PropertiesFixtures\WithInvalidFactoryTypePresenter::$service in annotation @autowire.'
+			'Neither class "string" or "KdybyTests\Autowired\PropertiesFixtures\string" was found, please check the typehint on KdybyTests\Autowired\PropertiesFixtures\WithInvalidFactoryTypePresenter::$service in annotation @autowire.',
 		);
 	}
 
@@ -255,12 +246,12 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\WithDisabledAutowiringServicePresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\MissingServiceException::class,
-			'Unable to autowire service for KdybyTests\Autowired\PropertiesFixtures\WithDisabledAutowiringServicePresenter::$service: Service of type KdybyTests\Autowired\PropertiesFixtures\FactoryWithDisabledAutowiring is not autowired or is missing in di › export › types.'
+			'Unable to autowire service for KdybyTests\Autowired\PropertiesFixtures\WithDisabledAutowiringServicePresenter::$service: Service of type KdybyTests\Autowired\PropertiesFixtures\FactoryWithDisabledAutowiring is not autowired or is missing in di › export › types.',
 		);
 	}
 
@@ -269,12 +260,12 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\WithMultipleServicesPresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\MissingServiceException::class,
-			'Unable to autowire service for KdybyTests\Autowired\PropertiesFixtures\WithMultipleServicesPresenter::$service: Multiple services of type KdybyTests\Autowired\PropertiesFixtures\FactoryWithMultipleServices found: one, two.'
+			'Unable to autowire service for KdybyTests\Autowired\PropertiesFixtures\WithMultipleServicesPresenter::$service: Multiple services of type KdybyTests\Autowired\PropertiesFixtures\FactoryWithMultipleServices found: one, two.',
 		);
 	}
 
@@ -283,12 +274,12 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\WithMissingServicePresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\MissingServiceException::class,
-			'Unable to autowire service for KdybyTests\Autowired\PropertiesFixtures\WithMissingServicePresenter::$service: Service of type KdybyTests\Autowired\PropertiesFixtures\MissingService not found. Did you add it to configuration file?'
+			'Unable to autowire service for KdybyTests\Autowired\PropertiesFixtures\WithMissingServicePresenter::$service: Service of type KdybyTests\Autowired\PropertiesFixtures\MissingService not found. Did you add it to configuration file?',
 		);
 	}
 
@@ -297,12 +288,12 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\WithInvalidPropertyTypePresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\MissingClassException::class,
-			'Class "string" not found, please check the typehint on KdybyTests\Autowired\PropertiesFixtures\WithInvalidPropertyTypePresenter::$service.'
+			'Class "string" not found, please check the typehint on KdybyTests\Autowired\PropertiesFixtures\WithInvalidPropertyTypePresenter::$service.',
 		);
 	}
 
@@ -311,12 +302,12 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\WithMissingPropertyTypePresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\InvalidStateException::class,
-			'Missing property typehint or annotation @var on KdybyTests\Autowired\PropertiesFixtures\WithMissingPropertyTypePresenter::$service.'
+			'Missing property typehint or annotation @var on KdybyTests\Autowired\PropertiesFixtures\WithMissingPropertyTypePresenter::$service.',
 		);
 	}
 
@@ -325,54 +316,49 @@ class AutowirePropertiesTest extends ContainerTestCase
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\PrivateAutowiredPropertyPresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\MemberAccessException::class,
-			'Autowired properties must be protected or public. Please fix visibility of KdybyTests\Autowired\PropertiesFixtures\PrivateAutowiredPropertyPresenter::$service or remove the @autowire annotation.'
+			'Autowired properties must be protected or public. Please fix visibility of KdybyTests\Autowired\PropertiesFixtures\PrivateAutowiredPropertyPresenter::$service or remove the @autowire annotation.',
 		);
 	}
-
-
 
 	public function testAutowireAnnotationWrongCaseException(): void
 	{
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\AutowireAnnotationWrongCasePresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\UnexpectedValueException::class,
-			'Annotation @Autowire on KdybyTests\Autowired\PropertiesFixtures\AutowireAnnotationWrongCasePresenter::$service should be fixed to lowercase @autowire.'
+			'Annotation @Autowire on KdybyTests\Autowired\PropertiesFixtures\AutowireAnnotationWrongCasePresenter::$service should be fixed to lowercase @autowire.',
 		);
 	}
-
-
 
 	public function testAutowireAnnotationTypoException(): void
 	{
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$presenter = new PropertiesFixtures\AutowireAnnotationTypoPresenter();
 				$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\UnexpectedValueException::class,
-			'Annotation @autowired on KdybyTests\Autowired\PropertiesFixtures\AutowireAnnotationTypoPresenter::$service should be fixed to lowercase @autowire.'
+			'Annotation @autowired on KdybyTests\Autowired\PropertiesFixtures\AutowireAnnotationTypoPresenter::$service should be fixed to lowercase @autowire.',
 		);
 	}
-
 
 	public function testTraitUserIsDescendantOfPresenterComponent(): void
 	{
 		$container = $this->container;
 
 		Assert::exception(
-			function () use ($container) {
+			function () use ($container): void {
 				$component = new PropertiesFixtures\NonPresenterComponent();
 				$container->callMethod([$component, 'injectProperties']);
 			},
@@ -380,7 +366,6 @@ class AutowirePropertiesTest extends ContainerTestCase
 			'Trait Kdyby\Autowired\AutowireProperties can be used only in descendants of Nette\Application\UI\Component.',
 		);
 	}
-
 
 	/**
 	 * @return array<mixed>

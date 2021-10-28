@@ -7,4 +7,5 @@ interface ComponentFactory
 {
 
 	public function create(): SillyComponent;
+
 }

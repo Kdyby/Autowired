@@ -7,5 +7,5 @@ interface ComponentFactoryWithMultipleServices
 {
 
 	public function create(): SillyComponent;
-}
 
+}

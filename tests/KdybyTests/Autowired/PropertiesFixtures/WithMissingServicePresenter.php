@@ -12,7 +12,6 @@ class WithMissingServicePresenter extends Nette\Application\UI\Presenter
 
 	use Kdyby\Autowired\AutowireProperties;
 
-
 	/**
 	 * @autowire
 	 */

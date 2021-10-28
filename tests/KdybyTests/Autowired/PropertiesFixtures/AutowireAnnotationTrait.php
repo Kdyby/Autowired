@@ -15,6 +15,7 @@ trait AutowireAnnotationTrait
 	public SampleService $typedServiceInTrait;
 
 	/**
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 	 * @var AliasedServiceInTrait
 	 * @autowire
 	 */
@@ -29,5 +30,10 @@ trait AutowireAnnotationTrait
 	 * @autowire("annotation trait", "aliased", factory=AliasedServiceInTrait)
 	 */
 	public SampleService $aliasedFactoryResultInTrait;
+
+	public function getAliasedAnnotatedServiceInTrait(): AliasedServiceInTrait
+	{
+		return $this->aliasedAnnotatedService;
+	}
 
 }

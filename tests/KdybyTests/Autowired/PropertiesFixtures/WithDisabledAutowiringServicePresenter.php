@@ -12,7 +12,6 @@ class WithDisabledAutowiringServicePresenter extends Nette\Application\UI\Presen
 
 	use Kdyby\Autowired\AutowireProperties;
 
-
 	/**
 	 * @autowire
 	 */

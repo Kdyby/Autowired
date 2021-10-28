@@ -12,7 +12,6 @@ class WithDisabledAutowiringServiceFactoryPresenter extends Nette\Application\UI
 
 	use Kdyby\Autowired\AutowireProperties;
 
-
 	/**
 	 * @autowire(factory=FactoryWithDisabledAutowiring)
 	 */

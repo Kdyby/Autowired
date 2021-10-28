@@ -12,7 +12,6 @@ class WithMultipleServicesPresenter extends Nette\Application\UI\Presenter
 
 	use Kdyby\Autowired\AutowireComponentFactories;
 
-
 	protected function createComponentSilly(ComponentFactoryWithMultipleServices $factory): SillyComponent
 	{
 		return new SillyComponent();
