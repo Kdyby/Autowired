@@ -3,6 +3,9 @@ parameters:
 	paths:
 		- src
 		- tests/KdybyTests
+	fileExtensions:
+		- php
+		- phpt
 	bootstrapFiles:
 	    - phpstan.bootstrap.php
 

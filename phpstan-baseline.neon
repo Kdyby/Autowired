@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method KdybyTests\\\\Autowired\\\\IntegrationPresenter\\:\\:createComponentSilly\\(\\) has no return typehint specified\\.$#"
-			count: 1
-			path: tests/KdybyTests/Autowired/mocks/IntegrationPresenter.php
-
-		-
 			message: "#^Method Kdyby\\\\Autowired\\\\DI\\\\AutowiredExtension\\:\\:register\\(\\) has no return typehint specified\\.$#"
 			count: 1
 			path: src/Kdyby/Autowired/DI/AutowiredExtension.php

@@ -26,7 +26,7 @@ require_once __DIR__ . '/../bootstrap.php';
 class ExtensionTest extends Tester\TestCase
 {
 
-	public function testFunctionality()
+	public function testFunctionality(): void
 	{
 		$config = new Nette\Configurator();
 		$config->setTempDirectory(TEMP_DIR);
