@@ -55,35 +55,6 @@ class InvalidStateException extends \RuntimeException implements Exception
 
 
 /**
- * The exception that is thrown when an argument does not match with the expected value.
- */
-class InvalidArgumentException extends \InvalidArgumentException implements Exception
-{
-
-	/**
-	 * @var \Reflector|null
-	 */
-	private $reflector;
-
-
-
-	public function __construct(string $message = "", ?\Reflector $reflector = NULL, ?\Throwable $previous = NULL)
-	{
-		parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
-		$this->reflector = $reflector;
-	}
-
-
-
-	public function getReflector(): ?\Reflector
-	{
-		return $this->reflector;
-	}
-}
-
-
-
-/**
  * The exception that is thrown when a value (typically returned by function) does not match with the expected value.
  */
 class UnexpectedValueException extends \UnexpectedValueException implements Exception
