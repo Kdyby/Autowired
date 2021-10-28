@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Kdyby\Autowired;
 
+use Kdyby\Autowired\Attributes\Autowire;
 use Nette;
 use Nette\Utils\Reflection;
 use Nette\Utils\Strings;
@@ -15,7 +16,7 @@ trait AutowireProperties
 {
 
 	/**
-	 * @var array<array{"type": class-string, "factory"?: class-string, "arguments"?: array<mixed>}>
+	 * @var array<array{"type": class-string}|array{"type": class-string, "factory": class-string, "arguments": array<mixed>}>
 	 */
 	private array $autowirePropertiesMeta = [];
 
@@ -66,7 +67,7 @@ trait AutowireProperties
 		$ignore = $nettePresenterParents + ['ui' => Nette\Application\UI\Presenter::class];
 		$rc = new \ReflectionClass($presenterClass);
 		foreach ($rc->getProperties() as $prop) {
-			if (! $this->validateProperty($prop, $ignore)) {
+			if (in_array($prop->getDeclaringClass()->getName(), $ignore, TRUE)) {
 				continue;
 			}
 
@@ -82,35 +83,6 @@ trait AutowireProperties
 		$cache->save($cacheKey, $this->autowirePropertiesMeta, [
 			$cache::FILES => $files,
 		]);
-	}
-
-	/**
-	 * @param \ReflectionProperty $property
-	 * @param array<string> $ignore
-	 */
-	private function validateProperty(\ReflectionProperty $property, array $ignore): bool
-	{
-		if (in_array($property->getDeclaringClass()->getName(), $ignore, TRUE)) {
-			return FALSE;
-		}
-
-		foreach (PhpDocParser::parseComment((string) $property->getDocComment()) as $name => $value) {
-			if (! in_array(Strings::lower($name), ['autowire', 'autowired'], TRUE)) {
-				continue;
-			}
-
-			if (Strings::lower($name) !== $name || $name !== 'autowire') {
-				throw new UnexpectedValueException(sprintf('Annotation @%s on %s should be fixed to lowercase @autowire.', $name, Reflection::toString($property)), $property);
-			}
-
-			if ($property->isPrivate()) {
-				throw new MemberAccessException(sprintf('Autowired properties must be protected or public. Please fix visibility of %s or remove the @autowire annotation.', Reflection::toString($property)), $property);
-			}
-
-			return TRUE;
-		}
-
-		return FALSE;
 	}
 
 	/**
@@ -139,39 +111,81 @@ trait AutowireProperties
 	 */
 	private function resolveProperty(\ReflectionProperty $prop): void
 	{
-		$type = $this->resolvePropertyType($prop);
-		$metadata = [
-			'type' => $type,
-		];
+		$metadata = $this->resolveAutowireMetadata($prop);
+		if ($metadata === NULL) {
+			return;
+		}
 
-		$annotations = PhpDocParser::parseComment((string) $prop->getDocComment());
-		$args = (array) end($annotations['autowire']);
-
-		if (array_key_exists('factory', $args)) {
-			$factoryType = $this->resolveFactoryType($prop, $args['factory'], 'autowire');
-			unset($args['factory']);
-			$arguments = array_values($args);
-
-			$factory = $this->getAutowiredService($factoryType, 'service factory', $prop);
+		if (isset($metadata['factory']) && isset($metadata['arguments'])) {
+			$factory = $this->getAutowiredService($metadata['factory'], 'service factory', $prop);
 			if (! method_exists($factory, 'create')) {
-				throw new InvalidStateException(sprintf('Service factory %s for property %s is missing create() method.', $factoryType, Reflection::toString($prop)), $prop);
+				throw new InvalidStateException(sprintf('Service factory %s for property %s is missing create() method.', $metadata['factory'], Reflection::toString($prop)), $prop);
 			}
-			$service = $factory->create(...$arguments);
+			$service = $factory->create(...$metadata['arguments']);
 			$createsType = is_object($service) ? get_class($service) : gettype($service);
 
-			if ($createsType !== $type) {
-				throw new UnexpectedValueException(sprintf('The property %s requires %s, but factory of type %s, that creates %s was provided.', Reflection::toString($prop), $type, $factoryType, $createsType), $prop);
+			if ($createsType !== $metadata['type']) {
+				throw new UnexpectedValueException(sprintf('The property %s requires %s, but factory of type %s, that creates %s was provided.', Reflection::toString($prop), $metadata['type'], $metadata['factory'], $createsType), $prop);
 			}
-			$metadata['arguments'] = $arguments;
-			$metadata['factory'] = $factoryType;
 
 		} else {
-			$this->getAutowiredService($type, 'service', $prop);
+			$this->getAutowiredService($metadata['type'], 'service', $prop);
 		}
 
 		// unset property to pass control to __set() and __get()
 		unset($this->{$prop->getName()});
 		$this->autowirePropertiesMeta[$prop->getName()] = $metadata;
+	}
+
+	/**
+	 * @return array{"type": class-string}|array{"type": class-string, "factory": class-string, "arguments": array<mixed>}|NULL
+	 */
+	private function resolveAutowireMetadata(\ReflectionProperty $property): ?array
+	{
+		$metadata = NULL;
+
+		if (PHP_VERSION_ID >= 8_00_00) {
+			$attributes = $property->getAttributes(Autowire::class);
+			if (count($attributes) > 0) {
+				if ($property->isPrivate()) {
+					throw new MemberAccessException(sprintf('Autowired properties must be protected or public. Please fix visibility of %s or remove the Autowire attribute.', Reflection::toString($property)), $property);
+				}
+
+				/** @var Autowire $autowire */
+				$autowire = reset($attributes)->newInstance();
+				$metadata = $autowire->toArray();
+			}
+		}
+
+		if ($metadata === NULL) {
+			foreach (PhpDocParser::parseComment((string) $property->getDocComment()) as $name => $value) {
+				if (! in_array(Strings::lower($name), ['autowire', 'autowired'], TRUE)) {
+					continue;
+				}
+
+				if (Strings::lower($name) !== $name || $name !== 'autowire') {
+					throw new UnexpectedValueException(sprintf('Annotation @%s on %s should be fixed to lowercase @autowire.', $name, Reflection::toString($property)), $property);
+				}
+
+				if ($property->isPrivate()) {
+					throw new MemberAccessException(sprintf('Autowired properties must be protected or public. Please fix visibility of %s or remove the @autowire annotation.', Reflection::toString($property)), $property);
+				}
+
+				$metadata = [];
+				$annotationParameters = (array) end($value);
+				if (isset($annotationParameters['factory'])) {
+					$metadata['factory'] = $this->resolveFactoryType($property, $annotationParameters['factory'], 'autowire');
+					unset($annotationParameters['factory']);
+					$metadata['arguments'] = array_values($annotationParameters);
+				}
+			}
+		}
+
+		if ($metadata !== NULL) {
+			$metadata['type'] = $this->resolvePropertyType($property);
+		}
+
+		return $metadata;
 	}
 
 	/**
