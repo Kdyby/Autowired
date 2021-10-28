@@ -12,7 +12,6 @@ class WithDisabledAutowiringPresenter extends Nette\Application\UI\Presenter
 
 	use Kdyby\Autowired\AutowireComponentFactories;
 
-
 	protected function createComponentSilly(ComponentFactoryWithDisabledAutowiring $factory): SillyComponent
 	{
 		return new SillyComponent();

@@ -12,7 +12,6 @@ class WithMissingServicePresenter extends Nette\Application\UI\Presenter
 
 	use Kdyby\Autowired\AutowireComponentFactories;
 
-
 	protected function createComponentSilly(ComponentFactoryWithMissingService $factory): SillyComponent
 	{
 		return new SillyComponent();

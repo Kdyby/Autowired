@@ -7,5 +7,5 @@ interface ComponentFactoryWithDisabledAutowiring
 {
 
 	public function create(): SillyComponent;
-}
 
+}

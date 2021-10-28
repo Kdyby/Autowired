@@ -1,8 +1,8 @@
 <?php
+declare(strict_types=1);
 
 namespace KdybyTests\Autowired\IntegrationFixtures;
 
-use Kdyby;
 use Nette;
 
 class DatagridComponent extends Nette\Application\UI\Component

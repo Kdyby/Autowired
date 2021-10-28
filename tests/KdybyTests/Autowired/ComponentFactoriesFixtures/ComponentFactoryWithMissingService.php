@@ -7,5 +7,5 @@ interface ComponentFactoryWithMissingService
 {
 
 	public function create(): SillyComponent;
-}
 
+}

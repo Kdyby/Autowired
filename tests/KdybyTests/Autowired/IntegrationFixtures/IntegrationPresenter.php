@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace KdybyTests\Autowired\IntegrationFixtures;
 
@@ -20,7 +21,6 @@ class IntegrationPresenter extends Nette\Application\UI\Presenter
 	 * @autowire(factory=\KdybyTests\Autowired\IntegrationFixtures\DatagridFactory)
 	 */
 	public DatagridComponent $factoryResult;
-
 
 	protected function createComponentSilly(DatagridFactory $factory): DatagridComponent
 	{

@@ -1,19 +1,10 @@
 <?php
-
-/**
- * Test: Kdyby\Autowired\Integration.
- *
- * @testCase KdybyTests\Autowired\IntegrationTest
- * @author Filip Procházka <filip@prochazka.su>
- * @package Kdyby\Autowired
- */
+declare(strict_types=1);
 
 namespace KdybyTests\Autowired;
 
-use Kdyby;
 use KdybyTests\Autowired\IntegrationFixtures\IntegrationPresenter;
 use KdybyTests\ContainerTestCase;
-use Tester;
 use Tester\Assert;
 
 

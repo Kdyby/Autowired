@@ -12,7 +12,6 @@ class WithMultipleServiceFactoriesPresenter extends Nette\Application\UI\Present
 
 	use Kdyby\Autowired\AutowireProperties;
 
-
 	/**
 	 * @autowire(factory=FactoryWithMultipleServices)
 	 */

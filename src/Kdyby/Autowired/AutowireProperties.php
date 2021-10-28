@@ -1,21 +1,11 @@
-<?php declare(strict_types=1);
-
-/**
- * This file is part of the Kdyby (http://www.kdyby.org)
- *
- * Copyright (c) 2008 Filip Procházka (filip@prochazka.su)
- *
- * For the full copyright and license information, please view the file license.txt that was distributed with this source code.
- */
+<?php
+declare(strict_types=1);
 
 namespace Kdyby\Autowired;
 
 use Nette;
-use Nette\DI\Helpers;
-use Nette\DI\ServiceCreationException;
 use Nette\Utils\Reflection;
 use Nette\Utils\Strings;
-use Nette\Utils\Type;
 
 
 /**
@@ -34,23 +24,18 @@ trait AutowireProperties
 	 */
 	private array $autowireProperties = [];
 
-
-	/**
-	 * @var Nette\DI\Container
-	 */
-	private $autowirePropertiesLocator;
-
-
+	private Nette\DI\Container $autowirePropertiesLocator;
 
 	/**
 	 * @throws MemberAccessException
 	 * @throws MissingServiceException
 	 * @throws InvalidStateException
 	 * @throws UnexpectedValueException
+	 * @internal
 	 */
 	public function injectProperties(Nette\DI\Container $dic): void
 	{
-		if (!$this instanceof Nette\Application\UI\Component) {
+		if (! $this instanceof Nette\Application\UI\Component) {
 			throw new MemberAccessException('Trait ' . __TRAIT__ . ' can be used only in descendants of ' . Nette\Application\UI\Component::class . '.');
 		}
 
@@ -64,7 +49,7 @@ trait AutowireProperties
 
 		$containerFileName = (new \ReflectionClass($this->autowirePropertiesLocator))->getFileName();
 		/** @var class-string<self> $presenterClass */
-		$presenterClass = get_class($this);
+		$presenterClass = static::class;
 		$cacheKey = [$presenterClass, $containerFileName];
 
 		$metadata = $cache->load($cacheKey);
@@ -81,7 +66,7 @@ trait AutowireProperties
 		$ignore = $nettePresenterParents + ['ui' => Nette\Application\UI\Presenter::class];
 		$rc = new \ReflectionClass($presenterClass);
 		foreach ($rc->getProperties() as $prop) {
-			if (!$this->validateProperty($prop, $ignore)) {
+			if (! $this->validateProperty($prop, $ignore)) {
 				continue;
 			}
 
@@ -90,9 +75,7 @@ trait AutowireProperties
 
 		$presenterParents = class_parents($presenterClass);
 		assert(is_array($presenterParents));
-		$files = array_map(function ($class) {
-			return (new \ReflectionClass($class))->getFileName();
-		}, array_diff(array_values($presenterParents + ['me' => $presenterClass]), $ignore));
+		$files = array_map(fn ($class) => (new \ReflectionClass($class))->getFileName(), array_diff(array_values($presenterParents + ['me' => $presenterClass]), $ignore));
 
 		$files[] = $containerFileName;
 
@@ -101,8 +84,8 @@ trait AutowireProperties
 		]);
 	}
 
-
 	/**
+	 * @param \ReflectionProperty $property
 	 * @param array<string> $ignore
 	 */
 	private function validateProperty(\ReflectionProperty $property, array $ignore): bool
@@ -112,7 +95,7 @@ trait AutowireProperties
 		}
 
 		foreach (PhpDocParser::parseComment((string) $property->getDocComment()) as $name => $value) {
-			if (!in_array(Strings::lower($name), ['autowire', 'autowired'], TRUE)) {
+			if (! in_array(Strings::lower($name), ['autowire', 'autowired'], TRUE)) {
 				continue;
 			}
 
@@ -130,7 +113,6 @@ trait AutowireProperties
 		return FALSE;
 	}
 
-
 	/**
 	 * @template T of object
 	 * @param class-string<T> $type
@@ -139,13 +121,13 @@ trait AutowireProperties
 	private function getAutowiredService(string $type, string $subject, \ReflectionProperty $property): object
 	{
 		try {
-			return $this->autowirePropertiesLocator->getByType($type, true);
+			return $this->autowirePropertiesLocator->getByType($type, TRUE);
 		} catch (Nette\DI\MissingServiceException $exception) {
 			$message = sprintf(
 				'Unable to autowire %s for %s: %s',
 				$subject,
 				Reflection::toString($property),
-				$exception->getMessage()
+				$exception->getMessage(),
 			);
 			throw new MissingServiceException($message, $property, $exception);
 		}
@@ -192,68 +174,73 @@ trait AutowireProperties
 		$this->autowirePropertiesMeta[$prop->getName()] = $metadata;
 	}
 
-
 	/**
 	 * @return class-string
 	 */
 	private function resolvePropertyType(\ReflectionProperty $prop): string
 	{
-		if ($type = Reflection::getPropertyType($prop)) {
-		} elseif ($type = Nette\DI\Helpers::parseAnnotation($prop, 'var')) {
-			$type = Reflection::expandClassName($type, Reflection::getPropertyDeclaringClass($prop));
-		} else {
+		$type = Reflection::getPropertyType($prop);
+		if ($type === NULL) {
+			$varType = Nette\DI\Helpers::parseAnnotation($prop, 'var');
+			if ($varType !== NULL && $varType !== '') {
+				$type = Reflection::expandClassName($varType, Reflection::getPropertyDeclaringClass($prop));
+			}
+		}
+
+		if ($type === NULL) {
 			throw new InvalidStateException(sprintf('Missing property typehint or annotation @var on %s.', Reflection::toString($prop)), $prop);
 		}
 
-		if (!class_exists($type) && !interface_exists($type)) {
+		if (! class_exists($type) && ! interface_exists($type)) {
 			throw new MissingClassException(sprintf('Class "%s" not found, please check the typehint on %s.', $type, Reflection::toString($prop)), $prop);
 		}
 
 		return $type;
 	}
 
-
 	/**
 	 * @return class-string
 	 */
 	private function resolveFactoryType(\ReflectionProperty $prop, string $annotationValue, string $annotationName): string
 	{
-		if (!$type = ltrim($annotationValue, '\\')) {
+		$type = ltrim($annotationValue, '\\');
+		if ($type === '') {
 			throw new InvalidStateException(sprintf('Missing annotation @%s with typehint on %s.', $annotationName, Reflection::toString($prop)), $prop);
 		}
 
-		if (!class_exists($type) && !interface_exists($type)) {
-			if (substr(func_get_arg(1), 0, 1) === '\\') {
+		if (! class_exists($type) && ! interface_exists($type)) {
+			if (substr($annotationValue, 0, 1) === '\\') {
 				throw new MissingClassException(sprintf('Class "%s" was not found, please check the typehint on %s in annotation @%s.', $type, Reflection::toString($prop), $annotationName), $prop);
 			}
 
 			$expandedType = Reflection::expandClassName(
 				$annotationValue,
-				Reflection::getPropertyDeclaringClass($prop)
+				Reflection::getPropertyDeclaringClass($prop),
 			);
 
 			if ($expandedType && (class_exists($expandedType) || interface_exists($expandedType))) {
 				$type = $expandedType;
 
-			} elseif(!class_exists($type = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $type) && !interface_exists($type)) {
-				throw new MissingClassException(sprintf('Neither class "%s" or "%s" was found, please check the typehint on %s in annotation @%s.', func_get_arg(1), $type, Reflection::toString($prop), $annotationName), $prop);
+			} else {
+				$type = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $type;
+				if (! class_exists($type) && ! interface_exists($type)) {
+					throw new MissingClassException(sprintf('Neither class "%s" or "%s" was found, please check the typehint on %s in annotation @%s.', $annotationValue, $type, Reflection::toString($prop), $annotationName), $prop);
+				}
 			}
 		}
 
-		/** @var class-string $type */
 		return (new \ReflectionClass($type))->getName();
 	}
 
-
-
 	/**
+	 * @param string $name
 	 * @param mixed $value
 	 * @throws MemberAccessException
 	 * @return void
 	 */
-	public function __set(string $name, $value)
+	public function __set(string $name, $value): void
 	{
-		if (!isset($this->autowirePropertiesMeta[$name])) {
+		if (! isset($this->autowirePropertiesMeta[$name])) {
 			parent::__set($name, $value);
 			return;
 
@@ -264,14 +251,12 @@ trait AutowireProperties
 
 		}
 
-		if (!$value instanceof $this->autowirePropertiesMeta[$name]['type']) {
-			throw new MemberAccessException("Property \$$name must be an instance of " . $this->autowirePropertiesMeta[$name]['type'] . ".");
+		if (! $value instanceof $this->autowirePropertiesMeta[$name]['type']) {
+			throw new MemberAccessException("Property \$$name must be an instance of " . $this->autowirePropertiesMeta[$name]['type'] . '.');
 		}
 
 		$this->autowireProperties[$name] = $value;
 	}
-
-
 
 	/**
 	 * @throws MemberAccessException
@@ -279,17 +264,16 @@ trait AutowireProperties
 	 */
 	public function &__get(string $name)
 	{
-		if (!isset($this->autowirePropertiesMeta[$name])) {
+		if (! isset($this->autowirePropertiesMeta[$name])) {
 			return parent::__get($name);
 		}
 
-		if (!isset($this->autowireProperties[$name])) {
+		if (! isset($this->autowireProperties[$name])) {
 			$this->autowireProperties[$name] = $this->createAutowiredPropertyService($name);
 		}
 
 		return $this->autowireProperties[$name];
 	}
-
 
 	private function createAutowiredPropertyService(string $name): object
 	{

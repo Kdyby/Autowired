@@ -38,6 +38,21 @@ jobs:
           name: output
           path: tests/**/output
 
+  code_style:
+    runs-on: ubuntu-latest
+    needs: [ tests ]
+    name: Code Style
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          coverage: none
+      - name: Build
+        run: composer update --no-interaction --no-progress --prefer-dist --prefer-stable
+      - name: Check Code Style
+        run: vendor/bin/phpcs
+
   code_coverage:
     runs-on: ubuntu-latest
     needs: [ tests ]

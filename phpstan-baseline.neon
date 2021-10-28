@@ -1,21 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method Kdyby\\\\Autowired\\\\DI\\\\AutowiredExtension\\:\\:register\\(\\) has no return typehint specified\\.$#"
-			count: 1
-			path: src/Kdyby/Autowired/DI/AutowiredExtension.php
-
-		-
-			message: "#^Method Kdyby\\\\Autowired\\\\Diagnostics\\\\Panel\\:\\:registerBluescreen\\(\\) has no return typehint specified\\.$#"
-			count: 1
-			path: src/Kdyby/Autowired/Diagnostics/Panel.php
-
-		-
-			message: "#^Method Kdyby\\\\Autowired\\\\Diagnostics\\\\Panel\\:\\:renderException\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Kdyby/Autowired/Diagnostics/Panel.php
-
-		-
 			message: "#^Cannot access offset 0 on array\\<int, string\\>\\|false\\.$#"
 			count: 1
 			path: src/Kdyby/Autowired/PhpDocParser.php

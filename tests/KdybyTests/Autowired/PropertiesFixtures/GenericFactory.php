@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-
 namespace KdybyTests\Autowired\PropertiesFixtures;
-
 
 final class GenericFactory
 {

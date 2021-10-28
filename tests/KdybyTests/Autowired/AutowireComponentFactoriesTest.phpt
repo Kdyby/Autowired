@@ -1,12 +1,5 @@
 <?php
-
-/**
- * Test: Kdyby\Autowired\AutowireComponentFactories.
- *
- * @testCase KdybyTests\Autowired\AutowireComponentFactoriesTest
- * @author Filip Procházka <filip@prochazka.su>
- * @package Kdyby\Autowired
- */
+declare(strict_types=1);
 
 namespace KdybyTests\Autowired;
 
@@ -31,8 +24,6 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 
 	private Nette\Caching\Cache $cache;
 
-
-
 	protected function setUp(): void
 	{
 		$this->container = $this->compileContainer('factories');
@@ -41,8 +32,6 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 			'Kdyby.Autowired.AutowireComponentFactories',
 		);
 	}
-
-
 
 	public function testAutowireComponentFactories(): void
 	{
@@ -55,7 +44,6 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 		Assert::type(SillyComponent::class, $presenter['typehintedName']);
 	}
 
-
 	public function testAutowiringValidationIsNotRunWhenAlreadyCached(): void
 	{
 		$this->cache->save($this->createCacheKey(WithMissingServicePresenter::class), TRUE);
@@ -67,7 +55,6 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 			},
 		);
 	}
-
 
 	public function testMissingServiceException(): void
 	{

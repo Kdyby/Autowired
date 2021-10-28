@@ -5,5 +5,7 @@ namespace KdybyTests\Autowired\PropertiesFixtures;
 
 interface SampleServiceFactory
 {
-	function create(string $name, ?string $secondName = NULL): SampleService;
+
+	public function create(string $name, ?string $secondName = NULL): SampleService;
+
 }

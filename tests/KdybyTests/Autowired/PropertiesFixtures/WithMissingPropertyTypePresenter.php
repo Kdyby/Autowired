@@ -12,8 +12,8 @@ class WithMissingPropertyTypePresenter extends Nette\Application\UI\Presenter
 
 	use Kdyby\Autowired\AutowireProperties;
 
-
 	/**
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint
 	 * @autowire
 	 */
 	public $service;

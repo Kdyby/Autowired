@@ -11,9 +11,9 @@ class SampleService
 	 */
 	public array $args;
 
-
 	public function __construct(string $name, ?string $secondName = NULL)
 	{
 		$this->args = func_get_args();
 	}
+
 }

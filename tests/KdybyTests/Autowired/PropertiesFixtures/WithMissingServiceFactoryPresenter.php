@@ -12,7 +12,6 @@ class WithMissingServiceFactoryPresenter extends Nette\Application\UI\Presenter
 
 	use Kdyby\Autowired\AutowireProperties;
 
-
 	/**
 	 * @autowire("string argument", "and another", factory=\KdybyTests\Autowired\PropertiesFixtures\MissingService)
 	 */
