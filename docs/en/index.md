@@ -69,6 +69,29 @@ class ArticlePresenter extends BasePresenter
 }
 ```
 
+Or using PHP 8 attributes:
+
+```php
+use Kdyby\Autowired\Attributes\Autowire;
+use Kdyby\Doctrine\EntityDao;
+use Kdyby\Doctrine\EntityDaoFactory;
+use App\Article;
+use App\ArticleRepository;
+
+class ArticlePresenter extends BasePresenter
+{
+
+	#[Autowire]
+	protected ArticleRepository $articleRepository;
+
+	#[Autowire(factory: EntityDaoFactory::class, arguments: [Article::class])]
+	protected EntityDao $factoryResult;
+
+	// ..
+
+}
+```
+
 
 
 Autowired component factories
