@@ -5,6 +5,7 @@ namespace KdybyTests\Autowired;
 
 use Kdyby;
 use KdybyTests\Autowired\PropertiesFixtures\AutowireAnnotationPresenter;
+use KdybyTests\Autowired\PropertiesFixtures\AutowireAttributePresenter;
 use KdybyTests\Autowired\PropertiesFixtures\GenericFactory;
 use KdybyTests\Autowired\PropertiesFixtures\SampleService;
 use KdybyTests\Autowired\PropertiesFixtures\SampleServiceFactory;
@@ -39,24 +40,24 @@ class AutowirePropertiesTest extends ContainerTestCase
 			'type' => ImportedService::class,
 		],
 		'fqnFactoryResult' => [
-			'type' => SampleService::class,
-			'arguments' => ['annotation', 'fqn'],
 			'factory' => SampleServiceFactory::class,
+			'arguments' => ['annotation', 'fqn'],
+			'type' => SampleService::class,
 		],
 		'factoryResult' => [
-			'type' => SampleService::class,
-			'arguments' => ['annotation', 'unqualified'],
 			'factory' => SampleServiceFactory::class,
+			'arguments' => ['annotation', 'unqualified'],
+			'type' => SampleService::class,
 		],
 		'aliasedFactoryResult' => [
-			'type' => SampleService::class,
-			'arguments' => ['annotation', 'aliased'],
 			'factory' => ImportedService::class,
+			'arguments' => ['annotation', 'aliased'],
+			'type' => SampleService::class,
 		],
 		'genericFactoryResult' => [
-			'type' => ImportedService::class,
-			'arguments' => [ImportedService::class],
 			'factory' => GenericFactory::class,
+			'arguments' => [ImportedService::class],
+			'type' => ImportedService::class,
 		],
 		'typedServiceInTrait' => [
 			'type' => SampleService::class,
@@ -65,14 +66,38 @@ class AutowirePropertiesTest extends ContainerTestCase
 			'type' => ImportedService::class,
 		],
 		'fqnFactoryResultInTrait' => [
-			'type' => SampleService::class,
-			'arguments' => ['annotation trait', 'fqn'],
 			'factory' => SampleServiceFactory::class,
+			'arguments' => ['annotation trait', 'fqn'],
+			'type' => SampleService::class,
 		],
 		'aliasedFactoryResultInTrait' => [
-			'type' => SampleService::class,
-			'arguments' => ['annotation trait', 'aliased'],
 			'factory' => ImportedService::class,
+			'arguments' => ['annotation trait', 'aliased'],
+			'type' => SampleService::class,
+		],
+	];
+
+	private const AUTOWIRE_ATTRIBUTE_PRESENTER_CACHE = [
+		'service' => [
+			'type' => SampleService::class,
+		],
+		'factoryResult' => [
+			'factory' => SampleServiceFactory::class,
+			'arguments' => ['attribute'],
+			'type' => SampleService::class,
+		],
+		'genericFactoryResult' => [
+			'factory' => GenericFactory::class,
+			'arguments' => [ImportedService::class],
+			'type' => ImportedService::class,
+		],
+		'serviceInTrait' => [
+			'type' => SampleService::class,
+		],
+		'factoryResultInTrait' => [
+			'factory' => SampleServiceFactory::class,
+			'arguments' => ['attribute trait'],
+			'type' => SampleService::class,
 		],
 	];
 
@@ -138,6 +163,38 @@ class AutowirePropertiesTest extends ContainerTestCase
 		Assert::same(
 			self::AUTOWIRE_ANNOTATION_PRESENTER_CACHE,
 			$this->cache->load($this->createCacheKey(AutowireAnnotationPresenter::class)),
+		);
+	}
+
+	public function testAutowireAttributeProperties(): void
+	{
+		if (PHP_VERSION_ID < 8_00_00) {
+			$this->skip('Attributes are supported on PHP >= 8.0');
+		}
+
+		$presenter = new PropertiesFixtures\AutowireAttributePresenter();
+		$this->container->callMethod([$presenter, 'injectProperties']);
+
+		Assert::false(isset($presenter->service));
+		Assert::type(SampleService::class, $presenter->service);
+
+		Assert::false(isset($presenter->serviceInTrait));
+		Assert::type(SampleService::class, $presenter->serviceInTrait);
+
+		Assert::false(isset($presenter->factoryResult));
+		Assert::type(SampleService::class, $presenter->factoryResult);
+		Assert::same(['attribute', NULL], $presenter->factoryResult->args);
+
+		Assert::false(isset($presenter->factoryResultInTrait));
+		Assert::type(SampleService::class, $presenter->factoryResultInTrait);
+		Assert::same(['attribute trait', NULL], $presenter->factoryResultInTrait->args);
+
+		Assert::false(isset($presenter->genericFactoryResult));
+		Assert::type(ImportedService::class, $presenter->genericFactoryResult);
+
+		Assert::same(
+			self::AUTOWIRE_ATTRIBUTE_PRESENTER_CACHE,
+			$this->cache->load($this->createCacheKey(AutowireAttributePresenter::class)),
 		);
 	}
 
