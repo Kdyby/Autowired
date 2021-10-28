@@ -12,6 +12,7 @@ namespace KdybyTests\Autowired;
 
 use Kdyby;
 use KdybyTests\Autowired\ComponentFactoriesFixtures\SillyComponent;
+use KdybyTests\Autowired\ComponentFactoriesFixtures\WithMissingServicePresenter;
 use KdybyTests\ContainerTestCase;
 use Nette;
 use Tester\Assert;
@@ -28,11 +29,17 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 
 	private Nette\DI\Container $container;
 
+	private Nette\Caching\Cache $cache;
+
 
 
 	protected function setUp(): void
 	{
 		$this->container = $this->compileContainer('factories');
+		$this->cache = new Nette\Caching\Cache(
+			$this->container->getService('cacheStorage'),
+			'Kdyby.Autowired.AutowireComponentFactories',
+		);
 	}
 
 
@@ -48,6 +55,18 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 		Assert::type(SillyComponent::class, $presenter['typehintedName']);
 	}
 
+
+	public function testAutowiringValidationIsNotRunWhenAlreadyCached(): void
+	{
+		$this->cache->save($this->createCacheKey(WithMissingServicePresenter::class), TRUE);
+
+		Assert::noError(
+			function (): void {
+				$presenter = new ComponentFactoriesFixtures\WithMissingServicePresenter();
+				$this->container->callMethod([$presenter, 'injectComponentFactories']);
+			},
+		);
+	}
 
 
 	public function testMissingServiceException(): void
@@ -104,6 +123,14 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 			Kdyby\Autowired\MemberAccessException::class,
 			'Trait Kdyby\Autowired\AutowireComponentFactories can be used only in descendants of Nette\Application\UI\Component.',
 		);
+	}
+
+	/**
+	 * @return array<mixed>
+	 */
+	private function createCacheKey(string $component): array
+	{
+		return [$component, (new \ReflectionClass($this->container))->getFileName()];
 	}
 
 }

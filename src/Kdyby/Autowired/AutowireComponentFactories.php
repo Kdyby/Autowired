@@ -62,9 +62,12 @@ trait AutowireComponentFactories
 			: $dic->getByType('Nette\Caching\IStorage');
 		$cache = new Nette\Caching\Cache($storage, 'Kdyby.Autowired.AutowireComponentFactories');
 
+		$containerFileName = (new \ReflectionClass($this->autowireComponentFactoriesLocator))->getFileName();
 		/** @var class-string<self> $presenterClass */
 		$presenterClass = get_class($this);
-		if ($cache->load($presenterClass) !== NULL) {
+		$cacheKey = [$presenterClass, $containerFileName];
+
+		if ($cache->load($cacheKey) !== NULL) {
 			return;
 		}
 
@@ -90,9 +93,9 @@ trait AutowireComponentFactories
 			return (new \ReflectionClass($class))->getFileName();
 		}, array_diff(array_values($presenterParents + ['me' => $presenterClass]), $ignore));
 
-		$files[] = (new \ReflectionClass($this->autowireComponentFactoriesLocator))->getFileName();
+		$files[] = $containerFileName;
 
-		$cache->save($presenterClass, TRUE, [
+		$cache->save($cacheKey, TRUE, [
 			$cache::FILES => $files,
 		]);
 	}

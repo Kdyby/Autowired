@@ -16,6 +16,7 @@ use KdybyTests\Autowired\PropertiesFixtures\GenericFactory;
 use KdybyTests\Autowired\PropertiesFixtures\SampleService;
 use KdybyTests\Autowired\PropertiesFixtures\SampleServiceFactory;
 use KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService;
+use KdybyTests\Autowired\PropertiesFixtures\WithMissingServiceFactoryPresenter;
 use KdybyTests\ContainerTestCase;
 use Nette;
 use Tester\Assert;
@@ -149,6 +150,35 @@ class AutowirePropertiesTest extends ContainerTestCase
 		);
 	}
 
+	public function testUsingCachedMetadata(): void
+	{
+		$this->cache->save(
+			$this->createCacheKey(AutowireAnnotationPresenter::class),
+			self::AUTOWIRE_ANNOTATION_PRESENTER_CACHE,
+		);
+
+		$presenter = new PropertiesFixtures\AutowireAnnotationPresenter();
+		$this->container->callMethod([$presenter, 'injectProperties']);
+
+		Assert::false(isset($presenter->typedService));
+		Assert::type(SampleService::class, $presenter->typedService);
+
+		Assert::false(isset($presenter->fqnFactoryResult));
+		Assert::type(SampleService::class, $presenter->fqnFactoryResult);
+		Assert::same(['annotation', 'fqn'], $presenter->fqnFactoryResult->args);
+	}
+
+	public function testAutowiringValidationIsNotRunWhenAlreadyCached(): void
+	{
+		$this->cache->save($this->createCacheKey(WithMissingServiceFactoryPresenter::class), []);
+
+		Assert::noError(
+			function (): void {
+				$presenter = new PropertiesFixtures\WithMissingServiceFactoryPresenter();
+				$this->container->callMethod([$presenter, 'injectProperties']);
+			},
+		);
+	}
 
 	public function testServiceFactoryReturnTypeMismatchException(): void
 	{
