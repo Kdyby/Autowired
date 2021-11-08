@@ -11,6 +11,26 @@ parameters:
 			path: src/Kdyby/Autowired/PhpDocParser.php
 
 		-
+			message: "#^Property KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\AutowireAnnotationPresenter\\:\\:\\$aliasedAnnotatedService \\(KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\UseExpansion\\\\ImportedService\\) in isset\\(\\) is not nullable\\.$#"
+			count: 1
+			path: tests/KdybyTests/Autowired/AutowirePropertiesTest.phpt
+
+		-
+			message: "#^Property KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\AutowireAnnotationPresenter\\:\\:\\$aliasedAnnotatedServiceInTrait \\(KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\UseExpansion\\\\ImportedService\\) in isset\\(\\) is not nullable\\.$#"
+			count: 1
+			path: tests/KdybyTests/Autowired/AutowirePropertiesTest.phpt
+
+		-
+			message: "#^Property KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\AutowireAnnotationPresenter\\:\\:\\$annotatedService \\(KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\SampleService\\) in isset\\(\\) is not nullable\\.$#"
+			count: 1
+			path: tests/KdybyTests/Autowired/AutowirePropertiesTest.phpt
+
+		-
+			message: "#^Property KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\AutowireAnnotationPresenter\\:\\:\\$fqnAnnotatedService \\(KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\SampleService\\) in isset\\(\\) is not nullable\\.$#"
+			count: 1
+			path: tests/KdybyTests/Autowired/AutowirePropertiesTest.phpt
+
+		-
 			message: "#^Call to an undefined method KdybyTests\\\\Autowired\\\\ComponentFactoriesFixtures\\\\NonPresenterComponent\\:\\:getComponents\\(\\)\\.$#"
 			count: 1
 			path: tests/KdybyTests/Autowired/ComponentFactoriesFixtures/NonPresenterComponent.php
@@ -26,6 +46,7 @@ parameters:
 			path: tests/KdybyTests/Autowired/PropertiesFixtures/NonPresenterComponent.php
 
 		-
-			message: "#^Property KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\WithMissingPropertyTypePresenter\\:\\:\\$service has no typehint specified\\.$#"
+			message: "#^Property KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\WithMissingPropertyTypePresenter\\:\\:\\$service has no type specified\\.$#"
 			count: 1
 			path: tests/KdybyTests/Autowired/PropertiesFixtures/WithMissingPropertyTypePresenter.php
+
