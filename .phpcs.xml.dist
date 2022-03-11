@@ -13,6 +13,7 @@
         <exclude name="Generic.Files.LineLength"/><!-- no hard limit on line length -->
         <exclude name="PSR2.Classes.ClassDeclaration.CloseBraceAfterBody"/><!-- we want 1 blank line before brace -->
         <exclude name="PSR12.Classes.AnonClassDeclaration.CloseBraceAfterBody"/><!-- we want 1 blank line before brace -->
+        <exclude name="PSR12.Classes.OpeningBraceSpace.Found"/><!-- we want 1 blank line after brace -->
         <exclude name="PSR12.Files.DeclareStatement.SpaceFoundAfterDirective"/><!-- we use space in declare statement -->
         <exclude name="PSR12.Files.DeclareStatement.SpaceFoundBeforeDirectiveValue"/><!-- we use space in declare statement -->
         <exclude name="PSR12.Files.FileHeader.SpacingAfterBlock"/><!-- interferes with declare statement on first line -->
