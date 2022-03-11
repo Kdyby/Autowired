@@ -38,8 +38,7 @@ class AutowiredExtension extends Nette\DI\CompilerExtension
 
 	public function afterCompile(Code\ClassType $class): void
 	{
-		$initialize = $class->methods['initialize'];
-		$initialize->addBody('Kdyby\Autowired\Diagnostics\Panel::registerBluescreen();');
+		$this->initialization->addBody('Kdyby\Autowired\Diagnostics\Panel::registerBluescreen();');
 	}
 
 	public function getConfigSchema(): Nette\Schema\Schema
