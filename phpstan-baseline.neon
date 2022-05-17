@@ -46,11 +46,6 @@ parameters:
 			path: tests/KdybyTests/Autowired/PropertiesFixtures/NonPresenterComponent.php
 
 		-
-			message: "#^Property KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\PrivateAutowiredPropertyPresenter\\:\\:\\$service is unused\\.$#"
-			count: 1
-			path: tests/KdybyTests/Autowired/PropertiesFixtures/PrivateAutowiredPropertyPresenter.php
-
-		-
 			message: "#^Property KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\WithMissingPropertyTypePresenter\\:\\:\\$service has no type specified\\.$#"
 			count: 1
 			path: tests/KdybyTests/Autowired/PropertiesFixtures/WithMissingPropertyTypePresenter.php
