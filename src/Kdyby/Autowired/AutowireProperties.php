@@ -122,7 +122,7 @@ trait AutowireProperties
 				throw new InvalidStateException(sprintf('Service factory %s for property %s is missing create() method.', $metadata['factory'], Reflection::toString($prop)), $prop);
 			}
 			$service = $factory->create(...$metadata['arguments']);
-			$createsType = is_object($service) ? get_class($service) : gettype($service);
+			$createsType = is_object($service) ? $service::class : gettype($service);
 
 			if ($createsType !== $metadata['type']) {
 				throw new UnexpectedValueException(sprintf('The property %s requires %s, but factory of type %s, that creates %s was provided.', Reflection::toString($prop), $metadata['type'], $metadata['factory'], $createsType), $prop);
@@ -144,17 +144,15 @@ trait AutowireProperties
 	{
 		$metadata = NULL;
 
-		if (PHP_VERSION_ID >= 8_00_00) {
-			$attributes = $property->getAttributes(Autowire::class);
-			if (count($attributes) > 0) {
-				if ($property->isPrivate()) {
-					throw new MemberAccessException(sprintf('Autowired properties must be protected or public. Please fix visibility of %s or remove the Autowire attribute.', Reflection::toString($property)), $property);
-				}
-
-				/** @var Autowire $autowire */
-				$autowire = reset($attributes)->newInstance();
-				$metadata = $autowire->toArray();
+		$attributes = $property->getAttributes(Autowire::class);
+		if (count($attributes) > 0) {
+			if ($property->isPrivate()) {
+				throw new MemberAccessException(sprintf('Autowired properties must be protected or public. Please fix visibility of %s or remove the Autowire attribute.', Reflection::toString($property)), $property);
 			}
+
+			/** @var Autowire $autowire */
+			$autowire = reset($attributes)->newInstance();
+			$metadata = $autowire->toArray();
 		}
 
 		if ($metadata === NULL) {
@@ -252,7 +250,7 @@ trait AutowireProperties
 	 * @throws MemberAccessException
 	 * @return void
 	 */
-	public function __set(string $name, $value): void
+	public function __set(string $name, mixed $value): void
 	{
 		if (! isset($this->autowirePropertiesMeta[$name])) {
 			parent::__set($name, $value);
@@ -276,7 +274,7 @@ trait AutowireProperties
 	 * @throws MemberAccessException
 	 * @return mixed
 	 */
-	public function &__get(string $name)
+	public function &__get(string $name): mixed
 	{
 		if (! isset($this->autowirePropertiesMeta[$name])) {
 			return parent::__get($name);

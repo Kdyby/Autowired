@@ -10,7 +10,6 @@ jobs:
       fail-fast: false
       matrix:
         php:
-          - 7.4
           - 8.0
           - 8.1
         composer_args:
@@ -47,7 +46,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: 7.4
+          php-version: 8.0
           coverage: none
       - name: Build
         run: composer update --no-interaction --no-progress --prefer-dist --prefer-stable

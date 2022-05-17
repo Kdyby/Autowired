@@ -181,10 +181,6 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 	public function testAutowireAttributeProperties(): void
 	{
-		if (PHP_VERSION_ID < 8_00_00) {
-			$this->skip('Attributes are supported on PHP >= 8.0');
-		}
-
 		$control = new PropertiesFixtures\AutowireAttributeControl();
 		$this->container->callMethod([$control, 'injectProperties']);
 
@@ -454,11 +450,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 		);
 	}
 
-	/**
-	 * @param string $component
-	 * @param mixed $value
-	 */
-	private function saveToCache(string $component, $value): void
+	private function saveToCache(string $component, mixed $value): void
 	{
 		$key = [$component, (new \ReflectionClass($this->container))->getFileName()];
 		$cache = new Nette\Caching\Cache($this->cacheStorage, 'Kdyby.Autowired.AutowireProperties');
@@ -469,7 +461,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 	 * @param class-string|object ...$classesOrObjects
 	 * @return array<string, mixed>
 	 */
-	private function createExpectedDependencies(...$classesOrObjects): array
+	private function createExpectedDependencies(string|object ...$classesOrObjects): array
 	{
 		$callbacks = [];
 		foreach ($classesOrObjects as $classesOrObject) {

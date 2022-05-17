@@ -22,10 +22,7 @@ class SillyPresenter extends Nette\Application\UI\Presenter
 		return new SillyComponent();
 	}
 
-	/**
-	 * @param string|int $name
-	 */
-	protected function createComponentNoTypehintName($name, ComponentFactory $factory): SillyComponent
+	protected function createComponentNoTypehintName(string|int $name, ComponentFactory $factory): SillyComponent
 	{
 		return $factory->create();
 	}
