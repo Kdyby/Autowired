@@ -128,11 +128,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 		);
 	}
 
-	/**
-	 * @param string $component
-	 * @param mixed $value
-	 */
-	private function saveToCache(string $component, $value): void
+	private function saveToCache(string $component, mixed $value): void
 	{
 		$key = [$component, (new \ReflectionClass($this->container))->getFileName()];
 		$cache = new Nette\Caching\Cache($this->cacheStorage, 'Kdyby.Autowired.AutowireComponentFactories');
@@ -143,7 +139,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 	 * @param class-string|object ...$classesOrObjects
 	 * @return array<string, mixed>
 	 */
-	private function createExpectedDependencies(...$classesOrObjects): array
+	private function createExpectedDependencies(string|object ...$classesOrObjects): array
 	{
 		$callbacks = [];
 		foreach ($classesOrObjects as $classesOrObject) {

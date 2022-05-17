@@ -13,11 +13,7 @@ final class TestStorage implements Nette\Caching\Storage
 	 */
 	private array $records = [];
 
-	/**
-	 * @param string $key
-	 * @return mixed|null
-	 */
-	public function read(string $key)
+	public function read(string $key): mixed
 	{
 		return $this->records[$key]['value'] ?? NULL;
 	}
@@ -31,7 +27,7 @@ final class TestStorage implements Nette\Caching\Storage
 	 * @param mixed $data
 	 * @param array<string, mixed> $dependencies
 	 */
-	public function write(string $key, $data, array $dependencies): void
+	public function write(string $key, mixed $data, array $dependencies): void
 	{
 		$this->records[$key] = ['value' => $data, 'dependencies' => $dependencies];
 	}
