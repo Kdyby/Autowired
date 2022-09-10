@@ -48,6 +48,11 @@
 			"KdybyTests": "tests/"
 		}
 	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": false
+		}
+	},
 	"extra": {
 		"branch-alias": {
 			"dev-master": "2.2-dev"
