@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace KdybyTests\Autowired;
 
 use Kdyby;
+use Kdyby\Autowired\Caching\CacheFactory;
 use KdybyTests\Autowired\PropertiesFixtures\AutowireAnnotationPresenter;
 use KdybyTests\Autowired\PropertiesFixtures\AutowireAttributeControl;
 use KdybyTests\Autowired\PropertiesFixtures\BaseControl;
@@ -450,11 +451,16 @@ class AutowirePropertiesTest extends ContainerTestCase
 		);
 	}
 
+	/**
+	 * @param class-string<Nette\Application\UI\Component> $component
+	 * @param mixed $value
+	 * @return void
+	 */
 	private function saveToCache(string $component, mixed $value): void
 	{
-		$key = [$component, (new \ReflectionClass($this->container))->getFileName()];
-		$cache = new Nette\Caching\Cache($this->cacheStorage, 'Kdyby.Autowired.AutowireProperties');
-		$cache->save($key, $value);
+		CacheFactory::fromContainer($this->container)
+			->create($component, 'Kdyby.Autowired.AutowireProperties')
+			->save($value);
 	}
 
 	/**

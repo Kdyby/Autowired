@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Kdyby\Autowired\DI;
 
+use Kdyby\Autowired\Caching\CacheFactory;
 use Nette;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\PhpGenerator as Code;
@@ -34,6 +35,13 @@ class AutowiredExtension extends Nette\DI\CompilerExtension
 		$storage->setFactory(is_string($config['cacheStorage'])
 			? new Nette\DI\Definitions\Statement($config['cacheStorage'])
 			: $config['cacheStorage']);
+
+		$builder->addDefinition($this->prefix('cacheFactory'), new ServiceDefinition())
+			->setType(CacheFactory::class)
+			->setArguments([
+				'cacheStorage' => $storage,
+				'containerFile' => $builder::literal('__FILE__'),
+			]);
 	}
 
 	public function afterCompile(Code\ClassType $class): void
