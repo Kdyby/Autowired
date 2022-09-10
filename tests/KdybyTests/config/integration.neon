@@ -1,3 +1,9 @@
+extensions:
+    autowired: Kdyby\Autowired\DI\AutowiredExtension
+
+autowired:
+    cacheStorage: KdybyTests\TestStorage
+
 services:
     cacheStorage: Nette\Caching\Storages\MemoryStorage
 
@@ -6,3 +12,4 @@ services:
 
     lorem: KdybyTests\Autowired\IntegrationFixtures\LoremService
 
+    presenter: KdybyTests\Autowired\IntegrationFixtures\IntegrationPresenter

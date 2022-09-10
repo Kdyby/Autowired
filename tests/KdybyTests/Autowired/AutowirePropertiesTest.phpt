@@ -5,15 +5,18 @@ namespace KdybyTests\Autowired;
 
 use Kdyby;
 use KdybyTests\Autowired\PropertiesFixtures\AutowireAnnotationPresenter;
-use KdybyTests\Autowired\PropertiesFixtures\AutowireAttributePresenter;
+use KdybyTests\Autowired\PropertiesFixtures\AutowireAttributeControl;
+use KdybyTests\Autowired\PropertiesFixtures\BaseControl;
 use KdybyTests\Autowired\PropertiesFixtures\GenericFactory;
 use KdybyTests\Autowired\PropertiesFixtures\SampleService;
 use KdybyTests\Autowired\PropertiesFixtures\SampleServiceFactory;
 use KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService;
 use KdybyTests\Autowired\PropertiesFixtures\WithMissingServiceFactoryPresenter;
 use KdybyTests\ContainerTestCase;
+use KdybyTests\TestStorage;
 use Nette;
 use Tester\Assert;
+use Tester\Expect;
 
 
 require_once __DIR__ . '/../bootstrap.php';
@@ -77,7 +80,10 @@ class AutowirePropertiesTest extends ContainerTestCase
 		],
 	];
 
-	private const AUTOWIRE_ATTRIBUTE_PRESENTER_CACHE = [
+	private const AUTOWIRE_ATTRIBUTE_CONTROL_CACHE = [
+		'baseService' => [
+			'type' => SampleService::class,
+		],
 		'service' => [
 			'type' => SampleService::class,
 		],
@@ -103,15 +109,12 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 	private Nette\DI\Container $container;
 
-	private Nette\Caching\Cache $cache;
+	private TestStorage $cacheStorage;
 
 	protected function setUp(): void
 	{
 		$this->container = $this->compileContainer('properties');
-		$this->cache = new Nette\Caching\Cache(
-			$this->container->getService('cacheStorage'),
-			'Kdyby.Autowired.AutowireProperties',
-		);
+		$this->cacheStorage = $this->container->getByType(TestStorage::class);
 	}
 
 	public function testAutowireAnnotationProperties(): void
@@ -160,9 +163,19 @@ class AutowirePropertiesTest extends ContainerTestCase
 		Assert::false(isset($presenter->genericFactoryResult));
 		Assert::type(ImportedService::class, $presenter->genericFactoryResult);
 
-		Assert::same(
-			self::AUTOWIRE_ANNOTATION_PRESENTER_CACHE,
-			$this->cache->load($this->createCacheKey(AutowireAnnotationPresenter::class)),
+		Assert::equal(
+			[Expect::match('~^Kdyby.Autowired.AutowireProperties\\x00.*~')],
+			array_keys($this->cacheStorage->getRecords()),
+		);
+
+		Assert::equal(
+			[
+				[
+					'value' => self::AUTOWIRE_ANNOTATION_PRESENTER_CACHE,
+					'dependencies' => $this->createExpectedDependencies(AutowireAnnotationPresenter::class, $this->container),
+				],
+			],
+			array_values($this->cacheStorage->getRecords()),
 		);
 	}
 
@@ -172,36 +185,53 @@ class AutowirePropertiesTest extends ContainerTestCase
 			$this->skip('Attributes are supported on PHP >= 8.0');
 		}
 
-		$presenter = new PropertiesFixtures\AutowireAttributePresenter();
-		$this->container->callMethod([$presenter, 'injectProperties']);
+		$control = new PropertiesFixtures\AutowireAttributeControl();
+		$this->container->callMethod([$control, 'injectProperties']);
 
-		Assert::false(isset($presenter->service));
-		Assert::type(SampleService::class, $presenter->service);
+		Assert::false(isset($control->baseService));
+		Assert::type(SampleService::class, $control->baseService);
 
-		Assert::false(isset($presenter->serviceInTrait));
-		Assert::type(SampleService::class, $presenter->serviceInTrait);
+		Assert::false(isset($control->service));
+		Assert::type(SampleService::class, $control->service);
 
-		Assert::false(isset($presenter->factoryResult));
-		Assert::type(SampleService::class, $presenter->factoryResult);
-		Assert::same(['attribute', NULL], $presenter->factoryResult->args);
+		Assert::false(isset($control->serviceInTrait));
+		Assert::type(SampleService::class, $control->serviceInTrait);
 
-		Assert::false(isset($presenter->factoryResultInTrait));
-		Assert::type(SampleService::class, $presenter->factoryResultInTrait);
-		Assert::same(['attribute trait', NULL], $presenter->factoryResultInTrait->args);
+		Assert::false(isset($control->factoryResult));
+		Assert::type(SampleService::class, $control->factoryResult);
+		Assert::same(['attribute', NULL], $control->factoryResult->args);
 
-		Assert::false(isset($presenter->genericFactoryResult));
-		Assert::type(ImportedService::class, $presenter->genericFactoryResult);
+		Assert::false(isset($control->factoryResultInTrait));
+		Assert::type(SampleService::class, $control->factoryResultInTrait);
+		Assert::same(['attribute trait', NULL], $control->factoryResultInTrait->args);
 
-		Assert::same(
-			self::AUTOWIRE_ATTRIBUTE_PRESENTER_CACHE,
-			$this->cache->load($this->createCacheKey(AutowireAttributePresenter::class)),
+		Assert::false(isset($control->genericFactoryResult));
+		Assert::type(ImportedService::class, $control->genericFactoryResult);
+
+		Assert::equal(
+			[Expect::match('~^Kdyby.Autowired.AutowireProperties\\x00.*~')],
+			array_keys($this->cacheStorage->getRecords()),
+		);
+
+		Assert::equal(
+			[
+				[
+					'value' => self::AUTOWIRE_ATTRIBUTE_CONTROL_CACHE,
+					'dependencies' => $this->createExpectedDependencies(
+						BaseControl::class,
+						AutowireAttributeControl::class,
+						$this->container,
+					),
+				],
+			],
+			array_values($this->cacheStorage->getRecords()),
 		);
 	}
 
 	public function testUsingCachedMetadata(): void
 	{
-		$this->cache->save(
-			$this->createCacheKey(AutowireAnnotationPresenter::class),
+		$this->saveToCache(
+			AutowireAnnotationPresenter::class,
 			self::AUTOWIRE_ANNOTATION_PRESENTER_CACHE,
 		);
 
@@ -218,7 +248,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 
 	public function testAutowiringValidationIsNotRunWhenAlreadyCached(): void
 	{
-		$this->cache->save($this->createCacheKey(WithMissingServiceFactoryPresenter::class), []);
+		$this->saveToCache(WithMissingServiceFactoryPresenter::class, []);
 
 		Assert::noError(
 			function (): void {
@@ -425,11 +455,32 @@ class AutowirePropertiesTest extends ContainerTestCase
 	}
 
 	/**
-	 * @return array<mixed>
+	 * @param string $component
+	 * @param mixed $value
 	 */
-	private function createCacheKey(string $component): array
+	private function saveToCache(string $component, $value): void
 	{
-		return [$component, (new \ReflectionClass($this->container))->getFileName()];
+		$key = [$component, (new \ReflectionClass($this->container))->getFileName()];
+		$cache = new Nette\Caching\Cache($this->cacheStorage, 'Kdyby.Autowired.AutowireProperties');
+		$cache->save($key, $value);
+	}
+
+	/**
+	 * @param class-string|object ...$classesOrObjects
+	 * @return array<string, mixed>
+	 */
+	private function createExpectedDependencies(...$classesOrObjects): array
+	{
+		$callbacks = [];
+		foreach ($classesOrObjects as $classesOrObject) {
+			$callbacks[] = [
+				[Nette\Caching\Cache::class, 'checkFile'],
+				(new \ReflectionClass($classesOrObject))->getFileName(),
+				Expect::type('int'),
+			];
+		}
+
+		return ['callbacks' => $callbacks];
 	}
 
 }

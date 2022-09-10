@@ -3,16 +3,12 @@ declare(strict_types=1);
 
 namespace KdybyTests\Autowired\PropertiesFixtures;
 
-use Kdyby;
 use Kdyby\Autowired\Attributes\Autowire;
 use KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService;
-use Nette;
 
-
-class AutowireAttributePresenter extends Nette\Application\UI\Presenter
+class AutowireAttributeControl extends BaseControl
 {
 
-	use Kdyby\Autowired\AutowireProperties;
 	use AutowireAttributeTrait;
 
 	#[Autowire]
