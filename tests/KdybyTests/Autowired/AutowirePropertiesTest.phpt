@@ -6,7 +6,9 @@ namespace KdybyTests\Autowired;
 use Kdyby;
 use Kdyby\Autowired\Caching\CacheFactory;
 use KdybyTests\Autowired\PropertiesFixtures\AutowireAnnotationPresenter;
+use KdybyTests\Autowired\PropertiesFixtures\AutowireAnnotationTrait;
 use KdybyTests\Autowired\PropertiesFixtures\AutowireAttributeControl;
+use KdybyTests\Autowired\PropertiesFixtures\AutowireAttributeTrait;
 use KdybyTests\Autowired\PropertiesFixtures\BaseControl;
 use KdybyTests\Autowired\PropertiesFixtures\GenericFactory;
 use KdybyTests\Autowired\PropertiesFixtures\SampleService;
@@ -173,7 +175,11 @@ class AutowirePropertiesTest extends ContainerTestCase
 			[
 				[
 					'value' => self::AUTOWIRE_ANNOTATION_PRESENTER_CACHE,
-					'dependencies' => $this->createExpectedDependencies(AutowireAnnotationPresenter::class, $this->container),
+					'dependencies' => $this->createExpectedDependencies(
+						AutowireAnnotationPresenter::class,
+						AutowireAnnotationTrait::class,
+						$this->container,
+					),
 				],
 			],
 			array_values($this->cacheStorage->getRecords()),
@@ -217,6 +223,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 					'dependencies' => $this->createExpectedDependencies(
 						BaseControl::class,
 						AutowireAttributeControl::class,
+						AutowireAttributeTrait::class,
 						$this->container,
 					),
 				],

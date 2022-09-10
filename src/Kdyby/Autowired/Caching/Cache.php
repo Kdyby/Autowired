@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Kdyby\Autowired\Caching;
 
+use Kdyby\Autowired\AutowireComponentFactories;
+use Kdyby\Autowired\AutowireProperties;
 use Nette;
 
 final class Cache
@@ -61,14 +63,24 @@ final class Cache
 		/** @var list<class-string> $nettePresenterParents */
 		$nettePresenterParents = class_parents(Nette\Application\UI\Presenter::class);
 		assert(is_array($nettePresenterParents));
-		$ignore = $nettePresenterParents + ['ui' => Nette\Application\UI\Presenter::class];
+		$ignoreClasses = $nettePresenterParents + ['ui' => Nette\Application\UI\Presenter::class];
+		$ignoreTraits = [AutowireProperties::class, AutowireComponentFactories::class];
 
 		/** @var list<class-string> $componentParents */
 		$componentParents = class_parents($this->componentClass);
 		assert(is_array($componentParents));
+
+		$classes = array_values(array_diff($componentParents + ['me' => $this->componentClass], $ignoreClasses));
+		foreach ($classes as $class) {
+			/** @var list<class-string> $uses */
+			$uses = class_uses($class);
+			assert(is_array($uses));
+			$classes = array_merge($classes, array_diff($uses, $ignoreTraits));
+		}
+
 		$files = array_map(
 			fn (string $class): string => (string) (new \ReflectionClass($class))->getFileName(),
-			array_diff($componentParents + ['me' => $this->componentClass], $ignore),
+			$classes,
 		);
 
 		$files[] = $this->containerFile;
