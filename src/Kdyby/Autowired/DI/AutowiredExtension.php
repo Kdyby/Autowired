@@ -28,7 +28,7 @@ class AutowiredExtension extends Nette\DI\CompilerExtension
 		$config = (array) $this->getConfig();
 
 		$storage = $builder->addDefinition($this->prefix('cacheStorage'), new ServiceDefinition())
-			->setType('Nette\Caching\IStorage')
+			->setType(Nette\Caching\Storage::class)
 			->setAutowired(FALSE);
 
 		$storage->setFactory(is_string($config['cacheStorage'])
@@ -44,7 +44,7 @@ class AutowiredExtension extends Nette\DI\CompilerExtension
 	public function getConfigSchema(): Nette\Schema\Schema
 	{
 		return Nette\Schema\Expect::structure([
-			'cacheStorage' => Nette\Schema\Expect::string('@Nette\Caching\IStorage'),
+			'cacheStorage' => Nette\Schema\Expect::string('@' . Nette\Caching\Storage::class),
 		]);
 	}
 

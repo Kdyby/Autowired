@@ -41,10 +41,10 @@ trait AutowireComponentFactories
 
 		$this->autowireComponentFactoriesLocator = $dic;
 
-		/** @var Nette\Caching\IStorage $storage */
+		/** @var Nette\Caching\Storage $storage */
 		$storage = $dic->hasService('autowired.cacheStorage')
 			? $dic->getService('autowired.cacheStorage')
-			: $dic->getByType('Nette\Caching\IStorage');
+			: $dic->getByType(Nette\Caching\Storage::class);
 		$cache = new Nette\Caching\Cache($storage, 'Kdyby.Autowired.AutowireComponentFactories');
 
 		$containerFileName = (new \ReflectionClass($this->autowireComponentFactoriesLocator))->getFileName();
