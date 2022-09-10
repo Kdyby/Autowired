@@ -5,10 +5,14 @@ namespace KdybyTests\Autowired;
 
 use Kdyby;
 use KdybyTests\Autowired\ComponentFactoriesFixtures\SillyComponent;
+use KdybyTests\Autowired\ComponentFactoriesFixtures\SillyPresenter;
 use KdybyTests\Autowired\ComponentFactoriesFixtures\WithMissingServicePresenter;
 use KdybyTests\ContainerTestCase;
+use KdybyTests\TestStorage;
 use Nette;
 use Tester\Assert;
+use Tester\Expect;
+
 
 require_once __DIR__ . '/../bootstrap.php';
 
@@ -22,15 +26,12 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 
 	private Nette\DI\Container $container;
 
-	private Nette\Caching\Cache $cache;
+	private TestStorage $cacheStorage;
 
 	protected function setUp(): void
 	{
 		$this->container = $this->compileContainer('factories');
-		$this->cache = new Nette\Caching\Cache(
-			$this->container->getService('cacheStorage'),
-			'Kdyby.Autowired.AutowireComponentFactories',
-		);
+		$this->cacheStorage = $this->container->getByType(TestStorage::class);
 	}
 
 	public function testAutowireComponentFactories(): void
@@ -42,11 +43,26 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 		Assert::type(SillyComponent::class, $presenter['optional']);
 		Assert::type(SillyComponent::class, $presenter['noTypehintName']);
 		Assert::type(SillyComponent::class, $presenter['typehintedName']);
+
+		Assert::equal(
+			[Expect::match('~^Kdyby.Autowired.AutowireComponentFactories\\x00.*~')],
+			array_keys($this->cacheStorage->getRecords()),
+		);
+
+		Assert::equal(
+			[
+				[
+					'value' => TRUE,
+					'dependencies' => $this->createExpectedDependencies(SillyPresenter::class, $this->container),
+				],
+			],
+			array_values($this->cacheStorage->getRecords()),
+		);
 	}
 
 	public function testAutowiringValidationIsNotRunWhenAlreadyCached(): void
 	{
-		$this->cache->save($this->createCacheKey(WithMissingServicePresenter::class), TRUE);
+		$this->saveToCache(WithMissingServicePresenter::class, TRUE);
 
 		Assert::noError(
 			function (): void {
@@ -113,11 +129,32 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 	}
 
 	/**
-	 * @return array<mixed>
+	 * @param string $component
+	 * @param mixed $value
 	 */
-	private function createCacheKey(string $component): array
+	private function saveToCache(string $component, $value): void
 	{
-		return [$component, (new \ReflectionClass($this->container))->getFileName()];
+		$key = [$component, (new \ReflectionClass($this->container))->getFileName()];
+		$cache = new Nette\Caching\Cache($this->cacheStorage, 'Kdyby.Autowired.AutowireComponentFactories');
+		$cache->save($key, $value);
+	}
+
+	/**
+	 * @param class-string|object ...$classesOrObjects
+	 * @return array<string, mixed>
+	 */
+	private function createExpectedDependencies(...$classesOrObjects): array
+	{
+		$callbacks = [];
+		foreach ($classesOrObjects as $classesOrObject) {
+			$callbacks[] = [
+				[Nette\Caching\Cache::class, 'checkFile'],
+				(new \ReflectionClass($classesOrObject))->getFileName(),
+				Expect::type('int'),
+			];
+		}
+
+		return ['callbacks' => $callbacks];
 	}
 
 }

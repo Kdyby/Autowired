@@ -1,5 +1,5 @@
 services:
-    cacheStorage: Nette\Caching\Storages\MemoryStorage
+    cacheStorage: KdybyTests\TestStorage
 
     - KdybyTests\Autowired\ComponentFactoriesFixtures\ComponentFactory
 
