@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Kdyby\Autowired;
 
 use Kdyby\Autowired\Attributes\Autowire;
+use Kdyby\Autowired\Caching\CacheFactory;
 use Nette;
 use Nette\Utils\Reflection;
 use Nette\Utils\Strings;
@@ -42,18 +43,14 @@ trait AutowireProperties
 
 		$this->autowirePropertiesLocator = $dic;
 
-		/** @var Nette\Caching\Storage $storage */
-		$storage = $dic->hasService('autowired.cacheStorage')
-			? $dic->getService('autowired.cacheStorage')
-			: $dic->getByType(Nette\Caching\Storage::class);
-		$cache = new Nette\Caching\Cache($storage, 'Kdyby.Autowired.AutowireProperties');
+		try {
+			$cacheFactory = $dic->getByType(CacheFactory::class);
+		} catch (Nette\DI\MissingServiceException $exception) {
+			$cacheFactory = CacheFactory::fromContainer($dic);
+		}
+		$cache = $cacheFactory->create(static::class, 'Kdyby.Autowired.AutowireProperties');
 
-		$containerFileName = (new \ReflectionClass($this->autowirePropertiesLocator))->getFileName();
-		/** @var class-string<self> $presenterClass */
-		$presenterClass = static::class;
-		$cacheKey = [$presenterClass, $containerFileName];
-
-		$metadata = $cache->load($cacheKey);
+		$metadata = $cache->load();
 		if (is_array($metadata)) {
 			$this->autowirePropertiesMeta = $metadata;
 			foreach ($this->autowirePropertiesMeta as $propName => $tmp) {
@@ -62,27 +59,16 @@ trait AutowireProperties
 			return;
 		}
 
-		$nettePresenterParents = class_parents(Nette\Application\UI\Presenter::class);
-		assert(is_array($nettePresenterParents));
-		$ignore = $nettePresenterParents + ['ui' => Nette\Application\UI\Presenter::class];
-		$rc = new \ReflectionClass($presenterClass);
+		$rc = new \ReflectionClass($this);
 		foreach ($rc->getProperties() as $prop) {
-			if (in_array($prop->getDeclaringClass()->getName(), $ignore, TRUE)) {
+			if (is_a(Nette\Application\UI\Presenter::class, $prop->getDeclaringClass()->getName(), TRUE)) {
 				continue;
 			}
 
 			$this->resolveProperty($prop);
 		}
 
-		$presenterParents = class_parents($presenterClass);
-		assert(is_array($presenterParents));
-		$files = array_map(fn ($class) => (new \ReflectionClass($class))->getFileName(), array_diff(array_values($presenterParents + ['me' => $presenterClass]), $ignore));
-
-		$files[] = $containerFileName;
-
-		$cache->save($cacheKey, $this->autowirePropertiesMeta, [
-			$cache::FILES => $files,
-		]);
+		$cache->save($this->autowirePropertiesMeta);
 	}
 
 	/**
