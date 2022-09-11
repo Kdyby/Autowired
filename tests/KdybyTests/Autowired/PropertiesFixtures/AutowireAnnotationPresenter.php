@@ -21,27 +21,6 @@ class AutowireAnnotationPresenter extends Nette\Application\UI\Presenter
 	public SampleService $typedService;
 
 	/**
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 * @var \KdybyTests\Autowired\PropertiesFixtures\SampleService
-	 * @autowire
-	 */
-	public $fqnAnnotatedService;
-
-	/**
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 * @var SampleService
-	 * @autowire
-	 */
-	public $annotatedService;
-
-	/**
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 * @var AliasedService
-	 * @autowire
-	 */
-	public $aliasedAnnotatedService;
-
-	/**
 	 * @autowire("annotation", "fqn", factory=\KdybyTests\Autowired\PropertiesFixtures\SampleServiceFactory)
 	 */
 	public SampleService $fqnFactoryResult;
@@ -61,9 +40,6 @@ class AutowireAnnotationPresenter extends Nette\Application\UI\Presenter
 	 */
 	public ImportedService $genericFactoryResult;
 
-	public function getAliasedAnnotatedService(): AliasedService
-	{
-		return $this->aliasedAnnotatedService;
-	}
+	protected AliasedService $aliasedService;
 
 }
