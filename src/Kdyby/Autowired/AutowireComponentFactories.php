@@ -45,6 +45,7 @@ trait AutowireComponentFactories
 		try {
 			$cacheFactory = $dic->getByType(CacheFactory::class);
 		} catch (Nette\DI\MissingServiceException $exception) {
+			trigger_error('Using ' . __TRAIT__ . ' without registered AutowiredExtension is deprecated, register the extension in your config.', E_USER_DEPRECATED);
 			$cacheFactory = CacheFactory::fromContainer($dic);
 		}
 		$cache = $cacheFactory->create(static::class, 'Kdyby.Autowired.AutowireComponentFactories');

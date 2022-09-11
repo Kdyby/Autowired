@@ -38,7 +38,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 	public function testAutowireComponentFactories(): void
 	{
 		$presenter = new ComponentFactoriesFixtures\SillyPresenter();
-		$this->container->callMethod([$presenter, 'injectComponentFactories']);
+		@$this->container->callMethod([$presenter, 'injectComponentFactories']);
 
 		Assert::type(SillyComponent::class, $presenter['autowired']);
 		Assert::type(SillyComponent::class, $presenter['optional']);
@@ -68,7 +68,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 		Assert::noError(
 			function (): void {
 				$presenter = new ComponentFactoriesFixtures\WithMissingServicePresenter();
-				$this->container->callMethod([$presenter, 'injectComponentFactories']);
+				@$this->container->callMethod([$presenter, 'injectComponentFactories']);
 			},
 		);
 	}
@@ -80,7 +80,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 		Assert::exception(
 			function () use ($container): void {
 				$presenter = new ComponentFactoriesFixtures\WithMissingServicePresenter();
-				$container->callMethod([$presenter, 'injectComponentFactories']);
+				@$container->callMethod([$presenter, 'injectComponentFactories']);
 			},
 			Kdyby\Autowired\MissingServiceException::class,
 			'Service of type KdybyTests\Autowired\ComponentFactoriesFixtures\ComponentFactoryWithMissingService required by $factory in KdybyTests\Autowired\ComponentFactoriesFixtures\WithMissingServicePresenter::createComponentSilly() not found. Did you add it to configuration file?',
@@ -94,7 +94,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 		Assert::exception(
 			function () use ($container): void {
 				$presenter = new ComponentFactoriesFixtures\WithMultipleServicesPresenter();
-				$container->callMethod([$presenter, 'injectComponentFactories']);
+				@$container->callMethod([$presenter, 'injectComponentFactories']);
 			},
 			Kdyby\Autowired\MissingServiceException::class,
 			'Service of type KdybyTests\Autowired\ComponentFactoriesFixtures\ComponentFactoryWithMultipleServices required by $factory in KdybyTests\Autowired\ComponentFactoriesFixtures\WithMultipleServicesPresenter::createComponentSilly() not found. Did you add it to configuration file?',
@@ -108,7 +108,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 		Assert::exception(
 			function () use ($container): void {
 				$presenter = new ComponentFactoriesFixtures\WithDisabledAutowiringPresenter();
-				$container->callMethod([$presenter, 'injectComponentFactories']);
+				@$container->callMethod([$presenter, 'injectComponentFactories']);
 			},
 			Kdyby\Autowired\MissingServiceException::class,
 			'Service of type KdybyTests\Autowired\ComponentFactoriesFixtures\ComponentFactoryWithDisabledAutowiring required by $factory in KdybyTests\Autowired\ComponentFactoriesFixtures\WithDisabledAutowiringPresenter::createComponentSilly() not found. Did you add it to configuration file?',
@@ -122,7 +122,7 @@ class AutowireComponentFactoriesTest extends ContainerTestCase
 		Assert::exception(
 			function () use ($container): void {
 				$component = new ComponentFactoriesFixtures\NonPresenterComponent();
-				$container->callMethod([$component, 'injectComponentFactories']);
+				@$container->callMethod([$component, 'injectComponentFactories']);
 			},
 			Kdyby\Autowired\MemberAccessException::class,
 			'Trait Kdyby\Autowired\AutowireComponentFactories can be used only in descendants of Nette\Application\UI\Component.',

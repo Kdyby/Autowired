@@ -13,6 +13,15 @@ $ composer require kdyby/autowired
 Include in application
 ----------------------
 
+Enable AutowiredExtension in config, which registers Tracy panel and other necessary services
+
+
+```php
+extensions:
+	autowired: Kdyby\Autowired\DI\AutowiredExtension
+```
+
+
 Package contains two traits that you can include in your Components.
 
 The first one is just for properties and the second one is for component factories.
@@ -26,14 +35,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 	// ...
 }
-```
-
-For debugging purposes you may also add the AutowiredExtension in config, which registers Tracy panel
-
-
-```php
-extensions:
-	autowired: Kdyby\Autowired\DI\AutowiredExtension
 ```
 
 
