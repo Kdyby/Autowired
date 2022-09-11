@@ -1,0 +1,8 @@
+extensions:
+    autowired: Kdyby\Autowired\DI\AutowiredExtension
+
+autowired:
+    cacheStorage: KdybyTests\TestStorage
+
+services:
+    - KdybyTests\Autowired\DeprecationsFixtures\SampleService
