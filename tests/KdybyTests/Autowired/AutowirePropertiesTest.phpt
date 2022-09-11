@@ -36,15 +36,6 @@ class AutowirePropertiesTest extends ContainerTestCase
 		'typedService' => [
 			'type' => SampleService::class,
 		],
-		'fqnAnnotatedService' => [
-			'type' => SampleService::class,
-		],
-		'annotatedService' => [
-			'type' => SampleService::class,
-		],
-		'aliasedAnnotatedService' => [
-			'type' => ImportedService::class,
-		],
 		'fqnFactoryResult' => [
 			'factory' => SampleServiceFactory::class,
 			'arguments' => ['annotation', 'fqn'],
@@ -67,9 +58,6 @@ class AutowirePropertiesTest extends ContainerTestCase
 		],
 		'typedServiceInTrait' => [
 			'type' => SampleService::class,
-		],
-		'aliasedAnnotatedServiceInTrait' => [
-			'type' => ImportedService::class,
 		],
 		'fqnFactoryResultInTrait' => [
 			'factory' => SampleServiceFactory::class,
@@ -100,6 +88,9 @@ class AutowirePropertiesTest extends ContainerTestCase
 			'arguments' => [ImportedService::class],
 			'type' => ImportedService::class,
 		],
+		'aliasedService' => [
+			'type' => ImportedService::class,
+		],
 		'serviceInTrait' => [
 			'type' => SampleService::class,
 		],
@@ -128,20 +119,8 @@ class AutowirePropertiesTest extends ContainerTestCase
 		Assert::false(isset($presenter->typedService));
 		Assert::type(SampleService::class, $presenter->typedService);
 
-		Assert::false(isset($presenter->fqnAnnotatedService));
-		Assert::type(SampleService::class, $presenter->fqnAnnotatedService);
-
-		Assert::false(isset($presenter->annotatedService));
-		Assert::type(SampleService::class, $presenter->annotatedService);
-
-		Assert::false(isset($presenter->aliasedAnnotatedService));
-		Assert::type(ImportedService::class, $presenter->aliasedAnnotatedService);
-
 		Assert::false(isset($presenter->typedServiceInTrait));
 		Assert::type(SampleService::class, $presenter->typedServiceInTrait);
-
-		Assert::false(isset($presenter->aliasedAnnotatedServiceInTrait));
-		Assert::type(ImportedService::class, $presenter->aliasedAnnotatedServiceInTrait);
 
 		Assert::false(isset($presenter->fqnFactoryResult));
 		Assert::type(SampleService::class, $presenter->fqnFactoryResult);
@@ -398,7 +377,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 				@$container->callMethod([$presenter, 'injectProperties']);
 			},
 			Kdyby\Autowired\InvalidStateException::class,
-			'Missing property typehint or annotation @var on KdybyTests\Autowired\PropertiesFixtures\WithMissingPropertyTypePresenter::$service.',
+			'Missing property typehint on KdybyTests\Autowired\PropertiesFixtures\WithMissingPropertyTypePresenter::$service.',
 		);
 	}
 

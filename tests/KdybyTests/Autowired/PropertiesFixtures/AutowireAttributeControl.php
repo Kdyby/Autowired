@@ -5,6 +5,7 @@ namespace KdybyTests\Autowired\PropertiesFixtures;
 
 use Kdyby\Autowired\Attributes\Autowire;
 use KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService;
+use KdybyTests\Autowired\PropertiesFixtures\UseExpansion\ImportedService as AliasedService;
 
 class AutowireAttributeControl extends BaseControl
 {
@@ -19,5 +20,8 @@ class AutowireAttributeControl extends BaseControl
 
 	#[Autowire(GenericFactory::class, [ImportedService::class])]
 	public ImportedService $genericFactoryResult;
+
+	#[Autowire]
+	public AliasedService $aliasedService;
 
 }

@@ -175,15 +175,7 @@ trait AutowireProperties
 	{
 		$type = Reflection::getPropertyType($prop);
 		if ($type === NULL) {
-			$varType = Nette\DI\Helpers::parseAnnotation($prop, 'var');
-			if ($varType !== NULL && $varType !== '') {
-				$type = Reflection::expandClassName($varType, Reflection::getPropertyDeclaringClass($prop));
-				trigger_error(sprintf('Resolving property type from @var annotation is deprecated, change %s to a typed property.', Reflection::toString($prop)), E_USER_DEPRECATED);
-			}
-		}
-
-		if ($type === NULL) {
-			throw new InvalidStateException(sprintf('Missing property typehint or annotation @var on %s.', Reflection::toString($prop)), $prop);
+			throw new InvalidStateException(sprintf('Missing property typehint on %s.', Reflection::toString($prop)), $prop);
 		}
 
 		if (! class_exists($type) && ! interface_exists($type)) {
