@@ -1,3 +1,6 @@
+extensions:
+    autowired: Kdyby\Autowired\DI\AutowiredExtension
+
 services:
     cacheStorage: KdybyTests\TestStorage
 
