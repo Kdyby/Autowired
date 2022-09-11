@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace KdybyTests\Autowired;
 
+use KdybyTests\Autowired\DeprecationsFixtures\AnnotationPresenter;
 use KdybyTests\Autowired\DeprecationsFixtures\SimplePresenter;
 use KdybyTests\ContainerTestCase;
 use Tester\Assert;
@@ -34,6 +35,20 @@ final class DeprecationsTest extends ContainerTestCase
 			},
 			E_USER_DEPRECATED,
 			'Using Kdyby\Autowired\AutowireProperties without registered AutowiredExtension is deprecated, register the extension in your config.',
+		);
+	}
+
+	public function testAnnotations(): void
+	{
+		$container = $this->compileContainer('deprecations');
+		$presenter = new AnnotationPresenter();
+
+		Assert::error(
+			function () use ($container, $presenter): void {
+				$container->callMethod([$presenter, 'injectProperties']);
+			},
+			E_USER_DEPRECATED,
+			'@autowire annotation is deprecated, use #[Autowire] attribute instead on KdybyTests\Autowired\DeprecationsFixtures\AnnotationPresenter::$typedService.',
 		);
 	}
 

@@ -163,6 +163,7 @@ trait AutowireProperties
 					unset($annotationParameters['factory']);
 					$metadata['arguments'] = array_values($annotationParameters);
 				}
+				trigger_error(sprintf('@autowire annotation is deprecated, use #[Autowire] attribute instead on %s.', Reflection::toString($property)), E_USER_DEPRECATED);
 			}
 		}
 

@@ -42,7 +42,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 Autowired properties
 --------------------
 
-Every `protected` or `public` property marked with `@autowire` annotation will be under control of `AutowireProperties` trait, we will call them "autowired properties".
+Every `protected` or `public` property marked with `#[Autowire]` attribute will be under control of `AutowireProperties` trait, we will call them "autowired properties".
 
 The properties are analysed and result of the analysis is cached. This means, that you will see errors in your configuration instantly, and not after you use it in some conditional code, that might not even be executed every time. This is here to help you find errors, as early as possible.
 
@@ -50,27 +50,6 @@ Every autowired property will be unsetted, when presenter is created, and then t
 
 This behaviour is inspired by article [DI and property injection](http://phpfashion.com/di-a-property-injection) by [David Grudl](http://davidgrudl.com/).
 
-
-```php
-class ArticlePresenter extends BasePresenter
-{
-
-	/**
-	 * @autowire
-	 */
-	protected App\ArticleRepository $articleRepository;
-
-	/**
-	 * @autowire(MyApp\Blog\Article, factory=\Kdyby\Doctrine\EntityDaoFactory)
-	 */
-	protected Kdyby\Doctrine\EntityDao $factoryResult;
-
-	// ..
-
-}
-```
-
-Or using PHP 8 attributes:
 
 ```php
 use Kdyby\Autowired\Attributes\Autowire;
@@ -87,6 +66,27 @@ class ArticlePresenter extends BasePresenter
 
 	#[Autowire(factory: EntityDaoFactory::class, arguments: [Article::class])]
 	protected EntityDao $factoryResult;
+
+	// ..
+
+}
+```
+
+Or by using phpdoc annotation (deprecated):
+
+```php
+class ArticlePresenter extends BasePresenter
+{
+
+	/**
+	 * @autowire
+	 */
+	protected App\ArticleRepository $articleRepository;
+
+	/**
+	 * @autowire(MyApp\Blog\Article, factory=\Kdyby\Doctrine\EntityDaoFactory)
+	 */
+	protected Kdyby\Doctrine\EntityDao $factoryResult;
 
 	// ..
 
