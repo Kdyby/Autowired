@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Cannot access offset 0 on array\\<int, string\\>\\|false\\.$#"
-			count: 1
-			path: src/Kdyby/Autowired/PhpDocParser.php
-
-		-
 			message: "#^Call to an undefined method KdybyTests\\\\Autowired\\\\ComponentFactoriesFixtures\\\\NonPresenterComponent\\:\\:getComponents\\(\\)\\.$#"
 			count: 1
 			path: tests/KdybyTests/Autowired/ComponentFactoriesFixtures/NonPresenterComponent.php
@@ -23,27 +18,7 @@ parameters:
 		-
 			message: "#^Offset 'arguments' on array\\{type\\: class\\-string, factory\\: class\\-string, arguments\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
-			path: tests/KdybyTests/Autowired/DeprecationsFixtures/AnnotationPresenter.php
-
-		-
-			message: "#^Offset 'arguments' on array\\{type\\: class\\-string, factory\\: class\\-string, arguments\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
 			path: tests/KdybyTests/Autowired/IntegrationFixtures/IntegrationPresenter.php
-
-		-
-			message: "#^Offset 'arguments' on array\\{type\\: class\\-string, factory\\: class\\-string, arguments\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: tests/KdybyTests/Autowired/PropertiesFixtures/AutowireAnnotationPresenter.php
-
-		-
-			message: "#^Offset 'arguments' on array\\{type\\: class\\-string, factory\\: class\\-string, arguments\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: tests/KdybyTests/Autowired/PropertiesFixtures/AutowireAnnotationTypoPresenter.php
-
-		-
-			message: "#^Offset 'arguments' on array\\{type\\: class\\-string, factory\\: class\\-string, arguments\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: tests/KdybyTests/Autowired/PropertiesFixtures/AutowireAnnotationWrongCasePresenter.php
 
 		-
 			message: "#^Offset 'arguments' on array\\{type\\: class\\-string, factory\\: class\\-string, arguments\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
@@ -84,11 +59,6 @@ parameters:
 			message: "#^Offset 'arguments' on array\\{type\\: class\\-string, factory\\: class\\-string, arguments\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: tests/KdybyTests/Autowired/PropertiesFixtures/WithDisabledAutowiringServicePresenter.php
-
-		-
-			message: "#^Offset 'arguments' on array\\{type\\: class\\-string, factory\\: class\\-string, arguments\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: tests/KdybyTests/Autowired/PropertiesFixtures/WithInvalidFactoryTypePresenter.php
 
 		-
 			message: "#^Offset 'arguments' on array\\{type\\: class\\-string, factory\\: class\\-string, arguments\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"

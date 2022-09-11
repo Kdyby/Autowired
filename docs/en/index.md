@@ -72,27 +72,6 @@ class ArticlePresenter extends BasePresenter
 }
 ```
 
-Or by using phpdoc annotation (deprecated):
-
-```php
-class ArticlePresenter extends BasePresenter
-{
-
-	/**
-	 * @autowire
-	 */
-	protected App\ArticleRepository $articleRepository;
-
-	/**
-	 * @autowire(MyApp\Blog\Article, factory=\Kdyby\Doctrine\EntityDaoFactory)
-	 */
-	protected Kdyby\Doctrine\EntityDao $factoryResult;
-
-	// ..
-
-}
-```
-
 
 
 Autowired component factories

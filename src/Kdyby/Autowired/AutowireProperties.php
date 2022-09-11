@@ -7,7 +7,6 @@ use Kdyby\Autowired\Attributes\Autowire;
 use Kdyby\Autowired\Caching\CacheFactory;
 use Nette;
 use Nette\Utils\Reflection;
-use Nette\Utils\Strings;
 
 
 /**
@@ -123,47 +122,19 @@ trait AutowireProperties
 	 */
 	private function resolveAutowireMetadata(\ReflectionProperty $property): ?array
 	{
-		$metadata = NULL;
-
 		$attributes = $property->getAttributes(Autowire::class);
-		if (count($attributes) > 0) {
-			if ($property->isPrivate()) {
-				throw new MemberAccessException(sprintf('Autowired properties must be protected or public. Please fix visibility of %s or remove the Autowire attribute.', Reflection::toString($property)), $property);
-			}
-
-			/** @var Autowire $autowire */
-			$autowire = reset($attributes)->newInstance();
-			$metadata = $autowire->toArray();
+		if (count($attributes) === 0) {
+			return NULL;
 		}
 
-		if ($metadata === NULL) {
-			foreach (PhpDocParser::parseComment((string) $property->getDocComment()) as $name => $value) {
-				if (! in_array(Strings::lower($name), ['autowire', 'autowired'], TRUE)) {
-					continue;
-				}
-
-				if (Strings::lower($name) !== $name || $name !== 'autowire') {
-					throw new UnexpectedValueException(sprintf('Annotation @%s on %s should be fixed to lowercase @autowire.', $name, Reflection::toString($property)), $property);
-				}
-
-				if ($property->isPrivate()) {
-					throw new MemberAccessException(sprintf('Autowired properties must be protected or public. Please fix visibility of %s or remove the @autowire annotation.', Reflection::toString($property)), $property);
-				}
-
-				$metadata = [];
-				$annotationParameters = (array) end($value);
-				if (isset($annotationParameters['factory'])) {
-					$metadata['factory'] = $this->resolveFactoryType($property, $annotationParameters['factory'], 'autowire');
-					unset($annotationParameters['factory']);
-					$metadata['arguments'] = array_values($annotationParameters);
-				}
-				trigger_error(sprintf('@autowire annotation is deprecated, use #[Autowire] attribute instead on %s.', Reflection::toString($property)), E_USER_DEPRECATED);
-			}
+		if ($property->isPrivate()) {
+			throw new MemberAccessException(sprintf('Autowired properties must be protected or public. Please fix visibility of %s or remove the Autowire attribute.', Reflection::toString($property)), $property);
 		}
 
-		if ($metadata !== NULL) {
-			$metadata['type'] = $this->resolvePropertyType($property);
-		}
+		/** @var Autowire $autowire */
+		$autowire = reset($attributes)->newInstance();
+		$metadata = $autowire->toArray();
+		$metadata['type'] = $this->resolvePropertyType($property);
 
 		return $metadata;
 	}
@@ -183,40 +154,6 @@ trait AutowireProperties
 		}
 
 		return $type;
-	}
-
-	/**
-	 * @return class-string
-	 */
-	private function resolveFactoryType(\ReflectionProperty $prop, string $annotationValue, string $annotationName): string
-	{
-		$type = ltrim($annotationValue, '\\');
-		if ($type === '') {
-			throw new InvalidStateException(sprintf('Missing annotation @%s with typehint on %s.', $annotationName, Reflection::toString($prop)), $prop);
-		}
-
-		if (! class_exists($type) && ! interface_exists($type)) {
-			if (substr($annotationValue, 0, 1) === '\\') {
-				throw new MissingClassException(sprintf('Class "%s" was not found, please check the typehint on %s in annotation @%s.', $type, Reflection::toString($prop), $annotationName), $prop);
-			}
-
-			$expandedType = Reflection::expandClassName(
-				$annotationValue,
-				Reflection::getPropertyDeclaringClass($prop),
-			);
-
-			if ($expandedType && (class_exists($expandedType) || interface_exists($expandedType))) {
-				$type = $expandedType;
-
-			} else {
-				$type = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $type;
-				if (! class_exists($type) && ! interface_exists($type)) {
-					throw new MissingClassException(sprintf('Neither class "%s" or "%s" was found, please check the typehint on %s in annotation @%s.', $annotationValue, $type, Reflection::toString($prop), $annotationName), $prop);
-				}
-			}
-		}
-
-		return (new \ReflectionClass($type))->getName();
 	}
 
 	/**

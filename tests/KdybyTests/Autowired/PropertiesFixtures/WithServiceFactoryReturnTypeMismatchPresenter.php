@@ -13,9 +13,7 @@ class WithServiceFactoryReturnTypeMismatchPresenter extends Nette\Application\UI
 
 	use Kdyby\Autowired\AutowireProperties;
 
-	/**
-	 * @autowire("missmatch", factory=\KdybyTests\Autowired\PropertiesFixtures\SampleServiceFactory)
-	 */
+	#[Kdyby\Autowired\Attributes\Autowire(factory: SampleServiceFactory::class, arguments: ['missmatch'])]
 	public ImportedService $service;
 
 }

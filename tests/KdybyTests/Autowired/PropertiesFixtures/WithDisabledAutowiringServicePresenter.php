@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace KdybyTests\Autowired\PropertiesFixtures;
 
 use Kdyby;
+use Kdyby\Autowired\Attributes\Autowire;
 use Nette;
 
 
@@ -12,9 +13,7 @@ class WithDisabledAutowiringServicePresenter extends Nette\Application\UI\Presen
 
 	use Kdyby\Autowired\AutowireProperties;
 
-	/**
-	 * @autowire
-	 */
+	#[Autowire]
 	public FactoryWithDisabledAutowiring $service;
 
 }
