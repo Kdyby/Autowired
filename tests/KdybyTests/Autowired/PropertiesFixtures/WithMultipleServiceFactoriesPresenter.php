@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace KdybyTests\Autowired\PropertiesFixtures;
 
 use Kdyby;
+use Kdyby\Autowired\Attributes\Autowire;
 use Nette;
 
 
@@ -12,9 +13,7 @@ class WithMultipleServiceFactoriesPresenter extends Nette\Application\UI\Present
 
 	use Kdyby\Autowired\AutowireProperties;
 
-	/**
-	 * @autowire(factory=FactoryWithMultipleServices)
-	 */
+	#[Autowire(factory: FactoryWithMultipleServices::class)]
 	public SampleService $service;
 
 }
