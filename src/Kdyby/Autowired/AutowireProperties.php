@@ -20,11 +20,6 @@ trait AutowireProperties
 	 */
 	private array $autowirePropertiesMeta = [];
 
-	/**
-	 * @var array<string, object>
-	 */
-	private array $autowireProperties = [];
-
 	private Nette\DI\Container $autowirePropertiesLocator;
 
 	/**
@@ -112,7 +107,7 @@ trait AutowireProperties
 			$this->getAutowiredService($metadata['type'], 'service', $prop);
 		}
 
-		// unset property to pass control to __set() and __get()
+		// unset property to pass control to __get()
 		unset($this->{$prop->getName()});
 		$this->autowirePropertiesMeta[$prop->getName()] = $metadata;
 	}
@@ -156,47 +151,17 @@ trait AutowireProperties
 		return $type;
 	}
 
-	/**
-	 * @param string $name
-	 * @param mixed $value
-	 * @throws MemberAccessException
-	 * @return void
-	 */
-	public function __set(string $name, mixed $value): void
-	{
-		if (! isset($this->autowirePropertiesMeta[$name])) {
-			parent::__set($name, $value);
-			return;
-
-		}
-
-		if (isset($this->autowireProperties[$name])) {
-			throw new MemberAccessException("Property \$$name has already been set.");
-
-		}
-
-		if (! $value instanceof $this->autowirePropertiesMeta[$name]['type']) {
-			throw new MemberAccessException("Property \$$name must be an instance of " . $this->autowirePropertiesMeta[$name]['type'] . '.');
-		}
-
-		$this->autowireProperties[$name] = $value;
-	}
-
-	/**
-	 * @throws MemberAccessException
-	 * @return mixed
-	 */
 	public function &__get(string $name): mixed
 	{
 		if (! isset($this->autowirePropertiesMeta[$name])) {
 			return parent::__get($name);
 		}
 
-		if (! isset($this->autowireProperties[$name])) {
-			$this->autowireProperties[$name] = $this->createAutowiredPropertyService($name);
+		if (! isset($this->{$name})) {
+			$this->{$name} = $this->createAutowiredPropertyService($name);
 		}
 
-		return $this->autowireProperties[$name];
+		return $this->{$name};
 	}
 
 	private function createAutowiredPropertyService(string $name): object
