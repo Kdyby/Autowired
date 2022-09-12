@@ -46,7 +46,7 @@ Every `protected` or `public` property marked with `#[Autowire]` attribute will 
 
 The properties are analysed and result of the analysis is cached. This means, that you will see errors in your configuration instantly, and not after you use it in some conditional code, that might not even be executed every time. This is here to help you find errors, as early as possible.
 
-Every autowired property will be unsetted, when presenter is created, and then the trait takes over using `__get()` and `__set()` magic. The service will be created only if it's really used and it cannot be overwritten, once it has some value.
+Every autowired property will be unsetted, when presenter is created, and then the trait takes over using `__get()` magic. The service will be created only if it's really used.
 
 This behaviour is inspired by article [DI and property injection](http://phpfashion.com/di-a-property-injection) by [David Grudl](http://davidgrudl.com/).
 

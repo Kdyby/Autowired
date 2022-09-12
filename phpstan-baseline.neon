@@ -31,11 +31,6 @@ parameters:
 			path: tests/KdybyTests/Autowired/PropertiesFixtures/NonPresenterComponent.php
 
 		-
-			message: "#^KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\NonPresenterComponent\\:\\:__set\\(\\) calls parent\\:\\:__set\\(\\) but KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\NonPresenterComponent does not extend any class\\.$#"
-			count: 1
-			path: tests/KdybyTests/Autowired/PropertiesFixtures/NonPresenterComponent.php
-
-		-
 			message: "#^Offset 'arguments' on array\\{type\\: class\\-string, factory\\: class\\-string, arguments\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: tests/KdybyTests/Autowired/PropertiesFixtures/NonPresenterComponent.php
