@@ -3,10 +3,7 @@ services:
 
     sampleFactory:
         implement: KdybyTests\Autowired\PropertiesFixtures\SampleServiceFactory
-        parameters:
-            - 'name'
-            secondName: null
-        factory: KdybyTests\Autowired\PropertiesFixtures\SampleService(%name%, %secondName%)
+        factory: KdybyTests\Autowired\PropertiesFixtures\SampleService($name, $secondName)
 
     - KdybyTests\Autowired\PropertiesFixtures\SampleService('shared')
 
