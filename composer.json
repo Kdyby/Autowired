@@ -17,7 +17,7 @@
 		"issues": "https://github.com/kdyby/autowired/issues"
 	},
 	"require": {
-		"php": ">=8.0",
+		"php": ">=8.0 <8.3",
 		"nette/utils": "^3.2.5",
 		"nette/di": "^3.0.10",
 		"nette/component-model": "^3.0.2",
