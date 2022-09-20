@@ -17,7 +17,7 @@ class SillyPresenter extends Nette\Application\UI\Presenter
 		return $factory->create();
 	}
 
-	protected function createComponentOptional(?ComponentFactoryWithMissingService $factory): SillyComponent
+	protected function createComponentOptional(?ComponentFactoryWithMissingService $factory = NULL): SillyComponent
 	{
 		return new SillyComponent();
 	}
@@ -30,8 +30,9 @@ class SillyPresenter extends Nette\Application\UI\Presenter
 		return $factory->create();
 	}
 
-	protected function createComponentTypehintedName(string $name, ComponentFactory $factory): SillyComponent
+	protected function createComponentTypehintedName(string $name, ?ComponentFactory $factory = NULL): SillyComponent
 	{
+		assert($factory !== NULL);
 		return $factory->create();
 	}
 
