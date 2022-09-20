@@ -22,7 +22,10 @@ class SillyPresenter extends Nette\Application\UI\Presenter
 		return new SillyComponent();
 	}
 
-	protected function createComponentNoTypehintName(string|int $name, ComponentFactory $factory): SillyComponent
+	/**
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint
+	 */
+	protected function createComponentNoTypehintName($name, ComponentFactory $factory): SillyComponent
 	{
 		return $factory->create();
 	}

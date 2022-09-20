@@ -41,6 +41,11 @@ parameters:
 			path: tests/KdybyTests/Autowired/ComponentFactoriesFixtures/NonPresenterComponent.php
 
 		-
+			message: "#^Method KdybyTests\\\\Autowired\\\\ComponentFactoriesFixtures\\\\SillyPresenter\\:\\:createComponentNoTypehintName\\(\\) has parameter \\$name with no type specified\\.$#"
+			count: 1
+			path: tests/KdybyTests/Autowired/ComponentFactoriesFixtures/SillyPresenter.php
+
+		-
 			message: "#^KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\NonPresenterComponent\\:\\:__get\\(\\) calls parent\\:\\:__get\\(\\) but KdybyTests\\\\Autowired\\\\PropertiesFixtures\\\\NonPresenterComponent does not extend any class\\.$#"
 			count: 1
 			path: tests/KdybyTests/Autowired/PropertiesFixtures/NonPresenterComponent.php
