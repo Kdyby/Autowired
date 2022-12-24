@@ -164,6 +164,17 @@ trait AutowireProperties
 		return $this->{$name};
 	}
 
+	public function __set(string $name, mixed $value): void
+	{
+		if (! isset($this->autowirePropertiesMeta[$name])) {
+			parent::__set($name, $value);
+			return;
+		}
+
+		// Assign directly bypassing magic from parents (e.g. SmartObject validation)
+		$this->{$name} = $value;
+	}
+
 	private function createAutowiredPropertyService(string $name): object
 	{
 		if (array_key_exists('factory', $this->autowirePropertiesMeta[$name])) {

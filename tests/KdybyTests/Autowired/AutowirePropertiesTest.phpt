@@ -82,7 +82,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 		Assert::type(SampleService::class, $control->service);
 
 		Assert::false(isset($control->serviceInTrait));
-		Assert::type(SampleService::class, $control->serviceInTrait);
+		Assert::type(SampleService::class, $control->getServiceInTrait());
 
 		Assert::false(isset($control->factoryResult));
 		Assert::type(SampleService::class, $control->factoryResult);

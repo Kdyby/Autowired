@@ -14,7 +14,7 @@ class IntegrationPresenter extends Nette\Application\UI\Presenter
 	use Kdyby\Autowired\AutowireComponentFactories;
 
 	#[Autowire]
-	public LoremService $service;
+	protected LoremService $service;
 
 	#[Autowire(factory: DatagridFactory::class)]
 	public DatagridComponent $factoryResult;
@@ -22,6 +22,11 @@ class IntegrationPresenter extends Nette\Application\UI\Presenter
 	protected function createComponentSilly(DatagridFactory $factory): DatagridComponent
 	{
 		return $factory->create();
+	}
+
+	public function getService(): LoremService
+	{
+		return $this->service;
 	}
 
 }

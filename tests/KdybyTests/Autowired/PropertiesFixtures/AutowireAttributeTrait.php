@@ -10,9 +10,14 @@ trait AutowireAttributeTrait
 {
 
 	#[Autowire]
-	public SampleService $serviceInTrait;
+	protected SampleService $serviceInTrait;
 
 	#[Autowire(factory: SampleServiceFactory::class, arguments: ['attribute trait'])]
 	public SampleService $factoryResultInTrait;
+
+	public function getServiceInTrait(): SampleService
+	{
+		return $this->serviceInTrait;
+	}
 
 }

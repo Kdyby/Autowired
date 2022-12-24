@@ -30,7 +30,7 @@ class IntegrationTest extends ContainerTestCase
 		$presenter = $container->getByName('presenter');
 		Assert::type(IntegrationPresenter::class, $presenter);
 
-		Assert::type(LoremService::class, $presenter->service);
+		Assert::type(LoremService::class, $presenter->getService());
 		Assert::type(DatagridComponent::class, $presenter->factoryResult);
 		Assert::type(DatagridComponent::class, $presenter->getComponent('silly'));
 
