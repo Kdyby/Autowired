@@ -7,6 +7,7 @@ use Kdyby\Autowired\Attributes\Autowire;
 use Kdyby\Autowired\Caching\CacheFactory;
 use Nette;
 use Nette\Utils\Reflection;
+use Nette\Utils\Type;
 
 
 /**
@@ -139,16 +140,21 @@ trait AutowireProperties
 	 */
 	private function resolvePropertyType(\ReflectionProperty $prop): string
 	{
-		$type = Reflection::getPropertyType($prop);
+		$type = Type::fromReflection($prop);
 		if ($type === NULL) {
 			throw new InvalidStateException(sprintf('Missing property typehint on %s.', Reflection::toString($prop)), $prop);
 		}
+		if (! $type->isSingle()) {
+			throw new InvalidStateException('The ' . Reflection::toString($prop) . ' is not expected to have a union or intersection type.', $prop);
+		}
 
-		if (! class_exists($type) && ! interface_exists($type)) {
+		$className = $type->getSingleName();
+		assert(is_string($className));
+		if (! class_exists($className) && ! interface_exists($className)) {
 			throw new MissingClassException(sprintf('Class "%s" not found, please check the typehint on %s.', $type, Reflection::toString($prop)), $prop);
 		}
 
-		return $type;
+		return $className;
 	}
 
 	public function &__get(string $name): mixed
