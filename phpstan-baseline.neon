@@ -1,6 +1,12 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Cannot access an offset on iterable\\<callable\\>\\.$#"
+			count: 1
+			path: src/Kdyby/Autowired/DI/AutowiredExtension.php
+			reportUnmatched: false
+
+		-
 			message: "#^Call to an undefined method KdybyTests\\\\Autowired\\\\ComponentFactoriesFixtures\\\\NonPresenterComponent\\:\\:getComponents\\(\\)\\.$#"
 			count: 1
 			path: tests/KdybyTests/Autowired/ComponentFactoriesFixtures/NonPresenterComponent.php
