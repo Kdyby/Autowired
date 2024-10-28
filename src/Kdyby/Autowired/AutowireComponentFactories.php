@@ -24,7 +24,11 @@ trait AutowireComponentFactories
 	protected function getComponentFactoriesLocator(): Nette\DI\Container
 	{
 		if (! isset($this->autowireComponentFactoriesLocator)) {
-			$this->injectComponentFactories($this->getPresenter()->getContext());
+			$presenter = $this->getPresenter();
+			if (! method_exists($presenter, 'getContext')) {
+				throw new InvalidStateException('Cannot get DI Container service - are inject methods allowed?');
+			}
+			$this->injectComponentFactories($presenter->getContext());
 		}
 
 		return $this->autowireComponentFactoriesLocator;
