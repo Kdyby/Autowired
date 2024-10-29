@@ -29,7 +29,8 @@ class ExtensionTest extends Tester\TestCase
 
 		Debugger::$logDirectory = TEMP_DIR;
 		$refl = new \ReflectionProperty('\Nette\Application\UI\Presenter', 'onShutdown');
-		$file = Debugger::log(new Kdyby\Autowired\MissingServiceException('Missing service blabla', $refl));
+		// @ to suppress deprecation warning from Tracy on PHP >=8.4, see https://github.com/nette/tracy/pull/587
+		$file = @Debugger::log(new Kdyby\Autowired\MissingServiceException('Missing service blabla', $refl));
 
 		Assert::match('%A%<h2%a?%><a%a% class="tracy-toggle">Autowired</a></h2>%A%', Nette\Utils\FileSystem::read($file));
 	}
