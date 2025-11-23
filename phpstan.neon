@@ -13,3 +13,4 @@ includes:
 	- vendor/phpstan/phpstan-nette/extension.neon
 	- vendor/phpstan/phpstan-nette/rules.neon
 	- phpstan-baseline.neon
+	- tests/PHPStan/conditional.config.php

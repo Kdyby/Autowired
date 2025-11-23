@@ -34,7 +34,9 @@
 		"php-parallel-lint/php-parallel-lint": "^1.3.2",
 		"squizlabs/php_codesniffer": "^4.0.1",
 		"slevomat/coding-standard": "^8.25.0",
-		"nette/neon": ">=3.3.4"
+		"nette/neon": ">=3.3.4",
+		"composer-runtime-api": "^2.0",
+		"composer/semver": "3.4.4"
 	},
 	"autoload": {
 		"psr-0": {
