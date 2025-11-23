@@ -38,6 +38,9 @@
 		"composer-runtime-api": "^2.0",
 		"composer/semver": "3.4.4"
 	},
+	"conflict": {
+		"nette/component-model": "3.1.2"
+	},
 	"autoload": {
 		"psr-0": {
 			"Kdyby\\Autowired": "src/"
