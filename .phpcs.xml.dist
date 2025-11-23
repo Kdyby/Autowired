@@ -16,7 +16,10 @@
         <exclude name="PSR12.Classes.OpeningBraceSpace.Found"/><!-- we want 1 blank line after brace -->
         <exclude name="PSR12.Files.DeclareStatement.SpaceFoundAfterDirective"/><!-- we use space in declare statement -->
         <exclude name="PSR12.Files.DeclareStatement.SpaceFoundBeforeDirectiveValue"/><!-- we use space in declare statement -->
-        <exclude name="PSR12.Files.FileHeader.SpacingAfterBlock"/><!-- interferes with declare statement on first line -->
+        <exclude name="PSR12.Files.FileHeader.SpacingAfterTagBlock"/><!-- interferes with declare statement on first line -->
+        <exclude name="PSR12.Files.FileHeader.SpacingAfterUseBlock"/><!-- avoid blank linke between class, function and const imports -->
+        <exclude name="PSR12.Files.FileHeader.SpacingAfterUseConstBlock"/><!-- avoid blank linke between class, function and const imports -->
+        <exclude name="PSR12.Files.FileHeader.SpacingAfterUseFunctionBlock"/><!-- avoid blank linke between class, function and const imports -->
         <exclude name="PSR12.Traits.UseDeclaration.BlankLineAfterLastUse"/><!-- we want 1 blank line before brace -->
         <exclude name="PSR12.Traits.UseDeclaration.UseAfterBrace"/><!-- we want 1 blank line after brace -->
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint"/><!-- already checked by SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing.MultipleSpacesBetweenTypeHintAndParameter -->
@@ -59,9 +62,9 @@
     <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
     <rule ref="Generic.Files.InlineHTML"/>
     <rule ref="Generic.Formatting.MultipleStatementAlignment">
+        <type>error</type>
         <properties>
             <property name="maxPadding" value="0"/>
-            <property name="error" value="true"/>
         </properties>
     </rule>
     <rule ref="Generic.Formatting.SpaceAfterCast"/>
@@ -95,6 +98,11 @@
     <rule ref="SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement"/>
     <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace"/>
     <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
+    <rule ref="SlevomatCodingStandard.Attributes.AttributeAndTargetSpacing"/>
+    <rule ref="SlevomatCodingStandard.Attributes.DisallowAttributesJoining"/>
+    <rule ref="SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine"/>
+    <rule ref="SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment"/>
+    <rule ref="SlevomatCodingStandard.Classes.BackedEnumTypeSpacing"/>
     <rule ref="SlevomatCodingStandard.Classes.ClassConstantVisibility"/>
     <rule ref="SlevomatCodingStandard.Classes.ClassMemberSpacing"/>
     <rule ref="SlevomatCodingStandard.Classes.ClassStructure">
@@ -118,6 +126,7 @@
     <rule ref="SlevomatCodingStandard.Classes.DisallowMultiConstantDefinition"/>
     <rule ref="SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition"/>
     <rule ref="SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces"/>
+    <rule ref="SlevomatCodingStandard.Classes.EnumCaseSpacing"/>
     <rule ref="SlevomatCodingStandard.Classes.ModernClassNameReference"/>
     <rule ref="SlevomatCodingStandard.Classes.PropertyDeclaration"/>
     <rule ref="SlevomatCodingStandard.Classes.TraitUseDeclaration"/>
@@ -189,6 +198,14 @@
             <property name="spacesCountAroundEqualsSign" value="0"/>
         </properties>
     </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat">
+        <properties>
+            <property name="withSpacesAroundOperators" value="no"/>
+            <property name="withSpacesInsideParentheses" value="no"/>
+            <property name="shortNullable" value="yes"/>
+            <property name="nullPosition" value="last"/>
+        </properties>
+    </rule>
     <rule ref="SlevomatCodingStandard.TypeHints.LongTypeHints"/>
     <rule ref="SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue"/>
     <rule ref="SlevomatCodingStandard.TypeHints.NullTypeHintOnLastPosition"/>
@@ -217,13 +234,6 @@
         </properties>
     </rule>
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing"/>
-    <rule ref="SlevomatCodingStandard.TypeHints.UnionTypeHintFormat">
-        <properties>
-            <property name="withSpaces" value="no"/>
-            <property name="shortNullable" value="yes"/>
-            <property name="nullPosition" value="last"/>
-        </properties>
-    </rule>
     <rule ref="SlevomatCodingStandard.TypeHints.UselessConstantTypeHint"/>
     <rule ref="SlevomatCodingStandard.Variables.DuplicateAssignmentToVariable"/>
     <rule ref="SlevomatCodingStandard.Whitespaces.DuplicateSpaces">
