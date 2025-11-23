@@ -60,21 +60,18 @@ final class Cache
 	 */
 	private function getFileDependencies(): array
 	{
-		/** @var list<class-string> $nettePresenterParents */
+		/** @var array<string, class-string> $nettePresenterParents */
 		$nettePresenterParents = class_parents(Nette\Application\UI\Presenter::class);
-		assert(is_array($nettePresenterParents));
 		$ignoreClasses = $nettePresenterParents + ['ui' => Nette\Application\UI\Presenter::class];
 		$ignoreTraits = [AutowireProperties::class, AutowireComponentFactories::class];
 
-		/** @var list<class-string> $componentParents */
+		/** @var array<string, class-string> $componentParents */
 		$componentParents = class_parents($this->componentClass);
-		assert(is_array($componentParents));
 
 		$classes = array_values(array_diff($componentParents + ['me' => $this->componentClass], $ignoreClasses));
 		foreach ($classes as $class) {
 			/** @var list<class-string> $uses */
-			$uses = class_uses($class);
-			assert(is_array($uses));
+			$uses = array_values(class_uses($class));
 			$classes = array_merge($classes, array_diff($uses, $ignoreTraits));
 		}
 

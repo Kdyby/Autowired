@@ -81,7 +81,7 @@ class AutowirePropertiesTest extends ContainerTestCase
 		Assert::false(isset($control->service));
 		Assert::type(SampleService::class, $control->service);
 
-		Assert::false(isset($control->serviceInTrait));
+		Assert::false(isset($control->serviceInTrait)); // @phpstan-ignore property.protected
 		Assert::type(SampleService::class, $control->getServiceInTrait());
 
 		Assert::false(isset($control->factoryResult));
