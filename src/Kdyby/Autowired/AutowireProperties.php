@@ -144,7 +144,7 @@ trait AutowireProperties
 		if ($type === NULL) {
 			throw new InvalidStateException(sprintf('Missing property typehint on %s.', Reflection::toString($prop)), $prop);
 		}
-		if (! $type->isSingle()) {
+		if (! $type->isSimple()) {
 			throw new InvalidStateException('The ' . Reflection::toString($prop) . ' is not expected to have a union or intersection type.', $prop);
 		}
 
