@@ -32,7 +32,7 @@ class ExtensionTest extends Tester\TestCase
 		// @ to suppress deprecation warning from Tracy on PHP >=8.4, see https://github.com/nette/tracy/pull/587
 		$file = @Debugger::log(new Kdyby\Autowired\MissingServiceException('Missing service blabla', $refl));
 
-		Assert::match('%A%<h2%a?%><a%a% class="tracy-toggle">Autowired</a></h2>%A%', Nette\Utils\FileSystem::read($file));
+		Assert::match('%A%<h2%a?%>%A?%<a%a% class="tracy-toggle">Autowired</a>%A?%</h2>%A%', Nette\Utils\FileSystem::read($file));
 	}
 
 }
