@@ -21,12 +21,12 @@ class Panel
 
 	public static function registerBluescreen(): void
 	{
-		Debugger::getBlueScreen()->addPanel([static::class, 'renderException']);
+		Debugger::getBlueScreen()->addPanel(static::renderException(...));
 	}
 
 	/**
 	 * @param \Throwable|null $e
-	 * @return array<mixed>|null
+	 * @return array{tab: string, panel: string}|null
 	 */
 	public static function renderException(?\Throwable $e = NULL): ?array
 	{
