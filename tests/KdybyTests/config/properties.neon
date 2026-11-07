@@ -2,7 +2,7 @@ extensions:
     autowired: Kdyby\Autowired\DI\AutowiredExtension
 
 services:
-    cacheStorage: KdybyTests\TestStorage
+    cache.storage: KdybyTests\TestStorage
 
     sampleFactory:
         implement: KdybyTests\Autowired\PropertiesFixtures\SampleServiceFactory
