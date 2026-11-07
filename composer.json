@@ -22,7 +22,7 @@
 		"nette/di": "^3.1",
 		"nette/component-model": "^3.1 || ^4.0",
 		"nette/application": "^3.1.4",
-		"nette/caching": "^3.1",
+		"nette/caching": "^3.2.2 || ^4.0",
 		"tracy/tracy": "^2.8"
 	},
 	"require-dev": {

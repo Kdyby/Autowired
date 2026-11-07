@@ -5,7 +5,7 @@ autowired:
     cacheStorage: KdybyTests\TestStorage
 
 services:
-    cacheStorage: Nette\Caching\Storages\MemoryStorage
+    cache.storage: Nette\Caching\Storages\MemoryStorage
 
     datagridFactory:
         implement: KdybyTests\Autowired\IntegrationFixtures\DatagridFactory

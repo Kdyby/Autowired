@@ -42,7 +42,7 @@ final class Cache
 			$this->getCacheKey(),
 			$value,
 			[
-				Nette\Caching\Cache::FILES => $this->getFileDependencies(),
+				Nette\Caching\Cache::Files => $this->getFileDependencies(),
 			],
 		);
 	}

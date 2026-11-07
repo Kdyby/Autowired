@@ -42,7 +42,7 @@ final class TestStorage implements Nette\Caching\Storage
 	 */
 	public function clean(array $conditions): void
 	{
-		if ($conditions[Nette\Caching\Cache::ALL] === TRUE) {
+		if ($conditions[Nette\Caching\Cache::All] === TRUE) {
 			$this->records = [];
 		}
 	}
